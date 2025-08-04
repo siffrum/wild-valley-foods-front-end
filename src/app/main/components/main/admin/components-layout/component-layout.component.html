@@ -1,0 +1,20 @@
+<div class="layout">
+  <header class="top-nav">
+    <button class="menu-toggle" (click)="isSidebarOpen = !isSidebarOpen">&#9776;</button>
+    <div class="logo">My App</div>
+  </header>
+
+  <aside class="side-nav" [class.open]="isSidebarOpen">
+    <nav>
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/website-resources" routerLinkActive="active">website-Resources</a>
+      <a routerLink="/contact" routerLinkActive="active">Contact</a>
+    </nav>
+  </aside>
+
+
+<main class="main-content" (click)="isSidebarOpen = false">
+
+    <router-outlet></router-outlet>
+  </main>
+</div>
