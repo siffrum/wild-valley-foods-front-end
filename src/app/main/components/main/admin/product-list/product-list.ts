@@ -44,8 +44,8 @@ export class ProductList  extends BaseComponent<ProductComponentViewModel> imple
         this.viewModel.products = resp.successData;
         console.log('Products loaded:', this.viewModel.products);
         this.viewModel.filteredProducts = [...resp.successData];
-        this.sortData();
-        this.TotalProductCount();
+        // this.sortData();
+        // this.TotalProductCount();
       }
     } catch (error) {
       await this._logHandler.logObject(error);
@@ -56,7 +56,7 @@ export class ProductList  extends BaseComponent<ProductComponentViewModel> imple
         confirmButtonText: 'OK',
       });
     } finally {
-      this._commonService.dismissLoading();
+      this._commonService.dismissLoader();
     }
   }
 }
