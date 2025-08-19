@@ -8,8 +8,8 @@ export const environment = {
   apiResponseCacheTimeoutInMinutes: 5,
   enableResponseCacheProcessing: true,
   applicationVersion: '0.0.1',
-  // apiBaseUrl: 'http://thelightapi.com/',
-  apiBaseUrl: 'http://localhost:8081',
+  apiBaseUrl: 'https://wild-valley-foods-backend-api-production.up.railway.app',
+  // apiBaseUrl: 'http://localhost:8081',
   apiDefaultTimeout: 10,
   LoggingInfo: {
     cacheLogs: true,
