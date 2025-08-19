@@ -4,10 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve -o",
-    "build": "ng build",
+    "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:wild-valley-food": "node dist/wild-valley-food/server/server.mjs"
+    "serve:ssr:wild-valley-food": "node dist/wild-valley-food/server/server.mjs",
+    "serve": "npx serve -s dist/wild-valley-food"
   },
   "prettier": {
     "overrides": [
@@ -21,14 +22,14 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "^20.1.0",
-    "@angular/compiler": "^20.1.0",
-    "@angular/core": "^20.1.0",
-    "@angular/forms": "^20.1.0",
-    "@angular/platform-browser": "^20.1.0",
-    "@angular/platform-server": "^20.1.0",
-    "@angular/router": "^20.1.0",
-    "@angular/ssr": "^20.1.4",
+    "@angular/common": "20.1.7",
+    "@angular/compiler": "20.1.7",
+    "@angular/core": "20.1.7",
+    "@angular/forms": "20.1.7",
+    "@angular/platform-browser": "20.1.7",
+    "@angular/platform-server": "20.1.7",
+    "@angular/router": "20.1.7",
+    "@angular/ssr": "20.1.7",
     "@auth0/angular-jwt": "^5.2.0",
     "@ng-bootstrap/ng-bootstrap": "^19.0.1",
     "@types/jwt-decode": "^2.2.1",
@@ -48,9 +49,9 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular/build": "^20.1.4",
-    "@angular/cli": "^20.1.4",
-    "@angular/compiler-cli": "^20.1.0",
+    "@angular/build": "20.1.7",
+    "@angular/cli": "20.1.7",
+    "@angular/compiler-cli": "20.1.7",
     "@types/crypto-js": "^4.2.2",
     "@types/datatables.net": "^1.10.28",
     "@types/express": "^5.0.1",
