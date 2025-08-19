@@ -4,9 +4,9 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { RouterModule } from '@angular/router';
-import { ComponentRoutingModule } from './auth-routing.module';
-import { TopNavComponent } from './internal/top-nav/top-nav.component';
-import { SideNavComponent } from './internal/side-nav/side-nav.component';
+import {  EndUserRoutingModule } from './end-user-routing.module';
+import { Home } from './home/home';
+import { EndUserLayout } from './end-user-layout/end-user-layout';
 
 @NgModule({
   declarations: [],
@@ -14,19 +14,20 @@ import { SideNavComponent } from './internal/side-nav/side-nav.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    ComponentRoutingModule,
+    EndUserRoutingModule,
     RouterModule,
-    TopNavComponent,
-    SideNavComponent
+    Home,
+    EndUserLayout
   ],
   exports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    ComponentRoutingModule,
     RouterModule,
-    TopNavComponent,
-    SideNavComponent
+    EndUserRoutingModule,
+    Home,
+    EndUserLayout
+  
   ]
 })
-export class ComponentModule {}
+export class EndUserModule {}

@@ -1,0 +1,62 @@
+.top-nav {
+  background-color: var(--color-light); // White background
+  box-shadow: var(--shadow-md);
+
+  .navbar-brand {
+    font-family: var(--font-family-base);
+    font-weight: var(--font-weight-bold);
+    font-size: 1.25rem;
+    color: var(--text-primary); // Black text
+
+    .logo {
+      height: 40px;
+    }
+
+    .brand-name {
+      color: var(--text-primary); // Black text
+    }
+  }
+
+  .navbar-nav .nav-link {
+    color: var(--text-primary); // Black text
+    font-weight: var(--font-weight-medium);
+    margin: 0 0.5rem;
+    transition: color 0.2s ease-in-out;
+
+    &:hover {
+      color: var(--color-primary); // Yellow hover
+    }
+  }
+
+  .login-btn {
+    background-color: var(--color-primary);
+    color: var(--btn-text);
+    border: none;
+    font-weight: var(--font-weight-medium);
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background-color: var(--btn-hover-bg);
+      color: var(--btn-hover-text);
+    }
+  }
+
+  .profile-wrapper {
+    .profile-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--color-primary); // Yellow border
+      cursor: pointer;
+    }
+  }
+
+  .navbar-toggler {
+    border: none;
+    color: var(--text-primary); // Black
+    font-size: 1.5rem;
+  }
+}

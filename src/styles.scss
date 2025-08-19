@@ -1,14 +1,24 @@
 /* You can add global styles to this file, and also import other style files */
-/* You can add global styles to this file, and also import other style files */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+/* ---------------- SCSS Fallback Variables ---------------- */
+$color-primary: #f5a623;   // Yellow-Orange from logo
+$color-secondary: #f7c948; // Soft golden yellow
+$color-accent: #ffcc00;
+
+$color-success: #36b37e;
+$color-warning: #ffab00;
+$color-danger: #de350b;
+
+/* ---------------- CSS Variables (Runtime Theming) ---------------- */
 :root {
-  /* Theme */
   --theme: light;
 
-  /* Semantic Colors */
-  --color-primary: #0052cc;
+  --color-primary: #f5a623;
+  --color-secondary: #f7c948;
+  --color-accent: #ffcc00;
+
   --color-primary-light: #6c8eff;
-  --color-secondary: #172b4d;
   --color-success: #36b37e;
   --color-warning: #ffab00;
   --color-danger: #de350b;
@@ -75,11 +85,9 @@
   :root {
     --theme: dark;
 
-    /* Semantic Colors (optional override) */
     --color-primary: #bb86fc;
-    --color-primary-light: lighten(#bb86fc, 15%);
+    --color-primary-light: #d0a8ff;
 
-    /* Gray Scale Overrides */
     --gray-100: #121212;
     --gray-200: #1e1e1e;
     --gray-300: #2c2c2c;
@@ -90,19 +98,18 @@
     --gray-800: #7a7a7a;
     --gray-900: #8a8a8a;
 
-    /* Background & Text Overrides */
     --color-bg: var(--gray-100);
     --color-surface: var(--gray-200);
     --color-on-surface: #e0e0e0;
     --color-text: var(--color-on-surface);
 
-    /* Shadows — lighter or no shadow in dark mode */
     --shadow-sm: none;
     --shadow-md: none;
     --shadow-lg: none;
   }
 }
 
+/* ---------------- Base Reset ---------------- */
 * {
   margin: 0;
   padding: 0;
@@ -116,3 +123,94 @@ body, html {
   height: 100%;
 }
 
+/* ---------------- Components ---------------- */
+.card {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.badge {
+  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+
+  &:hover {
+    background-color: darken($color-primary, 10%);
+    border-color: darken($color-primary, 10%);
+  }
+}
+
+.table {
+  th {
+    background-color: var(--gray-100);
+    color: var(--gray-800);
+    font-weight: 600;
+  }
+
+  tr {
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: var(--gray-100);
+    }
+  }
+}
+
+.form-control, .form-select {
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.75rem;
+
+  &:focus {
+    box-shadow: 0 0 0 0.25rem rgba(245, 166, 35, 0.25);
+    border-color: var(--color-primary);
+  }
+}
+
+.input-group-text {
+  background-color: var(--gray-100);
+  border-color: var(--gray-300);
+}
+
+.pagination {
+  .page-item {
+    .page-link {
+      border-radius: var(--radius-md);
+      margin: 0 0.25rem;
+      color: var(--gray-700);
+
+      &:hover {
+        background-color: var(--gray-200);
+      }
+    }
+
+    &.active .page-link {
+      background-color: var(--color-primary);
+      border-color: var(--color-primary);
+    }
+  }
+}
+
+.accordion-button {
+  font-weight: 600;
+
+  &:focus {
+    box-shadow: none;
+  }
+
+  &:not(.collapsed) {
+    background-color: var(--gray-100);
+    color: var(--color-text);
+  }
+}

@@ -8,12 +8,13 @@ import { ApiRequest } from '../models/service-models/foundation/api-contracts/ba
 import { DeleteResponseRoot } from '../models/service-models/foundation/common-response/delete-response-root';
 import { QueryFilter } from '../models/service-models/foundation/api-contracts/query-filter';
 import { IntResponseRoot } from '../models/service-models/foundation/common-response/int-response-root';
-import {  CategorySM } from '../models/service-models/app/v1/categories-s-m';
 import { AppConstants } from '../../app-constants';
+import { ProductSM } from '../models/service-models/app/v1/product-s-m';
+
 @Injectable({
   providedIn: 'root',
 })
-export class CategoryClient extends BaseApiClient {
+export class ProductClient extends BaseApiClient {
   constructor(
     storageService: StorageService,
     storageCache: StorageCache,
@@ -21,17 +22,17 @@ export class CategoryClient extends BaseApiClient {
   ) {
     super(storageService, storageCache, commonResponseCodeHandler);
   }
-  GetAllCategory = async (
+  GetAllProduct = async (
     queryFilter: QueryFilter
-  ): Promise<ApiResponse<CategorySM[]>> => {
-    let resp = await this.GetResponseAsync<null, CategorySM[]>(
+  ): Promise<ApiResponse<ProductSM[]>> => {
+    let resp = await this.GetResponseAsync<null, ProductSM[]>(
       `${AppConstants.ApiUrls.LOG_URL}?skip=${queryFilter.skip}&top=${queryFilter.top}`,
       'GET'
     );
     return resp;
   };
 
-  GetTotatCategoryCount = async (): Promise<ApiResponse<IntResponseRoot>> => {
+  GetTotatProductCount = async (): Promise<ApiResponse<IntResponseRoot>> => {
     let resp = await this.GetResponseAsync<null, IntResponseRoot>(
       `${AppConstants.ApiUrls.LOG_URL}/count`,
       'GET'
@@ -39,8 +40,8 @@ export class CategoryClient extends BaseApiClient {
     return resp;
   };
 
-  /**delete brand by id */
-  DeleteCategoryById = async (
+  /**delete Product by id */
+  DeleteProductById = async (
     Id: number
   ): Promise<ApiResponse<DeleteResponseRoot>> => {
     let resp = await this.GetResponseAsync<number, DeleteResponseRoot>(
@@ -50,41 +51,41 @@ export class CategoryClient extends BaseApiClient {
     return resp;
   };
 
-  GetCategoryById = async (
+  GetProductById = async (
     Id: number
-  ): Promise<ApiResponse<CategorySM>> => {
-    let resp = await this.GetResponseAsync<number, CategorySM>(
+  ): Promise<ApiResponse<ProductSM>> => {
+    let resp = await this.GetResponseAsync<number, ProductSM>(
       `${AppConstants.ApiUrls.LOG_URL}/${Id}`,
       'GET'
     );
     return resp;
   };
 
-  AddCategory = async (
-    addCategory: ApiRequest<CategorySM>
-  ): Promise<ApiResponse<CategorySM>> => {
+  AddProduct = async (
+    addCategory: ApiRequest<ProductSM>
+  ): Promise<ApiResponse<ProductSM>> => {
     let resp = await this.GetResponseAsync<
-      CategorySM,
-      CategorySM
+      ProductSM,
+      ProductSM
     >(`${AppConstants.ApiUrls.LOG_URL}`, 'POST', addCategory);
     return resp;
   };
 
   /**
-   * Update existing brand
+   * Update existing Product
    *
-   * @param updateBrand Brand data to update
-   * @returns Promise<ApiResponse<BrandSM>>
+   * @param updateProduct Product data to update
+   * @returns Promise<ApiResponse<ProductSM>>
    * @example
-   * const updatedBrand = new BrandSM();
+   * const updatedProduct = new ProductSM();
 
    */
-  UpdateCategory = async (
-    updatecategoryData: ApiRequest<CategorySM>
-  ): Promise<ApiResponse<CategorySM>> => {
+  UpdateProduct = async (
+    updatecategoryData: ApiRequest<ProductSM>
+  ): Promise<ApiResponse<ProductSM>> => {
     let resp = await this.GetResponseAsync<
-      CategorySM,
-      CategorySM
+      ProductSM,
+      ProductSM
     >(
       `${AppConstants.ApiUrls.LOG_URL}/${updatecategoryData.reqData.id}`,
       'PUT',

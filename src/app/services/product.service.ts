@@ -6,72 +6,73 @@ import { DeleteResponseRoot } from '../models/service-models/foundation/common-r
 import { ApiRequest } from '../models/service-models/foundation/api-contracts/base/api-request';
 import { QueryFilter } from '../models/service-models/foundation/api-contracts/query-filter';
 import { IntResponseRoot } from '../models/service-models/foundation/common-response/int-response-root';
-import { CategoryClient } from '../clients/category.client';
 import { AppConstants } from '../../app-constants';
-import { CategorySM } from '../models/service-models/app/v1/categories-s-m';
+import { ProductClient } from '../clients/product.client';
+import { ProductComponentViewModel } from '../models/view/end-user/product/product-component.viewmodel';
+import { ProductSM } from '../models/service-models/app/v1/product-s-m';
 
 @Injectable({
   providedIn: 'root',
 })
-export class CategoryService extends BaseService {
-  constructor(private categoryClient: CategoryClient) {
+export class ProductService extends BaseService {
+  constructor(private productClient: ProductClient) {
     super();
   }
 
   /**
-   * Retrieves all Categories from the server.
+   * Retrieves all Products from the server.
    *
-   * @returns A promise that resolves to an ApiResponse containing an array of CategorySM objects.
+   * @returns A promise that resolves to an ApiResponse containing an array of ProductSM objects.
    *
    * @throws Will throw an error if the server request fails.
    */
-  async getAllCategories(
-    viewModel: CategoriesViewModel
-  ): Promise<ApiResponse<CategorySM[]>> {
+  async getAllProducts(
+    viewModel: ProductComponentViewModel
+  ): Promise<ApiResponse<ProductSM[]>> {
     let queryFilter = new QueryFilter();
     queryFilter.skip =
       (viewModel.pagination.PageNo - 1) * viewModel.pagination.PageSize;
     queryFilter.top = viewModel.pagination.PageSize;
-    return await this.categoryClient.GetAllCategory(queryFilter);
+    return await this.productClient.GetAllProduct(queryFilter);
   }
 
-  async getTotatCategoryCount(): Promise<ApiResponse<IntResponseRoot>> {
-    return await this.categoryClient.GetTotatCategoryCount();
+  async getTotatProductsCount(): Promise<ApiResponse<IntResponseRoot>> {
+    return await this.productClient.GetTotatProductCount();
   }
-  async deleteCategory(id: number): Promise<ApiResponse<DeleteResponseRoot>> {
+  async deleteProduct(id: number): Promise<ApiResponse<DeleteResponseRoot>> {
     if (id <= 0) {
       throw new Error(AppConstants.ErrorPrompts.Delete_Data_Error);
     }
-    return await this.categoryClient.DeleteCategoryById(id);
+    return await this.productClient.DeleteProductById(id);
   }
 
-  async getCategoryById(id: number): Promise<ApiResponse<CategorySM>> {
+  async getProductsById(id: number): Promise<ApiResponse<ProductSM>> {
     if (id <= 0) {
       throw new Error(AppConstants.ErrorPrompts.Delete_Data_Error);
     }
-    return await this.categoryClient.GetCategoryById(id);
+    return await this.productClient.GetProductById(id);
   }
 
   async addCategory(
-    categoryData: CategorySM
-  ): Promise<ApiResponse<CategorySM>> {
+    categoryData: ProductSM
+  ): Promise<ApiResponse<ProductSM>> {
     if (!categoryData) {
       throw new Error(AppConstants.ErrorPrompts.Invalid_Input_Data);
     } else {
-      let apiRequest = new ApiRequest<CategorySM>();
+      let apiRequest = new ApiRequest<ProductSM>();
       apiRequest.reqData = categoryData;
-      return await this.categoryClient.AddCategory(apiRequest);
+      return await this.productClient.AddProduct(apiRequest);
     }
   }
-  async updateCategory(
-    categoryData: CategorySM
-  ): Promise<ApiResponse<CategorySM>> {
+  async updateProducts(
+    categoryData: ProductSM
+  ): Promise<ApiResponse<ProductSM>> {
     if (!categoryData) {
       throw new Error(AppConstants.ErrorPrompts.Invalid_Input_Data);
     } else {
-      let apiRequest = new ApiRequest<CategorySM>();
+      let apiRequest = new ApiRequest<ProductSM>();
       apiRequest.reqData = categoryData;
-      return await this.categoryClient.UpdateCategory(apiRequest);
+      return await this.productClient.UpdateProduct(apiRequest);
     }
   }
 }

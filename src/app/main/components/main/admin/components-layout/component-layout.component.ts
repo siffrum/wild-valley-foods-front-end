@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { TopNavComponent } from "../../../internal/top-nav/top-nav.component";
-import { SideNavComponent } from '../../../internal/side-nav/side-nav.component';
+import { TopNavComponent } from "../../../internal/Admin/top-nav/top-nav.component";
+import { SideNavComponent } from '../../../internal/Admin/side-nav/side-nav.component';
 
 @Component({
   selector: 'app-auth-layout',
