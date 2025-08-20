@@ -21,62 +21,63 @@ export class CategoryClient extends BaseApiClient {
   ) {
     super(storageService, storageCache, commonResponseCodeHandler);
   }
-  GetAllCategory = async (
-    queryFilter: QueryFilter
-  ): Promise<ApiResponse<CategorySM[]>> => {
-    let resp = await this.GetResponseAsync<null, CategorySM[]>(
-      `${AppConstants.ApiUrls.LOG_URL}?skip=${queryFilter.skip}&top=${queryFilter.top}`,
-      'GET'
-    );
-    return resp;
-  };
 
-  GetTotatCategoryCount = async (): Promise<ApiResponse<IntResponseRoot>> => {
-    let resp = await this.GetResponseAsync<null, IntResponseRoot>(
-      `${AppConstants.ApiUrls.LOG_URL}/count`,
-      'GET'
-    );
-    return resp;
-  };
-
-  /**delete brand by id */
-  DeleteCategoryById = async (
-    Id: number
-  ): Promise<ApiResponse<DeleteResponseRoot>> => {
-    let resp = await this.GetResponseAsync<number, DeleteResponseRoot>(
-      `${AppConstants.ApiUrls.LOG_URL}/${Id}`,
-      'DELETE'
-    );
-    return resp;
-  };
-
-  GetCategoryById = async (
-    Id: number
-  ): Promise<ApiResponse<CategorySM>> => {
-    let resp = await this.GetResponseAsync<number, CategorySM>(
-      `${AppConstants.ApiUrls.LOG_URL}/${Id}`,
-      'GET'
-    );
-    return resp;
-  };
-
-  AddCategory = async (
+/// Add a new category
+    AddCategory = async (
     addCategory: ApiRequest<CategorySM>
   ): Promise<ApiResponse<CategorySM>> => {
     let resp = await this.GetResponseAsync<
       CategorySM,
       CategorySM
-    >(`${AppConstants.ApiUrls.LOG_URL}`, 'POST', addCategory);
+    >(`${AppConstants.ApiUrls.BASE}/admin/createcategory`, 'POST', addCategory);
     return resp;
   };
 
   /**
-   * Update existing brand
+   * Retrieves all Categories from the server.
    *
-   * @param updateBrand Brand data to update
-   * @returns Promise<ApiResponse<BrandSM>>
+   * @returns A promise that resolves to an ApiResponse containing an array of CategorySM objects.
+   *
+   * @throws Will throw an error if the server request fails.
+   */
+  GetAllCategory = async (
+    queryFilter: QueryFilter
+  ): Promise<ApiResponse<CategorySM[]>> => {
+    let resp = await this.GetResponseAsync<null, CategorySM[]>(
+      `${AppConstants.ApiUrls.BASE}?skip=${queryFilter.skip}&top=${queryFilter.top}`,
+      'GET'
+    );
+    return resp;
+  };
+
+  /**get total category count */
+  GetTotatCategoryCount = async (): Promise<ApiResponse<IntResponseRoot>> => {
+    let resp = await this.GetResponseAsync<null, IntResponseRoot>(
+      `${AppConstants.ApiUrls.BASE}/categories/count`,
+      'GET'
+    );
+    return resp;
+  };
+  // Get category by id
+
+    GetCategoryById = async (
+    Id: number
+  ): Promise<ApiResponse<CategorySM>> => {
+    let resp = await this.GetResponseAsync<number, CategorySM>(
+      `${AppConstants.ApiUrls.BASE}/categoryById/${Id}`,
+      'GET'
+    );
+    return resp;
+  };
+
+  
+  /**
+   * Update existing Category
+   *
+   * @param updateCategory Category data to update
+   * @returns Promise<ApiResponse<CategorySM>>
    * @example
-   * const updatedBrand = new BrandSM();
+   * const updatedCategory = new CategorySM();
 
    */
   UpdateCategory = async (
@@ -86,9 +87,20 @@ export class CategoryClient extends BaseApiClient {
       CategorySM,
       CategorySM
     >(
-      `${AppConstants.ApiUrls.LOG_URL}/${updatecategoryData.reqData.id}`,
+      `${AppConstants.ApiUrls.BASE}/admin/updatecategoryById/${updatecategoryData.reqData.id}`,
       'PUT',
       updatecategoryData
+    );
+    return resp;
+  };
+
+  /**delete brand by id */
+  DeleteCategoryById = async (
+    Id: number
+  ): Promise<ApiResponse<DeleteResponseRoot>> => {
+    let resp = await this.GetResponseAsync<number, DeleteResponseRoot>(
+      `${AppConstants.ApiUrls.BASE}/deletecategoryById/${Id}`,
+      'DELETE'
     );
     return resp;
   };

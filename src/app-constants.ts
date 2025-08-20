@@ -6,6 +6,7 @@ export const AppConstants =
     ApiUrls: {
         TEST_URL: 'test/test',
         REGISTER_URL: 'api/v1/register',
+        BASE:'/api/v1',
         LOG_URL: 'api/v1/login',
         LICENSE: 'api/v1/License',
         Banner: 'api/v1/banner',
