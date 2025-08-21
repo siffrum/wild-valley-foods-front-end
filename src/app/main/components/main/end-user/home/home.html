@@ -1,1 +1,8 @@
 <app-banner [banners]="dummyBanners"></app-banner>
+
+<div class="products-row">
+    @for (product of dummuyProducts; track product) {
+    <app-product class="product-item" [product]="product" (addToCart)="onAddToCart($event)" (view)="openProduct($event)"
+        (wishlist)="toggleWishlist($event)"></app-product>
+    }
+</div>

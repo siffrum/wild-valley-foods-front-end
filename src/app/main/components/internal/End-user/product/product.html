@@ -1,0 +1,62 @@
+<article class="card product-card h-100" role="group">
+    <div class="position-relative">
+        <img [src]="product.imageBase64" (error)="onImageError($event)" class="card-img-top product-img"
+            [attr.alt]="product.name || 'product image'" loading="lazy" />
+
+        <!-- Badge -->
+        @if (product.badge) {
+        <span class="badge bg-danger position-absolute top-0 start-0 m-2">{{ product!.badge }}</span>
+        }
+
+        <!-- Out of stock overlay -->
+        @if (isOutOfStock) {
+        <div class="stock-overlay d-flex align-items-center justify-content-center">
+            Out of stock
+        </div>
+        }
+    </div>
+
+    <div class="card-body d-flex flex-column">
+        <h6 class="card-title mb-1 text-truncate" title="{{ product.name }}">{{ product.name }}</h6>
+
+        @if (product.category) {
+        <small class="text-muted mb-2 d-block" title="{{ product.category.name }}">{{ product.category.name }}</small>
+        }
+        @if (product.description) {
+        <p class="card-text text-muted small mb-2 description">
+            {{ product.description }}
+        </p>
+        }
+        <div class="mt-auto">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="price h6 mb-0">
+                        <span class="currency">{{ currency }}</span>
+                        <span class="amount">{{ product.price | number:'1.2-2' }}</span>
+                    </div>
+                    <small class="text-muted">SKU: {{ product.sku }}</small>
+                </div>
+
+                <div class="text-end">
+                    <small class="d-block" *ngIf="product?.weight">Wt: {{ product.weight }}{{ weightUnit }}</small>
+                    <small class="text-muted" *ngIf="!product?.weight">—</small>
+                </div>
+            </div>
+
+            <div class="mt-3 d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-primary flex-fill" [disabled]="isOutOfStock"
+                    (click)="onAddToCart()">
+                    Add to cart
+                </button>
+
+                <button type="button" class="btn btn-sm btn-outline-secondary" (click)="onView()">
+                    View
+                </button>
+
+                <button type="button" class="btn btn-sm btn-outline-danger" (click)="onToggleWishlist()">
+                    ♥
+                </button>
+            </div>
+        </div>
+    </div>
+</article>

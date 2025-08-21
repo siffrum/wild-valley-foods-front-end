@@ -1,0 +1,17 @@
+.products-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-evenly;
+  padding: 1rem;
+}
+
+.product-item {
+  box-sizing: border-box;
+}
+@media (max-width: 576px) {
+  .product-item {
+    flex: 0 0 180px;
+    max-width: 180px;
+  }
+}
