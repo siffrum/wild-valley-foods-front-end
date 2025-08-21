@@ -1,0 +1,52 @@
+@if (isVisible) {
+<div class="banner-carousel">
+    @if (banners && banners.length > 0) {
+    <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel">
+
+        <div class="carousel-inner">
+            @for (banner of banners; track banner; let i = $index) {
+            <div class="carousel-item" [class.active]="i === 0" [attr.data-type]="banner.bannerType">
+
+                @if (banner.link) {
+                <a [href]="banner.link" target="_blank" rel="noopener">
+                    <img [src]="banner.imageBase64" class="d-block w-100" alt="{{ banner.title }}" />
+                </a>
+                } @else {
+                <img [src]="banner.imageBase64" class="d-block w-100" alt="{{ banner.title }}" />
+                }
+
+                <div class="carousel-caption d-none d-md-block" [ngClass]="banner.bannerType.toLowerCase()">
+                    <h5>{{ banner.title }}</h5>
+                    <p>{{ banner.description }}</p>
+                    @if (banner.ctaText && banner.link) {
+                    <a [href]="banner.link" class="btn btn-primary" target="_blank" rel="noopener">
+                        {{ banner.ctaText }}
+                    </a>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+
+        <!-- Prev button -->
+        <button [disabled]="banners.length <= 1" class="carousel-control-prev" type="button"
+            data-bs-target="#bannerCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+
+        <!-- Next button -->
+        <button [disabled]="banners.length <= 1" class="carousel-control-next" type="button"
+            data-bs-target="#bannerCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+
+    </div>
+    } @else {
+    <div class="no-banners text-center p-3">
+        No banners to display
+    </div>
+    }
+</div>
+}
