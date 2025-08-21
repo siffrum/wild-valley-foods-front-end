@@ -1,57 +1,78 @@
-<nav class="top-nav navbar navbar-expand-lg bg-white text-black shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
   <div class="container-fluid">
-    <!-- Logo -->
-    <a class="navbar-brand d-flex align-items-center text-black" routerLink="/">
-      <img src="../../../../../../assets/logo.jfif" alt="Logo" class="logo me-2" style="width: 30px; height: 30px;">
-      <span class="brand-name fw-bold">Wild Valley Foods</span>
-    </a>
 
-    <!-- Hamburger for small screens -->
-    <button
-      class="navbar-toggler border-0"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarContent"
-      aria-controls="navbarContent"
-      aria-expanded="false"
-      aria-label="Toggle navigation">
-      <i class="bi bi-list fs-3 text-black"></i>
+    <button class="btn btn-outline-secondary d-lg-none me-2" type="button" data-bs-toggle="offcanvas"
+      data-bs-target="#offcanvasLeft">
+      <i class="bi bi-list"></i>
     </button>
 
-    <!-- Menu Items -->
-    <div class="collapse navbar-collapse" id="navbarContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link text-black" routerLink="/">Home</a></li>
-        <li class="nav-item"><a class="nav-link text-black" routerLink="/products">All Products</a></li>
-        <li class="nav-item"><a class="nav-link text-black" routerLink="/about">About</a></li>
-        <li class="nav-item"><a class="nav-link text-black" routerLink="/categories">Categories</a></li>
-      </ul>
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <img src="assets/logo.png" alt="Logo" width="50" class="me-2">
+      <!-- <span class="fw-bold">Multikart</span> -->
+    </a>
 
-      <!-- Right Side (Login / Profile) -->
-      <div class="d-flex align-items-center">
-        @if (!isLoggedIn) {
-          <button class="btn btn-outline-dark login-btn">Login</button>
-        }
-        @if (isLoggedIn) {
-          <div class="profile-wrapper dropdown">
-            <a
-              class="nav-link dropdown-toggle d-flex align-items-center text-black"
-              href="#"
-              id="profileDropdown"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false">
-              <img src="assets/profile.jpg" alt="Profile" class="profile-img rounded-circle" style="width: 35px; height: 35px;">
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="#">My Account</a></li>
-              <li><a class="dropdown-item" href="#">Orders</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Logout</a></li>
-            </ul>
-          </div>
-        }
-      </div>
-    </div>
+    <form class="d-flex mx-auto w-50 d-none d-lg-flex">
+      <input class="form-control me-2" type="search" placeholder="Search groceries..." aria-label="Search">
+      <button class="btn btn-link text-success" type="submit"><i class="bi bi-search"></i></button>
+    </form>
+
+    <button class="btn btn-outline-secondary d-lg-none ms-auto" type="button" data-bs-toggle="offcanvas"
+      data-bs-target="#offcanvasRight">
+      <i class="bi bi-three-dots-vertical"></i>
+    </button>
+
+    <!-- Icons (desktop only) -->
+    <ul class="navbar-nav ms-auto d-none d-lg-flex flex-row align-items-center">
+      <li class="nav-item me-3"><a class="nav-link" href="#"><i class="bi bi-heart fs-5"></i></a></li>
+      <li class="nav-item me-3"><a class="nav-link" href="#"><i class="bi bi-person fs-5"></i></a></li>
+      <li class="nav-item me-3"><a class="nav-link" href="#"><i class="bi bi-gear fs-5"></i></a></li>
+      <li class="nav-item position-relative">
+        <a class="nav-link" href="#"><i class="bi bi-cart fs-5"></i></a>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">2</span>
+      </li>
+    </ul>
   </div>
 </nav>
+
+<!-- Left Offcanvas Menu -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Menu</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="list-unstyled">
+      <li><a href="#" class="nav-link">Home</a></li>
+      <li><a href="#" class="nav-link">Categories</a></li>
+      <li><a href="#" class="nav-link">Offers</a></li>
+
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde, cupiditate.
+    </ul>
+  </div>
+</div>
+
+<!-- Right Offcanvas Menu -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Account</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="list-unstyled">
+      <li><a href="#" class="nav-link">Wishlist</a></li>
+      <li><a href="#" class="nav-link">Profile</a></li>
+      <li><a href="#" class="nav-link">Settings</a></li>
+      <li><a href="#" class="nav-link">Cart</a></li>
+
+      Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi distinctio excepturi laudantium deserunt nostrum
+      numquam, iure voluptates vitae praesentium eius voluptate itaque! Voluptates architecto dolorem, minima aperiam
+      fugiat, fuga ducimus ea est veniam sapiente ex tempora aliquid doloribus animi suscipit quaerat. Itaque nobis,
+      numquam ipsam doloribus, eum minus quam suscipit adipisci quisquam tenetur voluptates deserunt? Consequatur,
+      tenetur mollitia? Nobis quasi blanditiis magni maiores quisquam, natus esse, distinctio pariatur perferendis
+      necessitatibus aliquam modi alias dolore quidem est, repellendus accusantium molestias quo impedit possimus illum
+      itaque! Corporis aliquid exercitationem distinctio ipsa eveniet! Incidunt, maiores dolorum magnam inventore enim
+      iste reprehenderit assumenda est!
+
+    </ul>
+  </div>
+</div>
