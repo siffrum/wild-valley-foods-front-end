@@ -11,6 +11,9 @@ export const environment = {
   apiBaseUrl: 'https://wild-valley-foods-backend-api-production.up.railway.app',
   // apiBaseUrl: 'http://localhost:8081',
   apiDefaultTimeout: 10,
+  indexedDBName: 'WildValleyFoodsDB',
+  indexedDBVersion: 1,
+
   LoggingInfo: {
     cacheLogs: true,
     logToConsole: true,
@@ -25,4 +28,3 @@ export const environment = {
   },
   encryptionKey: '12345678',
 };
-
