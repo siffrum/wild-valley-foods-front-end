@@ -26,7 +26,7 @@ export class IndexDBStorageService extends BaseService {
    * IndexedDB. This way, session-only data is stored/encrypted in sessionStorage,
    * and IndexedDB is reserved solely for persistent storage.
    */
-  private _sessionStorage: Storage;
+  // private _sessionStorage: Storage;
 
   // ──────── CONSTRUCTOR ─────────────────────────────────────────────────────
 
@@ -40,7 +40,7 @@ export class IndexDBStorageService extends BaseService {
     this.dbPromise = this.openIndexedDB();
 
     // Directly reference sessionStorage for temporary data (no race issues).
-    this._sessionStorage = sessionStorage;
+    // this._sessionStorage = sessionStorage;
   }
 
   // ──────── PRIVATE: OPEN INDEXEDDB ───────────────────────────────────────────
@@ -140,79 +140,6 @@ export class IndexDBStorageService extends BaseService {
   }
 
   // ──────── SESSION STORAGE METHODS ───────────────────────────────────────────
-
-  /**
-   * Save a key/value pair to sessionStorage (encrypted).
-   * We keep sessionStorage usage separate from IndexedDB to avoid the race
-   * condition where IndexedDB might not be ready yet. Temporary data should
-   * reside in sessionStorage only.
-   *
-   * @param key  The sessionStorage key.
-   * @param val  The value (object or string). JSON.stringify() if not a string.
-   */
-  async saveToSessionStorage(key: string, val: any): Promise<void> {
-    const rawString: string =
-      typeof val !== 'string' ? JSON.stringify(val) : (val as string);
-
-    const encrypted: string = await this.encrypt(rawString);
-    this._sessionStorage.setItem(key, encrypted);
-  }
-
-  /**
-   * Get a key from sessionStorage, decrypt it, then parse JSON.
-   * This method never touches IndexedDB, so there's no need to await dbPromise.
-   *
-   * @param key  The sessionStorage key.
-   * @returns    The parsed object (if stored), or null if not found.
-   */
-  async getFromSessionStorage(key: string): Promise<any> {
-    const encrypted: string = this._sessionStorage.getItem(key) || '';
-    if (!encrypted) {
-      return null;
-    }
-
-    const decrypted: string = await this.decrypt(encrypted);
-    return this.getValueAsObject(decrypted);
-  }
-
-  /**
-   * Remove a key from sessionStorage (unencrypted removal).
-   *
-   * @param key  The sessionStorage key to remove.
-   */
-  async removeFromSessionStorage(key: string): Promise<void> {
-    this._sessionStorage.removeItem(key);
-  }
-
-  /**
-   * Clear all of sessionStorage in one go.
-   */
-  async clearSessionStorage(): Promise<void> {
-    this._sessionStorage.clear();
-  }
-
-  // ──────── UTILITY / MIXED STORAGE ────────────────────────────────────────────
-
-  /**
-   * Get data from either IndexedDB or sessionStorage based on the
-   * "remember me" flag (stored under AppConstants.DATABASE_KEYS.REMEMBER_PWD).
-   * If REMEMBER_PWD is true in IndexedDB, read from IndexedDB; otherwise, from
-   * sessionStorage. Because we always await `dbPromise` for getFromStorage(),
-   * we avoid the previous pitfall where `_storage` was localStorage prematurely.
-   *
-   * @param key  The key to retrieve.
-   * @returns    Whatever object/string was stored (or null if missing).
-   */
-  async getDataFromAnyStorage(key: string): Promise<any> {
-    const remMe: boolean = await this.getFromStorage(
-      AppConstants.DbKeys.REMEMBER_PWD
-    );
-    if (remMe) {
-      return this.getFromStorage(key);
-    } else {
-      return this.getFromSessionStorage(key);
-    }
-  }
 
   /**
    * Helper: Attempt to JSON.parse the string; if it fails, return the raw string.
