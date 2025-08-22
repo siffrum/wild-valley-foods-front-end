@@ -9,6 +9,27 @@
 .product-item {
   box-sizing: border-box;
 }
+
+.text-center {
+  margin-top: 2rem;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50; // dark gray/blue
+    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  h4 {
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: #7f8c8d; // softer gray
+    margin-bottom: 2rem;
+  }
+}
+
 @media (max-width: 576px) {
   .product-item {
     flex: 0 0 180px;

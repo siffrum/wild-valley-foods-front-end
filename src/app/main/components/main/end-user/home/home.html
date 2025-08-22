@@ -1,8 +1,11 @@
 <app-banner [banners]="dummyBanners"></app-banner>
-
-<div class="products-row">
-    @for (product of dummuyProducts; track product) {
-    <app-product class="product-item" [product]="product" (addToCart)="onAddToCart($event)" (view)="openProduct($event)"
-        (wishlist)="toggleWishlist($event)"></app-product>
-    }
+<div class="text-center mt-3">
+    <h1>Products</h1>
+    <h4>Explore our wide range of products</h4>
+    <div class="products-row">
+        @for (product of dummuyProducts; track product) {
+        <app-product class="product-item" [product]="product" (addToCart)="onAddToCart($event)"
+            (view)="openProduct($event)" (wishlist)="toggleWishlist($event)"></app-product>
+        }
+    </div>
 </div>
