@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { Home } from './home/home';
 import { EndUserLayout } from './end-user-layout/end-user-layout';
+import { SingleProduct } from './single-product/single-product';
 const routes: Routes = [
   {
     path: '',
@@ -10,12 +11,16 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: Home },
-    ]
-  }
+      {
+        path: 'product/:id',
+        component: SingleProduct,
+      },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class EndUserRoutingModule {}

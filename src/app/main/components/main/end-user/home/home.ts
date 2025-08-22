@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Banner } from '../../../internal/End-user/banner/banner';
 import { Product } from '../../../internal/End-user/product/product';
 import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -10,6 +11,7 @@ import { ProductSM } from '../../../../../models/service-models/app/v1/product-s
   styleUrl: './home.scss',
 })
 export class Home {
+  constructor(private router: Router) {}
   dummyBanners = [
     {
       title: 'Welcome to Our Sale',
@@ -44,7 +46,7 @@ export class Home {
 
   dummuyProducts = [
     {
-      id: 101,
+      id: 1,
       name: 'Organic Bananas (1 kg)',
       description:
         'Sweet organic bananas, locally sourced and ripened to perfection.',
@@ -251,7 +253,7 @@ export class Home {
   }
 
   openProduct(product: ProductSM) {
-    // navigate to product page or show modal
+    this.router.navigate(['/product', product.id]);
   }
 
   toggleWishlist(product: ProductSM) {

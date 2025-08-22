@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { IndexDBStorageService } from './services/indexdb.service';
 
 @Component({
   selector: 'app-root',
@@ -11,5 +12,9 @@ import { RouterOutlet } from '@angular/router';
 export class App {
   protected readonly title = signal('wild-valley-food');
 
-  constructor() {}
+  constructor(private indexDBStorageService: IndexDBStorageService) {}
+
+  ngOnInit() {
+    this.indexDBStorageService.saveToStorage('test', 'test');
+  }
 }
