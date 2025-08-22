@@ -23,7 +23,7 @@
         <small class="text-muted mb-2 d-block" title="{{ product.category.name }}">{{ product.category.name }}</small>
         }
         @if (product.description) {
-        <p class="card-text text-muted small mb-2 description">
+        <p class="card-text text-muted small mb-2 description d-none">
             {{ product.description }}
         </p>
         }
@@ -38,9 +38,13 @@
                 </div>
 
                 <div class="text-end">
-                    <small class="d-block" *ngIf="product?.weight">Wt: {{ product.weight }}{{ weightUnit }}</small>
-                    <small class="text-muted" *ngIf="!product?.weight">—</small>
+                    @if (product?.weight) {
+                    <small class="d-block">Wt: {{ product.weight }}{{ weightUnit }}</small>
+                    } @else {
+                    <small class="text-muted">—</small>
+                    }
                 </div>
+
             </div>
 
             <div class="mt-3 d-flex gap-2">

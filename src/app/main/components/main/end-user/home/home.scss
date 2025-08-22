@@ -1,3 +1,12 @@
+.div1 {
+  background-color: azure;
+  padding: 1rem 2rem;
+}
+.div2 {
+  padding: 1rem 2rem;
+  background-color: #c9f9e9;
+}
+
 .products-row {
   display: flex;
   flex-wrap: wrap;
@@ -23,9 +32,11 @@
   }
 
   h4 {
-    font-size: 1.2rem;
-    font-weight: 400;
-    color: #7f8c8d; // softer gray
+    font-size: 1.3rem;
+    font-weight: 500;
+    font-style: italic; // gives it a sleek look
+    color: #555; // softer dark gray
+    letter-spacing: 0.5px;
     margin-bottom: 2rem;
   }
 }
@@ -34,5 +45,9 @@
   .product-item {
     flex: 0 0 180px;
     max-width: 180px;
+  }
+  .div1,
+  .div2 {
+    padding: 1rem 0;
   }
 }
