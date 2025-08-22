@@ -8,7 +8,7 @@ import { AppConstants } from '../../app-constants';
 @Injectable({
   providedIn: 'root',
 })
-export class StorageService extends BaseService {
+export class IndexDBStorageService extends BaseService {
   // ──────── FIELDS ─────────────────────────────────────────────────────────
 
   /**
