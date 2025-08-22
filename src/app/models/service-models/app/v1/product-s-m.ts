@@ -15,5 +15,6 @@ export class ProductSM extends WildValleyFoodsServiceModelBase<number> {
   categoryId!: number;
   imageBase64?: string;
   badge?: string;
-  category!: CategorySM;
+  images?: string[];
+  category = new CategorySM();
 }

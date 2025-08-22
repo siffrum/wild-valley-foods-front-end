@@ -36,7 +36,7 @@ export class ProductService extends BaseService {
     return await this.productClient.GetAllProduct(queryFilter);
   }
 
-  async getTotatProductsCount(): Promise<ApiResponse<IntResponseRoot>> {
+  async getTotalProductsCount(): Promise<ApiResponse<IntResponseRoot>> {
     return await this.productClient.GetTotatProductCount();
   }
   async deleteProduct(id: number): Promise<ApiResponse<DeleteResponseRoot>> {
@@ -46,16 +46,11 @@ export class ProductService extends BaseService {
     return await this.productClient.DeleteProductById(id);
   }
 
-  async getProductsById(id: number): Promise<ApiResponse<ProductSM>> {
-    if (id <= 0) {
-      throw new Error(AppConstants.ErrorPrompts.Delete_Data_Error);
-    }
+  async getProductById(id: number): Promise<ApiResponse<ProductSM>> {
     return await this.productClient.GetProductById(id);
   }
 
-  async addCategory(
-    categoryData: ProductSM
-  ): Promise<ApiResponse<ProductSM>> {
+  async addCategory(categoryData: ProductSM): Promise<ApiResponse<ProductSM>> {
     if (!categoryData) {
       throw new Error(AppConstants.ErrorPrompts.Invalid_Input_Data);
     } else {

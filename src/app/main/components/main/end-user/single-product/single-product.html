@@ -1,23 +1,23 @@
 <!-- src/app/pages/product-page/product-page.component.html -->
-<div class="container py-4" *ngIf="!loading; else loadingTpl">
-    <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+<div class="container py-4" *ngIf="!viewModel.loading; else loadingTpl">
 
-    <div *ngIf="product" class="product-page">
+    <div *ngIf="viewModel.errorMsg" class="alert alert-danger">{{ viewModel.errorMsg }}</div>
+    @if (viewModel.product) {
+    <div class="product-page">
         <div class="row g-4">
             <!-- images -->
             <div class="col-md-6">
                 <div class="card image-card p-3">
                     <div class="main-image-wrapper mb-2">
-                        <img [src]="images[selectedImageIndex]" class="img-fluid main-image" [attr.alt]="product?.name"
-                            (error)="images[selectedImageIndex]='/assets/logo.png'" />
+                        <img [src]="viewModel.product.imageBase64" class="img-fluid main-image"
+                            [attr.alt]="viewModel.product.name" (error)="_commonService.onImageError($event)" />
                     </div>
 
                     <div class="d-flex gap-2 thumbnails">
-                        <button *ngFor="let img of images; index as i" class="thumb-btn"
-                            [class.selected]="i === selectedImageIndex" (click)="selectImage(i)"
+                        <button *ngFor="let img of viewModel.product.images; index as i" class="thumb-btn"
+                            [class.selected]="i === viewModel.selectedImageIndex" (click)="selectImage(i)"
                             [attr.aria-label]="'Show image ' + (i+1)">
-                            <img [src]="img" class="img-thumbnail thumb-img"
-                                [attr.alt]="product.name + ' thumbnail ' + (i+1)" />
+                            <img [src]="img" class="img-thumbnail thumb-img" [attr.alt]="viewModel.product.name" />
                         </button>
                     </div>
                 </div>
@@ -28,46 +28,51 @@
                 <div class="card p-3">
                     <div class="d-flex align-items-start justify-content-between mb-2">
                         <div>
-                            <h2 class="mb-1 product-title">{{ product.name }}</h2>
+                            <h2 class="mb-1 product-title">{{ viewModel.product.name }}</h2>
                             <p class="mb-1 text-muted small">Category:
-                                <a [routerLink]="['/category', product.categoryId]" class="link-primary">{{
-                                    product.category?.name ?? '—' }}</a>
+                                <a [routerLink]="['/category', viewModel.product.categoryId]" class="link-primary">{{
+                                    viewModel.product.category.name }}</a>
                             </p>
                         </div>
 
                         <div class="text-end">
-                            <span *ngIf="product.badge" class="badge bg-success me-1">{{ product.badge }}</span>
-                            <div class="stock" [class.text-muted]="product.stock === 0"
-                                [class.text-danger]="product.stock === 0">
-                                <small *ngIf="product.stock > 0">In stock: {{ product.stock }}</small>
-                                <small *ngIf="product.stock === 0">Out of stock</small>
+                            <span *ngIf="viewModel.product.badge" class="badge bg-success me-1">{{
+                                viewModel.product.badge }}</span>
+                            <div class="stock" [class.text-muted]="viewModel.product.stock === 0"
+                                [class.text-danger]="viewModel.product.stock === 0">
+                                <small *ngIf="viewModel.product.stock > 0">In stock: {{ viewModel.product.stock
+                                    }}</small>
+                                <small *ngIf="viewModel.product.stock === 0">Out of stock</small>
                             </div>
                         </div>
                     </div>
 
                     <div class="price-row mb-3">
-                        <h3 class="price mb-0">₹ {{ product.price | number:'1.2-2' }}</h3>
+                        <h3 class="price mb-0">₹ {{ viewModel.product.price | number:'1.2-2' }}</h3>
                         <!-- placeholder if you later add originalPrice/discount -->
                         <!-- <small class="text-muted ms-2"><s>₹ 1,999</s></small> -->
                     </div>
 
-                    <p class="product-desc text-muted mb-3" *ngIf="product.description">{{ product.description }}</p>
+                    <p class="product-desc text-muted mb-3" *ngIf="viewModel.product.description">{{
+                        viewModel.product.description }}</p>
 
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="qty-selector d-flex align-items-center">
                             <button class="btn btn-outline-secondary btn-sm" (click)="decrement()"
                                 aria-label="Decrease quantity">−</button>
                             <input type="number" class="form-control form-control-sm mx-2 text-center"
-                                style="width:4.5rem" [(ngModel)]="qty" [min]="1" [max]="maxQty" />
+                                style="width:4.5rem" [(ngModel)]="viewModel.qty" [min]="1" [max]="viewModel.maxQty" />
                             <button class="btn btn-outline-secondary btn-sm" (click)="increment()"
                                 aria-label="Increase quantity">+</button>
                         </div>
 
                         <div>
-                            <button class="btn btn-primary me-2" [disabled]="product.stock === 0" (click)="addToCart()">
+                            <button class="btn btn-primary me-2" [disabled]="viewModel.product.stock === 0"
+                                (click)="addToCart()">
                                 <i class="bi bi-cart-plus me-1"></i> Add to cart
                             </button>
-                            <button class="btn btn-outline-success" [disabled]="product.stock === 0" (click)="buyNow()">
+                            <button class="btn btn-outline-success" [disabled]="viewModel.product.stock === 0"
+                                (click)="buyNow()">
                                 Buy now
                             </button>
                         </div>
@@ -79,9 +84,12 @@
                         <button class="btn btn-sm btn-outline-secondary" title="Save for later"><i
                                 class="bi bi-heart"></i></button>
                     </div>
-
+                    <div class="description">
+                        <h3>Description</h3>
+                        <p>{{ viewModel.product.description }}</p>
+                    </div>
                     <!-- accordions for more info -->
-                    <div class="accordion" id="productDetailsAcc">
+                    <!-- <div class="accordion" id="productDetailsAcc">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingDesc">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
@@ -137,7 +145,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div> <!-- card -->
             </div> <!-- col-md-6 -->
         </div> <!-- row -->
@@ -150,10 +158,11 @@
                 <div class="col-6 col-md-3" *ngFor="let r of []">
                     <!-- placeholder -->
                 </div>
-                <div *ngIf="!product?.categoryId" class="text-muted">No related products available.</div>
+                <div *ngIf="!viewModel.product?.categoryId" class="text-muted">No related products available.</div>
             </div>
         </div>
     </div>
+    }
 </div>
 
 <ng-template #loadingTpl>

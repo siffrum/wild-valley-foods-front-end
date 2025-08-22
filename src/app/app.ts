@@ -1,5 +1,11 @@
-import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import {
+  Component,
+  Inject,
+  Injector,
+  PLATFORM_ID,
+  signal,
+} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { IndexDBStorageService } from './services/indexdb.service';
 
@@ -11,10 +17,18 @@ import { IndexDBStorageService } from './services/indexdb.service';
 })
 export class App {
   protected readonly title = signal('wild-valley-food');
+  isBrowser: boolean;
+  indexDBStorageService: IndexDBStorageService | undefined;
 
-  constructor(private indexDBStorageService: IndexDBStorageService) {}
+  constructor(
+    private injector: Injector,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
 
-  ngOnInit() {
-    this.indexDBStorageService.saveToStorage('test', 'test');
+    if (this.isBrowser) {
+      // lazy-resolve only when running in the browser
+      this.indexDBStorageService = this.injector.get(IndexDBStorageService);
+    }
   }
 }

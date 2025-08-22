@@ -38,6 +38,7 @@ export const AppConstants = {
     PAYMENT_URL: 'api/v1/Payment',
     LICENSE_TYPE_URL: '/api/v1/LicenseType',
     CONTACT_US: 'api/v1/ContactUs',
+    PRODUCT: 'api/v1/Product',
   },
   DbKeys: {
     ACCESS_TOKEN: 'ACCESS_TOKEN',

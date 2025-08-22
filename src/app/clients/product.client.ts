@@ -10,6 +10,11 @@ import { QueryFilter } from '../models/service-models/foundation/api-contracts/q
 import { IntResponseRoot } from '../models/service-models/foundation/common-response/int-response-root';
 import { AppConstants } from '../../app-constants';
 import { ProductSM } from '../models/service-models/app/v1/product-s-m';
+import {
+  AdditionalRequestDetails,
+  Authentication,
+} from '../models/internal/additional-request-details';
+import { productSM } from '../models/service-models/app/v1/dummy-teacher-s-m';
 
 @Injectable({
   providedIn: 'root',
@@ -51,12 +56,12 @@ export class ProductClient extends BaseApiClient {
     return resp;
   };
 
-  GetProductById = async (
-    Id: number
-  ): Promise<ApiResponse<ProductSM>> => {
+  GetProductById = async (Id: number): Promise<ApiResponse<ProductSM>> => {
     let resp = await this.GetResponseAsync<number, ProductSM>(
-      `${AppConstants.ApiUrls.LOG_URL}/${Id}`,
-      'GET'
+      `${AppConstants.ApiUrls.PRODUCT}/${Id}`,
+      'GET',
+      null,
+      new AdditionalRequestDetails<ProductSM>(false, Authentication.false)
     );
     return resp;
   };
@@ -64,10 +69,11 @@ export class ProductClient extends BaseApiClient {
   AddProduct = async (
     addCategory: ApiRequest<ProductSM>
   ): Promise<ApiResponse<ProductSM>> => {
-    let resp = await this.GetResponseAsync<
-      ProductSM,
-      ProductSM
-    >(`${AppConstants.ApiUrls.LOG_URL}`, 'POST', addCategory);
+    let resp = await this.GetResponseAsync<ProductSM, ProductSM>(
+      `${AppConstants.ApiUrls.LOG_URL}`,
+      'POST',
+      addCategory
+    );
     return resp;
   };
 
@@ -83,10 +89,7 @@ export class ProductClient extends BaseApiClient {
   UpdateProduct = async (
     updatecategoryData: ApiRequest<ProductSM>
   ): Promise<ApiResponse<ProductSM>> => {
-    let resp = await this.GetResponseAsync<
-      ProductSM,
-      ProductSM
-    >(
+    let resp = await this.GetResponseAsync<ProductSM, ProductSM>(
       `${AppConstants.ApiUrls.LOG_URL}/${updatecategoryData.reqData.id}`,
       'PUT',
       updatecategoryData

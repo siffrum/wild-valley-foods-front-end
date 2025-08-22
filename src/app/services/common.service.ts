@@ -23,7 +23,10 @@ export class CommonService extends BaseService {
   async presentLoading(message: string = '') {
     this.loaderInfo = { message, showLoader: true };
   }
-
+  onImageError(event: any) {
+    const img = event.target as HTMLImageElement;
+    img.src = 'assets/logo.png';
+  }
   async presentAlert() {}
   async showConfirmationAlert(
     title: string,
