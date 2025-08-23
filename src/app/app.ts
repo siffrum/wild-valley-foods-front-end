@@ -8,10 +8,11 @@ import {
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { IndexDBStorageService } from './services/indexdb.service';
+import { NgxUiLoaderModule } from 'ngx-ui-loader';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule],
+  imports: [RouterOutlet, CommonModule, NgxUiLoaderModule],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

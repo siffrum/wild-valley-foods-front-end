@@ -8,6 +8,7 @@ import {
 import { SweetAlertIcon } from '../models/internal/custom-sweet-alert-options';
 import Swal, { SweetAlertOptions } from 'sweetalert2';
 import { Observable, ReplaySubject } from 'rxjs';
+import { NgxUiLoaderService } from 'ngx-ui-loader';
 
 @Injectable({
   providedIn: 'root',
@@ -16,11 +17,12 @@ export class CommonService extends BaseService {
   layoutViewModel!: LayoutViewModel;
   layoutVM: layoutVM = new layoutVM();
   loaderInfo: LoaderInfo = { message: '', showLoader: false };
-  constructor() {
+  constructor(private ngxService: NgxUiLoaderService) {
     super();
   }
 
   async presentLoading(message: string = '') {
+    this.ngxService.start();
     this.loaderInfo = { message, showLoader: true };
   }
   onImageError(event: any) {
@@ -206,6 +208,7 @@ export class CommonService extends BaseService {
   }
 
   async dismissLoader() {
+    this.ngxService.stop();
     this.loaderInfo.showLoader = false;
     this.loaderInfo.message = '';
   }

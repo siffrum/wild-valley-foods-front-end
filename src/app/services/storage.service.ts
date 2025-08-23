@@ -1,20 +1,22 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { BaseService } from './base.service';
 import { AppConstants } from '../../app-constants';
+import { isPlatformBrowser } from '@angular/common';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StorageService extends BaseService {
-
   private _storage: any;
   private _sessionStorage: any;
-  constructor() {
-    super();
-    this._storage = localStorage;
-    this._sessionStorage = sessionStorage;
-    // this.init();
-  }
 
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    super();
+    if (isPlatformBrowser(this.platformId)) {
+      // Runs only in browser
+      this._storage = localStorage;
+      this._sessionStorage = sessionStorage;
+    }
+  }
   async init() {
     // If using, define drivers here: await this.storage.defineDriver(/*...*/);
     const storage = await this._storage['create'];
@@ -22,14 +24,14 @@ export class StorageService extends BaseService {
   }
 
   async getFromStorage(key: string): Promise<any> {
-    let data = await this._storage.getItem(key) || "";
+    let data = (await this._storage.getItem(key)) || '';
     let res = await this.decrypt(data);
     return await this.getValueAsObject(res);
   }
 
   async saveToStorage(key: string, val: any) {
     let value: string = '';
-    value = typeof (val) != typeof ('') ? JSON.stringify(val) : val;
+    value = typeof val != typeof '' ? JSON.stringify(val) : val;
     await this._storage.setItem(key, await this.encrypt(value));
   }
 
@@ -41,17 +43,16 @@ export class StorageService extends BaseService {
     return this._storage.clear();
   }
 
-
   /** Save To Session Storage*/
   async saveToSessionStorage(key: string, val: any) {
     let value: string = '';
-    value = typeof (val) != typeof ('') ? JSON.stringify(val) : val;
+    value = typeof val != typeof '' ? JSON.stringify(val) : val;
     await this._sessionStorage.setItem(key, await this.encrypt(value));
   }
 
   // Get from Session Storage
   async getFromSessionStorage(key: string) {
-    let data = await this._sessionStorage.getItem(key) || "";
+    let data = (await this._sessionStorage.getItem(key)) || '';
     let res = await this.decrypt(data);
     return await this.getValueAsObject(res);
   }
@@ -66,14 +67,14 @@ export class StorageService extends BaseService {
     this._sessionStorage.clear();
   }
 
-
   /** Get Data From Storage if Present
    * Checks appropriate storage as per the user remember
-  */
+   */
   async getDataFromAnyStorage(key: string): Promise<any> {
-    let remMe: boolean = await this.getFromStorage(AppConstants.DbKeys.REMEMBER_ME);
-    if (remMe && remMe == true)
-      return await this.getFromStorage(key);
+    let remMe: boolean = await this.getFromStorage(
+      AppConstants.DbKeys.REMEMBER_ME
+    );
+    if (remMe && remMe == true) return await this.getFromStorage(key);
     return await this.getFromSessionStorage(key);
   }
 

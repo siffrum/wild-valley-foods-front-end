@@ -40,12 +40,13 @@
     "datatables.net-bs5": "^2.3.2",
     "datatables.net-dt": "^2.3.2",
     "express": "^5.1.0",
+    "idb": "^8.0.3",
     "jquery": "^3.7.1",
     "jwt-decode": "^4.0.0",
+    "ngx-ui-loader": "^19.0.0",
     "rxjs": "~7.8.0",
     "sweetalert2": "^11.22.2",
     "tslib": "^2.3.0",
-    "idb": "^8.0.3",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {

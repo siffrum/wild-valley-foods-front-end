@@ -6,5 +6,4 @@ import 'jquery';
 import 'bootstrap';
 import 'datatables.net';
 import 'datatables.net-bs5';
-bootstrapApplication(App, appConfig)
-  .catch((err) => console.error(err));
+bootstrapApplication(App, appConfig).catch((err) => console.error(err));
