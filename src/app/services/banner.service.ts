@@ -25,16 +25,19 @@ export class BannerService extends BaseService {
    *
    * @throws Will throw an error if the server request fails.
    */
-  async getAllBanners(viewModel:BannerViewModel): Promise<ApiResponse<BannerSM[]>> {
-      let queryFilter = new QueryFilter();
-      queryFilter.skip = (viewModel.pagination.PageNo - 1) * viewModel.pagination.PageSize;
-      queryFilter.top = viewModel.pagination.PageSize
-      return await this.BannerClient.GetAllBanners(queryFilter);
+  async getAllBanners(
+    viewModel: BannerViewModel
+  ): Promise<ApiResponse<BannerSM[]>> {
+    let queryFilter = new QueryFilter();
+    queryFilter.skip =
+      (viewModel.pagination.PageNo - 1) * viewModel.pagination.PageSize;
+    queryFilter.top = viewModel.pagination.PageSize;
+    return await this.BannerClient.GetAllBanners(queryFilter);
   }
 
-  async getTotatBannersCount(): Promise<ApiResponse<number>> {
-    return await this.BannerClient.GetTotatBannerCount()
-    }
+  async getTotalBannersCount(): Promise<ApiResponse<number>> {
+    return await this.BannerClient.GetTotatBannerCount();
+  }
   async deleteBanner(id: number): Promise<ApiResponse<DeleteResponseRoot>> {
     if (id <= 0) {
       throw new Error(AppConstants.ErrorPrompts.Delete_Data_Error);

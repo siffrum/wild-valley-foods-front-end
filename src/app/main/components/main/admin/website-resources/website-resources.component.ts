@@ -10,7 +10,7 @@ import { PaginationComponent } from '../../../internal/pagination/pagination.com
 
 @Component({
   selector: 'app-website-resources',
-  imports: [CommonModule, ReactiveFormsModule,PaginationComponent],
+  imports: [CommonModule, ReactiveFormsModule, PaginationComponent],
   templateUrl: './website-resources.component.html',
   styleUrl: './website-resources.component.scss',
 })
@@ -61,10 +61,10 @@ export class WebsiteResourcesComponent
       this._commonService.dismissLoader();
     }
   }
-   async getTotalCount(): Promise<void> {
+  async getTotalCount(): Promise<void> {
     try {
       this._commonService.presentLoading();
-      let resp = await this.bannerService.getTotatBannersCount();
+      let resp = await this.bannerService.getTotalBannersCount();
       if (resp.isError) {
         await this._logHandler.logObject(resp.errorData);
         this._commonService.showSweetAlertToast({
@@ -74,8 +74,8 @@ export class WebsiteResourcesComponent
           confirmButtonText: 'OK',
         });
       } else {
-        console.log('Banners loaded:',resp.successData);
-        let count =resp.successData
+        console.log('Banners loaded:', resp.successData);
+        let count = resp.successData;
         this.viewModel.pagination.totalCount = count;
         // alert(`Total Banners Count: ${resp.successData}`);
 
@@ -88,7 +88,7 @@ export class WebsiteResourcesComponent
     }
   }
 
-    /**this function is used to create an event for pagination */
+  /**this function is used to create an event for pagination */
   async loadPagedataWithPagination(pageNumber: number) {
     if (pageNumber && pageNumber > 0) {
       // this.viewModel.PageNo = pageNumber;
@@ -99,36 +99,39 @@ export class WebsiteResourcesComponent
   initForm(): void {
     this.viewModel.bannerForm = this.fb.group({
       title: ['', Validators.required],
-      description: ['',Validators.required],
-      imageBase64: ['',Validators.required],
-      link: ['',],
-      ctaText: ['',],
-      bannerType: ['Slider', ],
+      description: ['', Validators.required],
+      imageBase64: ['', Validators.required],
+      link: [''],
+      ctaText: [''],
+      bannerType: ['Slider'],
       isVisible: [true],
     });
   }
 
-   onImageSelected(event: any): void {
+  onImageSelected(event: any): void {
     const file: File = event.target.files[0];
     if (file) {
-        if (file.size > 1 * 1024 * 1024) { // 1 MB limit
-    alert('Image is too large. Max size is 1MB.');
-    return;
-  }
-      this._commonService.convertFileToBase64(file).subscribe((base64: string) => {
-        this.viewModel.bannerForm.get('imageBase64')?.setValue(base64);
-        console.log('Base64 image:', base64); // optional
-      });
+      if (file.size > 1 * 1024 * 1024) {
+        // 1 MB limit
+        alert('Image is too large. Max size is 1MB.');
+        return;
+      }
+      this._commonService
+        .convertFileToBase64(file)
+        .subscribe((base64: string) => {
+          this.viewModel.bannerForm.get('imageBase64')?.setValue(base64);
+          console.log('Base64 image:', base64); // optional
+        });
     }
   }
 
-onDebugClick(event: Event): void {
-  console.log('Debug click fired!');
-  const file = (event.target as HTMLInputElement).files?.[0];
-  if (file) {
-    console.log('Selected file:', file.name);
+  onDebugClick(event: Event): void {
+    console.log('Debug click fired!');
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      console.log('Selected file:', file.name);
+    }
   }
-}
   onToggleVisibility() {
     const current = this.viewModel.bannerForm.get('isVisible')?.value;
     console.log('Checkbox toggled, new value:', current);
@@ -142,7 +145,7 @@ onDebugClick(event: Event): void {
   }
 
   openEditModal(bannerId: number): void {
-  // Ensure ID is set for edit
+    // Ensure ID is set for edit
     this.getBannerById(bannerId);
     this.viewModel.showEditModal = true;
   }
@@ -150,11 +153,10 @@ onDebugClick(event: Event): void {
   closeAddModal(): void {
     this.viewModel.showAddModal = false;
     this.viewModel.showEditModal = false;
-
   }
 
   closeEditModal(): void {
-      this.viewModel.showAddModal = false;
+    this.viewModel.showAddModal = false;
     this.viewModel.showEditModal = false;
   }
 
@@ -195,7 +197,7 @@ onDebugClick(event: Event): void {
       this._commonService.presentLoading();
       if (this.viewModel.bannerForm.valid) {
         this.viewModel.bannerSM = this.viewModel.bannerForm.value;
-        this.viewModel.bannerSM.id=this.viewModel.bannerId;  // Ensure ID is set for update
+        this.viewModel.bannerSM.id = this.viewModel.bannerId; // Ensure ID is set for update
         let resp = await this.bannerService.updateBanner(
           this.viewModel.bannerSM
         );
@@ -258,19 +260,19 @@ onDebugClick(event: Event): void {
   async getBannerById(bannerId: number) {
     try {
       this._commonService.presentLoading();
-        let resp = await this.bannerService.getBannerById(bannerId);
-        if (resp.isError) {
-          this._commonService.showSweetAlertToast({
-            title: 'Error',
-            text: resp.errorData?.displayMessage || 'An error occurred',
-            icon: 'error',
-            confirmButtonText: 'OK',
-          });
-        } else {
-          this.viewModel.bannerSM = resp.successData;
-          this.viewModel.bannerId=this.viewModel.bannerSM.id;
-          console.log('Banner loaded:', this.viewModel.bannerSM);
-          this.viewModel.bannerForm.patchValue(this.viewModel.bannerSM);
+      let resp = await this.bannerService.getBannerById(bannerId);
+      if (resp.isError) {
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData?.displayMessage || 'An error occurred',
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+      } else {
+        this.viewModel.bannerSM = resp.successData;
+        this.viewModel.bannerId = this.viewModel.bannerSM.id;
+        console.log('Banner loaded:', this.viewModel.bannerSM);
+        this.viewModel.bannerForm.patchValue(this.viewModel.bannerSM);
       }
     } catch (error) {
       throw error;

@@ -1,8 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Banner } from '../../../internal/End-user/banner/banner';
 import { Product } from '../../../internal/End-user/product/product';
 import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
 import { Router } from '@angular/router';
+import { BaseComponent } from '../../../../../base.component';
+import { HomeViewModel } from '../../../../../models/view/end-user/home.viewmodel';
+import { CommonService } from '../../../../../services/common.service';
+import { LogHandlerService } from '../../../../../services/log-handler.service';
+import { BannerService } from '../../../../../services/banner.service';
 
 @Component({
   selector: 'app-home',
@@ -10,8 +15,20 @@ import { Router } from '@angular/router';
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
-export class Home {
-  constructor(private router: Router) {}
+export class Home extends BaseComponent<HomeViewModel> implements OnInit {
+  constructor(
+    commonService: CommonService,
+    logHandlerService: LogHandlerService,
+    private router: Router,
+    private bannerService: BannerService
+  ) {
+    super(commonService, logHandlerService);
+    this.viewModel = new HomeViewModel();
+  }
+
+  async ngOnInit() {
+    await this.getAllBanners();
+  }
   dummyBanners = [
     {
       title: 'Welcome to Our Sale',
@@ -258,5 +275,34 @@ export class Home {
 
   toggleWishlist(product: ProductSM) {
     // handle wishlist toggle
+  }
+
+  async getAllBanners(): Promise<void> {
+    try {
+      this._commonService.presentLoading();
+      let resp = await this.bannerService.getAllBanners(
+        this.viewModel.bannerViewModel
+      );
+      if (resp.isError) {
+        await this._exceptionHandler.logObject(resp.errorData);
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData.displayMessage,
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+      } else {
+        this.viewModel.banners = resp.successData;
+      }
+    } catch (error) {
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: 'An error occurred',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    } finally {
+      this._commonService.dismissLoader();
+    }
   }
 }

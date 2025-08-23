@@ -10,6 +10,10 @@ import { QueryFilter } from '../models/service-models/foundation/api-contracts/q
 import { IntResponseRoot } from '../models/service-models/foundation/common-response/int-response-root';
 import { AppConstants } from '../../app-constants';
 import { BannerSM } from '../models/service-models/app/v1/website-resource/banner-s-m';
+import {
+  AdditionalRequestDetails,
+  Authentication,
+} from '../models/internal/additional-request-details';
 @Injectable({
   providedIn: 'root',
 })
@@ -21,20 +25,29 @@ export class BannerClient extends BaseApiClient {
   ) {
     super(storageService, storageCache, commonResponseCodeHandler);
   }
-  GetAllBanners = async (queryFilter:QueryFilter): Promise<ApiResponse<BannerSM[]>> => {
-    let resp = await this.GetResponseAsync<null, BannerSM[]>(`${AppConstants.ApiUrls.Banner}/getall?skip=${queryFilter.skip}&top=${queryFilter.top}`, 'GET');
+  GetAllBanners = async (
+    queryFilter: QueryFilter
+  ): Promise<ApiResponse<BannerSM[]>> => {
+    let resp = await this.GetResponseAsync<null, BannerSM[]>(
+      `${AppConstants.ApiUrls.Banner}/getall/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`,
+      'GET',
+      null,
+      new AdditionalRequestDetails<BannerSM[]>(false, Authentication.false)
+    );
     return resp;
   };
 
   GetTotatBannerCount = async (): Promise<ApiResponse<number>> => {
     let resp = await this.GetResponseAsync<null, number>(
       `${AppConstants.ApiUrls.Banner}/count`,
-      'GET'
+      'GET',
+      null,
+      new AdditionalRequestDetails<number>(false, Authentication.false)
     );
     return resp;
-    }
+  };
 
- AddBanner= async (
+  AddBanner = async (
     addBanner: ApiRequest<BannerSM>
   ): Promise<ApiResponse<BannerSM>> => {
     let resp = await this.GetResponseAsync<BannerSM, BannerSM>(
@@ -63,8 +76,6 @@ export class BannerClient extends BaseApiClient {
     );
     return resp;
   };
-
-
 
   /**
    * Update existing Banner
