@@ -9,10 +9,11 @@ import { CategoryService } from '../../../../../services/category.service';
 import { CategorySM } from '../../../../../models/service-models/app/v1/categories-s-m';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { PaginationComponent } from '../../../internal/pagination/pagination.component';
 
 @Component({
   selector: 'app-category-list',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule,FormsModule,PaginationComponent],
   templateUrl: './category-list.html',
   styleUrl: './category-list.scss'
 })
@@ -75,6 +76,15 @@ export class CategoryList extends BaseComponent<CategoriesViewModel> implements 
     //   },
     //   error: (err) => console.error('Error loading categories', err)
     // });
+  }
+
+    /**this function is used to create an event for pagination */
+  async loadPagedataWithPagination(pageNumber: number) {
+    if (pageNumber && pageNumber > 0) {
+      // this.viewModel.PageNo = pageNumber;
+      this.viewModel.pagination.PageNo = pageNumber;
+      await this.loadPageData();
+    }
   }
  applyFilter(): void {
     if (!this.viewModel.searchTerm) {
