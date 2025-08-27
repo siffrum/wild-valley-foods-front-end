@@ -8,8 +8,9 @@ import { CommonModule } from '@angular/common';
   templateUrl: './product.html',
   styleUrl: './product.scss',
 })
-export class Product {
+export class ProductCardComponent {
   @Input({ required: true }) product!: any;
+
   @Input() currency = '₹';
   @Input() weightUnit = 'kg';
   @Input() placeholder = 'assets/logo.png';

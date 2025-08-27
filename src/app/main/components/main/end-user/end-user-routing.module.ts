@@ -4,6 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { Home } from './home/home';
 import { EndUserLayout } from './end-user-layout/end-user-layout';
 import { SingleProduct } from './single-product/single-product';
+import { Shop } from './shop/shop';
 const routes: Routes = [
   {
     path: '',
@@ -15,6 +16,7 @@ const routes: Routes = [
         path: 'product/:id',
         component: SingleProduct,
       },
+      { path: 'shop', component: Shop },
     ],
   },
 ];

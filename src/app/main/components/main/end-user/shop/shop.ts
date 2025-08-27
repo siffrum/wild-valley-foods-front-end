@@ -1,65 +1,203 @@
-import { Component, OnInit } from '@angular/core';
-import { Banner } from '../../../internal/End-user/banner/banner';
-import { ProductCardComponent } from '../../../internal/End-user/product/product';
-import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
-import { Router } from '@angular/router';
+import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { BaseComponent } from '../../../../../base.component';
-import { HomeViewModel } from '../../../../../models/view/end-user/home.viewmodel';
+import { ShopViewModel } from '../../../../../models/view/end-user/shop.viewmodel';
 import { CommonService } from '../../../../../services/common.service';
 import { LogHandlerService } from '../../../../../services/log-handler.service';
-import { BannerService } from '../../../../../services/banner.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ProductComponent } from '../../admin/product-list/product-component/product-component';
+import { ProductCardComponent } from '../../../internal/End-user/product/product';
+import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
 
 @Component({
-  selector: 'app-home',
-  imports: [Banner, ProductCardComponent],
-  templateUrl: './home.html',
-  styleUrl: './home.scss',
+  selector: 'app-shop',
+  imports: [CommonModule, FormsModule, ProductCardComponent],
+  templateUrl: './shop.html',
+  styleUrl: './shop.scss',
+  standalone: true,
 })
-export class Home extends BaseComponent<HomeViewModel> implements OnInit {
+export class Shop extends BaseComponent<ShopViewModel> implements OnInit {
+  pageSize: number = 10;
   constructor(
     commonService: CommonService,
-    logHandlerService: LogHandlerService,
-    private router: Router,
-    private bannerService: BannerService
+    logHandlerService: LogHandlerService
   ) {
     super(commonService, logHandlerService);
-    this.viewModel = new HomeViewModel();
+    this.viewModel = new ShopViewModel();
+  }
+  products: any[] = [];
+  ngOnInit(): void {
+    this.products = this.dummuyProducts;
+    this.currentPage = 1;
+    this.applyFilters();
   }
 
-  async ngOnInit() {
-    await this.getAllBanners();
+  // --- internal state ---
+  searchText = '';
+  selectedCategory: any = null;
+  selectedSort: string | null = null;
+  minPrice: number | null = null;
+  maxPrice: number | null = null;
+  inStockOnly = true;
+
+  currentPage = 1;
+  pagedProducts: any[] = [];
+  totalItems = 0;
+  totalPages = 1;
+  categories = ['all', 'category1', 'category2'];
+
+  // call this whenever products input changes (implement ngOnChanges or setter)
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['products']) {
+      this.currentPage = 1;
+      this.applyFilters();
+    }
   }
-  dummyBanners = [
-    {
-      title: 'Welcome to Our Sale',
-      description: 'Get up to 50% off selected items. Limited time only!',
-      imageBase64:
-        'https://images.unsplash.com/photo-1615478441828-1b28a6115394?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', // replace with a real base64 image string
-      link: 'https://example.com/sale',
-      ctaText: 'Shop Now',
-      bannerType: 'Sales' as const,
-      isVisible: true,
-    },
-    {
-      title: 'Exclusive Voucher',
-      description: 'Use code SAVE20 to get 20% off your next purchase.',
-      imageBase64:
-        'https://plus.unsplash.com/premium_photo-1668677227454-213252229b73?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      link: 'https://example.com/voucher',
-      ctaText: 'Redeem',
-      bannerType: 'Voucher' as const,
-      isVisible: true,
-    },
-    {
-      title: 'Summer Collection',
-      description: 'Discover our latest summer styles and trends.',
-      imageBase64:
-        'https://images.unsplash.com/photo-1722886689077-d22d8fc2a305?q=80&w=1025&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      bannerType: 'Slider' as const,
-      isVisible: true,
-    },
-  ];
-  // mock-products-by-banner-style.ts
+  trackById(index: number, item: ProductSM) {
+    // return item.id ?? item.sku;
+  }
+
+  openProduct(product: ProductSM) {
+    // this.router.navigate(['/product', product.id]);
+  }
+
+  toggleWishlist(product: ProductSM) {
+    // handle wishlist toggle
+  }
+  onAddToCart(product: ProductSM) {}
+  /** MAIN: apply filters, sort and paginate */
+  applyFilters() {
+    this.pagedProducts = this.dummuyProducts;
+    // if (!Array.isArray(this.products)) {
+    //   this.pagedProducts = this.dummuyProducts;
+    //   this.totalItems = 0;
+    //   this.totalPages = 1;
+    //   return;
+    // }
+
+    // 1) filter
+    // let out = this.products.filter((p) => {
+    //   // search
+    //   if (this.searchText) {
+    //     const q = this.searchText.toLowerCase();
+    //     const inName = (p.name || '').toLowerCase().includes(q);
+    //     const inSku = (p.sku || '').toLowerCase().includes(q);
+    //     if (!inName && !inSku) return false;
+    //   }
+    //   // category
+    //   if (
+    //     this.selectedCategory !== null &&
+    //     this.selectedCategory !== undefined
+    //   ) {
+    //     if (!p.category) return false;
+    //     if (
+    //       p.category.id != this.selectedCategory &&
+    //       p.category.name != this.selectedCategory
+    //     )
+    //       return false;
+    //   }
+    //   // price
+    //   if (this.minPrice != null && p.price < this.minPrice) return false;
+    //   if (this.maxPrice != null && p.price > this.maxPrice) return false;
+    //   // in-stock
+    //   if (this.inStockOnly && p.inStock === false) return false;
+    //   return true;
+    // });
+
+    // // 2) sort
+    // out = this.sortProducts(out, this.selectedSort);
+
+    // // 3) paginate
+    // this.totalItems = out.length;
+    // this.totalPages = Math.max(1, Math.ceil(this.totalItems / this.pageSize));
+    // if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
+    // const start = (this.currentPage - 1) * this.pageSize;
+    // this.pagedProducts = out.slice(start, start + this.pageSize);
+  }
+
+  /** sort helper */
+  sortProducts(list: any[], sortKey: string | null) {
+    if (!sortKey) return list;
+    const copy = [...list];
+    if (sortKey === 'price_asc')
+      copy.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+    else if (sortKey === 'price_desc')
+      copy.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+    else if (sortKey === 'name_asc')
+      copy.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    else if (sortKey === 'name_desc')
+      copy.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+    return copy;
+  }
+
+  /** UI handlers */
+  onSearchChange() {
+    this.currentPage = 1;
+    // you can debounce externally if desired
+    this.applyFilters();
+  }
+
+  onSelectCategory(id: any) {
+    this.selectedCategory = id;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  onSortChange(val: Event | null) {
+    // this.selectedSort = val || null;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  onPriceApply() {
+    // if inputs are bound as strings, convert to number first
+    // ensure minPrice/maxPrice are numbers or null
+    if (
+      this.minPrice !== null &&
+      this.minPrice !== undefined &&
+      isNaN(Number(this.minPrice))
+    )
+      this.minPrice = null;
+    if (
+      this.maxPrice !== null &&
+      this.maxPrice !== undefined &&
+      isNaN(Number(this.maxPrice))
+    )
+      this.maxPrice = null;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  onResetPrice() {
+    this.minPrice = null;
+    this.maxPrice = null;
+    this.onPriceApply();
+  }
+
+  onToggleInStock() {
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  onResetFilters() {
+    this.searchText = '';
+    this.selectedCategory = null;
+    this.selectedSort = null;
+    this.minPrice = null;
+    this.maxPrice = null;
+    this.inStockOnly = false;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  /** pagination */
+  goToPage(page: number) {
+    if (page < 1) page = 1;
+    if (page > this.totalPages) page = this.totalPages;
+    if (page === this.currentPage) return;
+    this.currentPage = page;
+    this.applyFilters();
+  }
 
   dummuyProducts = [
     {
@@ -260,49 +398,4 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
       isVisible: false,
     },
   ];
-
-  trackById(index: number, item: ProductSM) {
-    // return item.id ?? item.sku;
-  }
-
-  onAddToCart(product: ProductSM) {
-    // handle add to cart
-  }
-
-  openProduct(product: ProductSM) {
-    this.router.navigate(['/product', product.id]);
-  }
-
-  toggleWishlist(product: ProductSM) {
-    // handle wishlist toggle
-  }
-
-  async getAllBanners(): Promise<void> {
-    try {
-      this._commonService.presentLoading();
-      let resp = await this.bannerService.getAllBanners(
-        this.viewModel.bannerViewModel
-      );
-      if (resp.isError) {
-        await this._exceptionHandler.logObject(resp.errorData);
-        this._commonService.showSweetAlertToast({
-          title: 'Error',
-          text: resp.errorData.displayMessage,
-          icon: 'error',
-          confirmButtonText: 'OK',
-        });
-      } else {
-        this.viewModel.banners = resp.successData;
-      }
-    } catch (error) {
-      this._commonService.showSweetAlertToast({
-        title: 'Error',
-        text: 'An error occurred',
-        icon: 'error',
-        confirmButtonText: 'OK',
-      });
-    } finally {
-      this._commonService.dismissLoader();
-    }
-  }
 }
