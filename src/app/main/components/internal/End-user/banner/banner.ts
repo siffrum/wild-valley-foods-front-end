@@ -11,7 +11,7 @@ export class Banner {
   @Input() banners: {
     title: string;
     description: string;
-    imageBase64: string;
+    image_base64: string;
     link?: string;
     ctaText?: string;
     bannerType: 'Slider' | 'ShortAdd' | 'LongAdd' | 'Sales' | 'Voucher';

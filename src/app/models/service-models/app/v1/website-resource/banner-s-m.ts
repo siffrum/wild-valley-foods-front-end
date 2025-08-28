@@ -3,7 +3,7 @@ import { WildValleyFoodsServiceModelBase } from "../../base/WildValleyFoods-serv
 export class BannerSM extends WildValleyFoodsServiceModelBase<number> {
   title!: string;
   description!: string;
-  imageBase64!: string;
+  image_base64!: string;
   link?: string;
   ctaText?: string;
   bannerType!: 'Slider' | 'ShortAdd' | 'LongAdd' | 'Sales' | 'Voucher';

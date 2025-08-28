@@ -14,6 +14,7 @@ import {
   AdditionalRequestDetails,
   Authentication,
 } from '../models/internal/additional-request-details';
+import { log } from 'console';
 @Injectable({
   providedIn: 'root',
 })
@@ -34,6 +35,8 @@ export class BannerClient extends BaseApiClient {
       null,
       new AdditionalRequestDetails<BannerSM[]>(false, Authentication.false)
     );
+    console.log(resp);
+    
     return resp;
   };
 

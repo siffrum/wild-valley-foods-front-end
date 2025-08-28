@@ -5,7 +5,6 @@ import { CommonService } from '../../../../../services/common.service';
 import { LogHandlerService } from '../../../../../services/log-handler.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ProductComponent } from '../../admin/product-list/product-component/product-component';
 import { ProductCardComponent } from '../../../internal/End-user/product/product';
 import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
 

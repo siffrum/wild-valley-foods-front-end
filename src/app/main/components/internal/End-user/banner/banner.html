@@ -9,10 +9,10 @@
 
                 @if (banner.link) {
                 <a [href]="banner.link" target="_blank" rel="noopener">
-                    <img [src]="banner.imageBase64" class="d-block w-100" alt="{{ banner.title }}" />
+                    <img [src]="banner.image_base64" class="d-block w-100" alt="{{ banner.title }}" />
                 </a>
                 } @else {
-                <img [src]="banner.imageBase64" class="d-block w-100" alt="{{ banner.title }}" />
+                <img [src]="banner.image_base64" class="d-block w-100" alt="{{ banner.title }}" />
                 }
 
                 <div class="carousel-caption d-none d-md-block" [ngClass]="banner.bannerType.toLowerCase()">
