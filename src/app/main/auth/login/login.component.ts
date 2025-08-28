@@ -30,7 +30,7 @@ export class LoginComponent extends BaseComponent <AuthViewModel> implements OnI
      this.viewModel.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
-      role: ['', Validators.required]
+      role: ['Admin',]
     });
   }
 
@@ -56,7 +56,7 @@ export class LoginComponent extends BaseComponent <AuthViewModel> implements OnI
           confirmButtonText: 'OK',
         })}
          else {
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/auth/dashboard']);
           this._commonService.showSweetAlertToast({
             title: 'Success',
             text: 'Login successful',

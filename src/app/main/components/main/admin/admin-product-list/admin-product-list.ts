@@ -1,32 +1,28 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { ProductComponentViewModel } from '../../../../../models/view/end-user/product/product-component.viewmodel';
 import { BaseComponent } from '../../../../../base.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AdminProductComponentViewModel } from '../../../../../models/view/Admin/admin-product-component.viewmodel';
 import { CategoryService } from '../../../../../services/category.service';
 import { CommonService } from '../../../../../services/common.service';
 import { LogHandlerService } from '../../../../../services/log-handler.service';
 import { ProductService } from '../../../../../services/product.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-product-list',
-  imports: [CommonModule, FormsModule,],
-  templateUrl: './product-list.html',
-  styleUrl: './product-list.scss'
+  selector: 'app-admin-product-list',
+  imports: [CommonModule,FormsModule],
+  templateUrl: './admin-product-list.html',
+  styleUrl: './admin-product-list.scss'
 })
-export class ProductList  extends BaseComponent<ProductComponentViewModel> implements OnInit {
+export class AdminProductList extends BaseComponent<AdminProductComponentViewModel> implements OnInit {
     protected _logHandler: LogHandlerService;
   constructor(commonService:CommonService,logHandler:LogHandlerService, private modalService: NgbModal,private categoryService: CategoryService,private productService: ProductService,) {
     super(commonService,logHandler);
     this._logHandler = logHandler;
-    this.viewModel = new ProductComponentViewModel();
+    this.viewModel = new AdminProductComponentViewModel();
   }
-  // categories: Category[] = [];
-  // filteredCategories: Category[] = [];
-
-  ngOnInit(){
-  }
+  ngOnInit(){}
 
   async loadProducts() {
     try {
@@ -60,3 +56,4 @@ export class ProductList  extends BaseComponent<ProductComponentViewModel> imple
     }
   }
 }
+

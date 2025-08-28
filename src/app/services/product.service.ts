@@ -1,4 +1,3 @@
-import { CategoriesViewModel } from './../models/view/end-user/categories.viewmodel';
 import { Injectable } from '@angular/core';
 import { BaseService } from './base.service';
 import { ApiResponse } from '../models/service-models/foundation/api-contracts/base/api-response';
@@ -8,8 +7,8 @@ import { QueryFilter } from '../models/service-models/foundation/api-contracts/q
 import { IntResponseRoot } from '../models/service-models/foundation/common-response/int-response-root';
 import { AppConstants } from '../../app-constants';
 import { ProductClient } from '../clients/product.client';
-import { ProductComponentViewModel } from '../models/view/end-user/product/product-component.viewmodel';
 import { ProductSM } from '../models/service-models/app/v1/product-s-m';
+import { AdminProductComponentViewModel } from '../models/view/Admin/admin-product-component.viewmodel';
 
 @Injectable({
   providedIn: 'root',
@@ -27,7 +26,7 @@ export class ProductService extends BaseService {
    * @throws Will throw an error if the server request fails.
    */
   async getAllProducts(
-    viewModel: ProductComponentViewModel
+    viewModel: AdminProductComponentViewModel
   ): Promise<ApiResponse<ProductSM[]>> {
     let queryFilter = new QueryFilter();
     queryFilter.skip =

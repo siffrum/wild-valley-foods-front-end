@@ -1,4 +1,3 @@
-import { CategoriesViewModel } from './../models/view/end-user/categories.viewmodel';
 import { Injectable } from '@angular/core';
 import { BaseService } from './base.service';
 import { ApiResponse } from '../models/service-models/foundation/api-contracts/base/api-response';
@@ -9,6 +8,7 @@ import { IntResponseRoot } from '../models/service-models/foundation/common-resp
 import { CategoryClient } from '../clients/category.client';
 import { AppConstants } from '../../app-constants';
 import { CategorySM } from '../models/service-models/app/v1/categories-s-m';
+import { AdminCategoriesViewModel } from '../models/view/Admin/admin.categories.viewmodel';
 
 @Injectable({
   providedIn: 'root',
@@ -26,7 +26,7 @@ export class CategoryService extends BaseService {
    * @throws Will throw an error if the server request fails.
    */
   async getAllCategories(
-    viewModel: CategoriesViewModel
+    viewModel: AdminCategoriesViewModel
   ): Promise<ApiResponse<CategorySM[]>> {
     let queryFilter = new QueryFilter();
     queryFilter.skip =

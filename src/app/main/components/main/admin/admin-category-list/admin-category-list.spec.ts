@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AuthLayoutComponent } from './component-layout.component';
+import { AdminCategoryList } from './admin-category-list';
 
-describe('AuthLayoutComponent', () => {
-  let component: AuthLayoutComponent;
-  let fixture: ComponentFixture<AuthLayoutComponent>;
+describe('AdminCategoryList', () => {
+  let component: AdminCategoryList;
+  let fixture: ComponentFixture<AdminCategoryList>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AuthLayoutComponent]
+      imports: [AdminCategoryList]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(AuthLayoutComponent);
+    fixture = TestBed.createComponent(AdminCategoryList);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

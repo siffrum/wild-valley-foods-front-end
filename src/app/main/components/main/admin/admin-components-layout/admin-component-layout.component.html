@@ -6,16 +6,15 @@
 
   <aside class="side-nav" [class.open]="isSidebarOpen">
     <nav>
-      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-      <a routerLink="/website-resources" routerLinkActive="active">website-Resources</a>
-      <a routerLink="/contact" routerLinkActive="active">Contact</a>
-      <a routerLink="/category-list" routerLinkActive="active">Category List</a>
+      <a routerLink="/auth/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/auth/website-resources" routerLinkActive="active">website-Resources</a>
+      <a routerLink="/auth/contact" routerLinkActive="active">Contact</a>
+      <a routerLink="/auth/category-list" routerLinkActive="active">Category List</a>
     </nav>
   </aside>
 
 
 <main class="main-content" (click)="isSidebarOpen = false">
-
     <router-outlet></router-outlet>
   </main>
 </div>

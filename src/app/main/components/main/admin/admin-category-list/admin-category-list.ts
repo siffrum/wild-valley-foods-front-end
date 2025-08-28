@@ -1,28 +1,28 @@
 import { Component, OnInit } from '@angular/core';
 import { BaseComponent } from '../../../../../base.component';
-import { CategoriesViewModel } from '../../../../../models/view/end-user/categories.viewmodel';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CategorySM } from '../../../../../models/service-models/app/v1/categories-s-m';
+import { AdminCategoriesViewModel } from '../../../../../models/view/Admin/admin.categories.viewmodel';
+import { CategoryService } from '../../../../../services/category.service';
 import { CommonService } from '../../../../../services/common.service';
 import { LogHandlerService } from '../../../../../services/log-handler.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { CategoryFormComponent } from './category-form-component/category-form-component';
-import { CategoryService } from '../../../../../services/category.service';
-import { CategorySM } from '../../../../../models/service-models/app/v1/categories-s-m';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PaginationComponent } from '../../../internal/pagination/pagination.component';
+import { AdminCategoryForm } from './admin-category-form/admin-category-form';
 
 @Component({
-  selector: 'app-category-list',
+  selector: 'app-admin-category-list',
   imports: [CommonModule,FormsModule,PaginationComponent],
-  templateUrl: './category-list.html',
-  styleUrl: './category-list.scss'
+  templateUrl: './admin-category-list.html',
+  styleUrl: './admin-category-list.scss'
 })
-export class CategoryList extends BaseComponent<CategoriesViewModel> implements OnInit {
+export class AdminCategoryList extends BaseComponent<AdminCategoriesViewModel> implements OnInit {
     protected _logHandler: LogHandlerService;
   constructor(commonService:CommonService,logHandler:LogHandlerService, private modalService: NgbModal,private categoryService: CategoryService) {
     super(commonService,logHandler);
     this._logHandler = logHandler;
-    this.viewModel = new CategoriesViewModel();
+    this.viewModel = new AdminCategoriesViewModel();
   }
   // categories: Category[] = [];
   // filteredCategories: Category[] = [];
@@ -160,7 +160,7 @@ export class CategoryList extends BaseComponent<CategoriesViewModel> implements 
 
   
 openFormModal(category?: CategorySM): void {
-    const modalRef = this.modalService.open(CategoryFormComponent, {
+    const modalRef = this.modalService.open(AdminCategoryForm, {
       centered: true,
       size: 'lg'
     });

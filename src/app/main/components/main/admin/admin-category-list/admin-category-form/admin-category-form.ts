@@ -1,21 +1,21 @@
-import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BaseComponent } from '../../../../../../base.component';
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { CategoriesViewModel } from '../../../../../../models/view/end-user/categories.viewmodel';
+import { FormGroup, FormBuilder, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgbModal, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { CategorySM } from '../../../../../../models/service-models/app/v1/categories-s-m';
+import { AdminCategoriesViewModel } from '../../../../../../models/view/Admin/admin.categories.viewmodel';
 import { CategoryService } from '../../../../../../services/category.service';
 import { CommonService } from '../../../../../../services/common.service';
 import { LogHandlerService } from '../../../../../../services/log-handler.service';
-import { CategorySM } from '../../../../../../models/service-models/app/v1/categories-s-m';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-category-form-component',
+  selector: 'app-admin-category-form',
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './category-form-component.html',
-  styleUrl: './category-form-component.scss'
+  templateUrl: './admin-category-form.html',
+  styleUrl: './admin-category-form.scss'
 })
-export class CategoryFormComponent extends BaseComponent<CategoriesViewModel> implements OnInit {
+export class AdminCategoryForm extends BaseComponent<AdminCategoriesViewModel> implements OnInit {
     protected _logHandler: LogHandlerService;
   @Input() category: CategorySM | null = null;
   form!: FormGroup;
@@ -24,7 +24,7 @@ export class CategoryFormComponent extends BaseComponent<CategoriesViewModel> im
     private fb: FormBuilder,) {
     super(commonService,logHandler);
     this._logHandler = logHandler;
-    this.viewModel = new CategoriesViewModel();
+    this.viewModel = new AdminCategoriesViewModel();
   }
   // categories: Category[] = [];
   // filteredCategories: Category[] = [];
@@ -74,3 +74,4 @@ export class CategoryFormComponent extends BaseComponent<CategoriesViewModel> im
     // });
   }
 }
+

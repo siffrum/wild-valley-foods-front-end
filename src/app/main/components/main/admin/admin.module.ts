@@ -2,7 +2,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-
 import { RouterModule } from '@angular/router';
 import { TopNavComponent } from '../../internal/Admin/top-nav/top-nav.component';
 import { SideNavComponent } from '../../internal/Admin/side-nav/side-nav.component';

@@ -4,8 +4,8 @@ import { BannerSM } from '../../service-models/app/v1/website-resource/banner-s-
 
 export class BannerViewModel extends BaseViewModel {
   bannerSM: BannerSM = new BannerSM();
-bannerForm!: FormGroup;
-bannerId: number = 0;
+  bannerForm!: FormGroup;
+  bannerId: number = 0;
   bannerSMList :BannerSM [] = [];
   showAddModal = false;
   showEditModal = false;
