@@ -35,7 +35,6 @@ export class BannerClient extends BaseApiClient {
       null,
       new AdditionalRequestDetails<BannerSM[]>(false, Authentication.false)
     );
-    console.log(resp);
     
     return resp;
   };
