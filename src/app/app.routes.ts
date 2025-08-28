@@ -13,7 +13,7 @@ export const routes: Routes = [
   },
 
   {
-    path: 'admin',loadChildren:()=> import('./main/components/main/admin/admin.module').then(m => m.AdminModule),canActivate: [AuthGuard]
+    path: 'admin',loadChildren:()=> import('./main/components/main/admin/admin.module').then(m => m.AdminModule)
   },
   { path: '**', redirectTo: '' }
 ];

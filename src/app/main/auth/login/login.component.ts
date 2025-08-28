@@ -35,10 +35,10 @@ export class LoginComponent extends BaseComponent <AuthViewModel> implements OnI
   }
 
   redirectToSignUp() {
-    this.router.navigate(['/auth/sign-up']);
+    this.router.navigate(['/admin/sign-up']);
   }
   redirctToForgotPassword() {
-    this.router.navigate(['/auth/forgot-password']);  
+    this.router.navigate(['/admin/forgot-password']);  
   }
    async onSubmit() {
     try {
@@ -56,7 +56,7 @@ export class LoginComponent extends BaseComponent <AuthViewModel> implements OnI
           confirmButtonText: 'OK',
         })}
          else {
-          this.router.navigate(['/auth/dashboard']);
+          this.router.navigate(['/admin/dashboard']);
           this._commonService.showSweetAlertToast({
             title: 'Success',
             text: 'Login successful',

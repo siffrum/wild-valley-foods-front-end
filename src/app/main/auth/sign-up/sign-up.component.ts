@@ -75,7 +75,7 @@ export class SignUpComponent
         });
       } else {
         console.log('User registered successfully:', resp.successData);
-        this.roouter.navigate(['/auth/login']);
+        this.roouter.navigate(['/admin/login']);
         this._commonService.showSweetAlertToast({
           title: 'Success',
           text: 'User registered successfully',
