@@ -5,6 +5,7 @@ import { Home } from './home/home';
 import { EndUserLayout } from './end-user-layout/end-user-layout';
 import { SingleProduct } from './single-product/single-product';
 import { Shop } from './shop/shop';
+import { CartComponent } from './cart/cart';
 const routes: Routes = [
   {
     path: '',
@@ -17,6 +18,7 @@ const routes: Routes = [
         component: SingleProduct,
       },
       { path: 'shop', component: Shop },
+      { path: 'cart', component: CartComponent },
     ],
   },
 ];
