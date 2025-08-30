@@ -6,6 +6,7 @@ import { EndUserLayout } from './end-user-layout/end-user-layout';
 import { SingleProduct } from './single-product/single-product';
 import { Shop } from './shop/shop';
 import { CartComponent } from './cart/cart';
+import { Checkout } from './checkout/checkout';
 const routes: Routes = [
   {
     path: '',
@@ -19,6 +20,7 @@ const routes: Routes = [
       },
       { path: 'shop', component: Shop },
       { path: 'cart', component: CartComponent },
+      { path: 'checkout', component: Checkout },
     ],
   },
 ];

@@ -1,0 +1,61 @@
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-lg-8">
+      <h2 class="mb-4">Checkout</h2>
+
+      <!-- Address Form -->
+      <div class="card">
+        <div class="card-header">
+          <h5>Shipping Address</h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="onSubmit()">
+            <div class="form-group">
+              <label for="fullName">Full Name</label>
+              <input id="fullName" class="form-control" [(ngModel)]="viewModel.address.fullName" name="fullName" required />
+            </div>
+            <div class="form-group">
+              <label for="addressLine">Address Line</label>
+              <input id="addressLine" class="form-control" [(ngModel)]="viewModel.address.addressLine" name="addressLine" required />
+            </div>
+            <div class="form-group">
+              <label for="city">City</label>
+              <input id="city" class="form-control" [(ngModel)]="viewModel.address.city" name="city" required />
+            </div>
+            <div class="form-group">
+              <label for="postalCode">Postal Code</label>
+              <input id="postalCode" class="form-control" [(ngModel)]="viewModel.address.postalCode" name="postalCode" required />
+            </div>
+            <div class="form-group">
+              <label for="country">Country</label>
+              <input id="country" class="form-control" [(ngModel)]="viewModel.address.country" name="country" required />
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Continue to Payment</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Summary -->
+    <div class="col-lg-4">
+      <div class="card">
+        <div class="card-header">
+          <h5>Cart Summary</h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-group mb-3">
+            <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let item of viewModel.cartItems">
+              {{ item.name }}
+              <span class="badge badge-primary badge-pill">{{ item.quantity }} x ₹{{ item.price | number:'1.2-2' }}</span>
+            </li>
+          </ul>
+          <div class="d-flex justify-content-between">
+            <h5>Total</h5>
+            <h5>₹{{ viewModel.totalPrice | number:'1.2-2' }}</h5>
+          </div>
+          <button class="btn btn-success btn-block mt-3" (click)="proceedToPayment()">Proceed to Payment</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
