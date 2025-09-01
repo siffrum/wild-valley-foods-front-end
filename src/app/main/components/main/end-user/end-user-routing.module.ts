@@ -8,6 +8,7 @@ import { Shop } from './shop/shop';
 import { CartComponent } from './cart/cart';
 import { Checkout } from './checkout/checkout';
 import { WishlistComponent } from './wishlist/wishlist';
+import { MyOrders } from './my-orders/my-orders';
 const routes: Routes = [
   {
     path: '',
@@ -23,6 +24,9 @@ const routes: Routes = [
       { path: 'cart', component: CartComponent },
       { path: 'checkout', component: Checkout },
       { path: 'wishlist', component: WishlistComponent },
+      {
+        path:'my-orders',component:MyOrders
+      }
     ],
   },
 ];

@@ -1,0 +1,156 @@
+<div class="orders-root" role="main" >
+  <header class="orders-header">
+    <div>
+      <h1 id="orders-heading">My Orders <span class="count">({{ totalCount }})</span></h1>
+      <p class="subtitle">All your recent purchases and order details</p>
+    </div>
+
+    <div class="actions">
+      <input
+        type="search"
+        class="search"
+        placeholder="Search order id, item, or customer..."
+        [(ngModel)]="searchTerm"
+      />
+
+      <div class="filter-row" role="tablist" >
+        <button
+          class="filter-btn"
+          [class.active]="statusFilter === ''"
+          (click)="setFilter('')"
+          role="tab"
+        
+        >All</button>
+
+        <button
+          class="filter-btn"
+          [class.active]="statusFilter === 'Processing'"
+          (click)="setFilter('Processing')"
+          role="tab"
+        >Processing</button>
+
+        <button
+          class="filter-btn"
+          [class.active]="statusFilter === 'Shipped'"
+          (click)="setFilter('Shipped')"
+          role="tab"
+        >Shipped</button>
+
+        <button
+          class="filter-btn"
+          [class.active]="statusFilter === 'Delivered'"
+          (click)="setFilter('Delivered')"
+          role="tab"
+        >Delivered</button>
+
+        <button
+          class="filter-btn"
+          [class.active]="statusFilter === 'Cancelled'"
+          (click)="setFilter('Cancelled')"
+          role="tab"
+        >Cancelled</button>
+      </div>
+
+      <select class="sort" [(ngModel)]="sortBy"  (change)="page = 1">
+        <option value="dateDesc">Newest</option>
+        <option value="dateAsc">Oldest</option>
+        <option value="totalDesc">Total: High → Low</option>
+        <option value="totalAsc">Total: Low → High</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- empty -->
+  <div *ngIf="!isLoading && filteredOrders.length === 0" class="empty">
+    <img src="https://cdn-icons-png.flaticon.com/512/107/107831.png" alt="" />
+    <h2>No orders yet</h2>
+    <p>Once you place an order it will appear here. Try placing a test order or load sample data.</p>
+    <div class="empty-actions">
+      <button class="btn primary" (click)="loadSample()">Load sample orders</button>
+      <button class="btn ghost" (click)="clearAll()">Clear storage</button>
+    </div>
+  </div>
+
+  <!-- skeleton -->
+  <div *ngIf="isLoading" class="skeleton-list">
+    <div class="skeleton-item" *ngFor="let s of [1,2,3]"></div>
+  </div>
+
+  <!-- list -->
+  <section *ngIf="!isLoading && filteredOrders.length > 0" class="orders-list">
+    <article class="order-card" *ngFor="let order of pagedOrders; let i = index">
+      <div class="order-head">
+        <div class="left">
+          <input type="checkbox" [(ngModel)]="order.selected" (ngModelChange)="onSelectionChange()"/>
+          <div class="meta">
+            <div class="order-id">Order <strong>#{{ order.id }}</strong></div>
+            <div class="small muted">Placed: {{ order.date | date:'mediumDate' }}</div>
+          </div>
+        </div>
+
+        <div class="right">
+          <div class="total">₹{{ order.total | number:'1.0-0' }}</div>
+          <div class="status" [ngClass]="statusClass(order.status)">{{ order.status }}</div>
+          <button class="icon-btn" (click)="toggleDetails(order)" [attr.aria-expanded]="!!order.showDetails">
+            <span *ngIf="!order.showDetails">View</span><span *ngIf="order.showDetails">Hide</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="order-body" *ngIf="order.showDetails" [id]="'details-'+i">
+        <div class="items">
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th class="center">Qty</th>
+                <th class="right">Price</th>
+                <th class="right">Line Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let it of order.items">
+                <td>
+                  <div class="product">
+                    <img [src]="it.image" [alt]="it.name" />
+                    <div>
+                      <div class="p-name">{{ it.name }}</div>
+                      <div class="muted small">{{ it.variant }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="center">{{ it.quantity }}</td>
+                <td class="right">₹{{ it.price | number:'1.0-0' }}</td>
+                <td class="right">₹{{ (it.price * it.quantity) | number:'1.0-0' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="summary">
+          <div class="left">
+            <div><strong>Shipping:</strong> {{ order.shippingMethod }}</div>
+            <div><strong>Payment:</strong> {{ order.paymentMethod }}</div>
+            <div *ngIf="order.tracking">Tracking: <a href="#" (click)="$event.preventDefault()">{{ order.tracking }}</a></div>
+          </div>
+          <div class="right">
+            <div class="row"><span>Subtotal</span><span>₹{{ order.subtotal | number:'1.0-0' }}</span></div>
+            <div class="row"><span>Discount</span><span>- ₹{{ order.discount | number:'1.0-0' }}</span></div>
+            <div class="row total-row"><span>Total</span><span>₹{{ order.total | number:'1.0-0' }}</span></div>
+            <div class="actions">
+              <button class="btn ghost" (click)="downloadInvoice(order)">Download Invoice</button>
+              <button class="btn primary" (click)="reorder(order)">Reorder</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- pagination -->
+    <nav class="pager" *ngIf="filteredOrders.length > pageSize" >
+      <button class="btn ghost" (click)="prevPage()" [disabled]="page === 1">Prev</button>
+      <span class="muted">Page {{ page }} of {{ totalPages }}</span>
+      <button class="btn ghost" (click)="nextPage()" [disabled]="page === totalPages">Next</button>
+    </nav>
+  </section>
+</div>
