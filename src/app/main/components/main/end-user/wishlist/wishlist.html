@@ -1,0 +1,145 @@
+<div class="wishlist-root" [class.loading]="isLoading">
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="title-wrap">
+      <h1>My Wishlist <span class="count">({{ totalCount }})</span></h1>
+      <small class="muted">Saved lists · <strong>{{ listName }}</strong></small>
+    </div>
+
+    <div class="controls">
+      <input
+        type="search"
+        placeholder="Search products, titles..."
+        [(ngModel)]="searchTerm"
+        class="search"
+      />
+
+      <div class="dropdown">
+        <button class="btn ghost" (click)="toggleDropdown('filter')"
+              >
+          Filter <span class="chip">{{ statusFilter || 'All' }}</span>
+        </button>
+        <div class="dropdown-menu" *ngIf="openDropdown === 'filter'">
+          <button (click)="setFilter('')">All</button>
+          <button (click)="setFilter('In Stock')">In Stock</button>
+          <button (click)="setFilter('Limited')">Limited</button>
+          <button (click)="setFilter('Out of Stock')">Out of Stock</button>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <button class="btn ghost" (click)="toggleDropdown('sort')" >
+          Sort <span class="chip">{{ sortByLabel }}</span>
+        </button>
+        <div class="dropdown-menu" *ngIf="openDropdown === 'sort'">
+          <button (click)="setSort('addedDesc')">Recently Added</button>
+          <button (click)="setSort('priceAsc')">Price: Low → High</button>
+          <button (click)="setSort('priceDesc')">Price: High → Low</button>
+        </div>
+      </div>
+
+      <label class="select-all">
+        <input type="checkbox" [checked]="allSelected" (change)="toggleSelectAll($event.target.checked)"/>
+        Select all
+      </label>
+
+      <button class="btn primary" (click)="bulkMoveToCart()" [disabled]="!hasSelection()">Move to Cart</button>
+      <button class="btn danger ghost" (click)="bulkRemove()" [disabled]="!hasSelection()">Remove</button>
+    </div>
+  </div>
+
+  <!-- Skeleton loader -->
+  <div class="skeleton-grid" *ngIf="isLoading">
+    <div class="skeleton-card" *ngFor="let s of [0,1,2,3,4]"></div>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="!isLoading && filteredWishlist.length === 0">
+    <img src="https://cdn-icons-png.flaticon.com/512/4076/4076549.png" alt="" />
+    <h2>Your wishlist is empty</h2>
+    <p>Add products to your wishlist from the store — or <button class="link" (click)="loadSample()">load sample</button></p>
+  </div>
+
+  <!-- Desktop table and mobile grid -->
+  <div *ngIf="!isLoading && filteredWishlist.length > 0" class="content-area">
+    <!-- Desktop table -->
+    <table class="wishlist-table" *ngIf="!isMobile">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Product</th>
+          <th>Title</th>
+          <th>Added</th>
+          <th>Price</th>
+          <th>Status</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of pagedWishlist; let i=index" [class.selected]="item.selected">
+          <td class="checkbox-cell">
+            <input type="checkbox" [(ngModel)]="item.selected" (ngModelChange)="onSelectionChange()"
+                  />
+          </td>
+          <td>
+            <img [src]="item.image" [alt]="item.title" class="product-img" loading="lazy" />
+          </td>
+          <td class="title-col">
+            <div class="title">{{ item.title }}</div>
+            <div class="muted small">{{ item.notes }}</div>
+          </td>
+          <td class="muted small">{{ item.addedAt | date:'mediumDate' }}</td>
+          <td class="price-col">{{ item.price | currency:'INR' }}</td>
+          <td>
+            <span class="badge" [ngClass]="statusClass(item.status)">{{ item.status }}</span>
+          </td>
+          <td class="actions text-right">
+            <button class="icon" (click)="moveToCart(item)" >🛒</button>
+            <button class="icon" (click)="shareItem(item)" >🔗</button>
+            <button class="icon" (click)="removeFromWishlist(item.id)" >✖</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Mobile cards -->
+    <div class="card-grid" *ngIf="isMobile">
+      <div class="card" *ngFor="let item of pagedWishlist" [class.selected]="item.selected">
+        <div class="card-head">
+          <input type="checkbox" [(ngModel)]="item.selected" (ngModelChange)="onSelectionChange()" />
+          <img [src]="item.image" [alt]="item.title" loading="lazy" />
+          <div class="card-info">
+            <div class="title">{{ item.title }}</div>
+            <div class="muted small">{{ item.addedAt | date:'shortDate' }}</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="price">{{ item.price | currency:'INR' }}</div>
+          <div class="badge" [ngClass]="statusClass(item.status)">{{ item.status }}</div>
+        </div>
+        <div class="card-actions">
+          <button class="btn ghost" (click)="moveToCart(item)">Move to cart</button>
+          <button class="btn ghost" (click)="shareItem(item)">Share</button>
+          <button class="btn danger ghost" (click)="removeFromWishlist(item.id)">Remove</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination / Load more -->
+    <div class="pager" *ngIf="filteredWishlist.length > pageSize">
+      <button class="btn ghost" (click)="prevPage()" [disabled]="page === 1">Prev</button>
+      <span class="muted">Page {{ page }} of {{ totalPages }}</span>
+      <button class="btn ghost" (click)="nextPage()" [disabled]="page === totalPages">Next</button>
+      <button class="btn primary" (click)="loadMore()" *ngIf="page < totalPages">Load more</button>
+    </div>
+  </div>
+
+  <!-- Undo toast -->
+  <div class="undo-toast" *ngIf="undoVisible">
+    <div>Removed "<strong>{{ lastRemoved?.item?.title }}</strong>"</div>
+    <div class="toast-actions">
+      <button class="btn ghost" (click)="undoRemove()">Undo</button>
+      <button class="btn danger ghost" (click)="dismissUndo()">Dismiss</button>
+    </div>
+  </div>
+</div>

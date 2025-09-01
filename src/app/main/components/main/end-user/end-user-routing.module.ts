@@ -7,6 +7,7 @@ import { SingleProduct } from './single-product/single-product';
 import { Shop } from './shop/shop';
 import { CartComponent } from './cart/cart';
 import { Checkout } from './checkout/checkout';
+import { WishlistComponent } from './wishlist/wishlist';
 const routes: Routes = [
   {
     path: '',
@@ -21,6 +22,7 @@ const routes: Routes = [
       { path: 'shop', component: Shop },
       { path: 'cart', component: CartComponent },
       { path: 'checkout', component: Checkout },
+      { path: 'wishlist', component: WishlistComponent },
     ],
   },
 ];
