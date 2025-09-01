@@ -2,21 +2,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
 
 /* ---------------- SCSS Fallback Variables ---------------- */
-$color-primary: #f5a623; // Yellow-Orange from logo
-$color-secondary: #f7c948; // Soft golden yellow
-$color-accent: #ffcc00;
-
-$color-success: #36b37e;
-$color-warning: #ffab00;
-$color-danger: #de350b;
-
 /* ---------------- CSS Variables (Runtime Theming) ---------------- */
 :root {
   --theme: light;
   --color-primary: #f5a623;
-  --color-secondary: #f7c948;
+  --color-secondary: #e8ca76;
   --color-accent: #ffcc00;
-
   --color-primary-light: #6c8eff;
   --color-success: #36b37e;
   --color-warning: #ffab00;

@@ -1,18 +1,16 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
   <div class="container-fluid">
-
     <button class="btn btn-outline-secondary  me-2" type="button" data-bs-toggle="offcanvas"
       data-bs-target="#offcanvasLeft">
       <i class="bi bi-list"></i>
     </button>
 
-    <a class="navbar-brand d-flex align-items-center">
+    <a class="navbar-brand d-flex align-items-center" [routerLink]="['/home']" routerLinkActive="router-link-active" >
       <img src="assets/logo.png" alt="Logo" width="50" class="me-2">
-      <!-- <span class="fw-bold">Multikart</span> -->
     </a>
 
     <form class="d-flex mx-auto w-50 d-none d-lg-flex">
-      <input class="form-control me-2" type="search" placeholder="Search groceries..." aria-label="Search">
+      <input class="form-control me-2" type="search" placeholder="Search Product..." aria-label="Search">
       <button class="btn btn-link text-success" type="submit"><i class="bi bi-search"></i></button>
     </form>
 
@@ -23,9 +21,8 @@
 
     <!-- Icons (desktop only) -->
     <ul class="navbar-nav ms-auto d-none d-lg-flex flex-row align-items-center">
-      <li class="nav-item me-3"><a class="nav-link" routerLink="/wishlist"><i class="bi bi-heart fs-5"></i></a></li>
-      <li class="nav-item me-3"><a class="nav-link"><i class="bi bi-person fs-5"></i></a></li>
-      <li class="nav-item me-3"><a class="nav-link"><i class="bi bi-gear fs-5"></i></a></li>
+      <li class="nav-item me-3">
+        <a class="nav-link" routerLink="/wishlist"><i class="bi bi-heart fs-5"></i></a></li>
       <li class="nav-item position-relative">
         <a class="nav-link"><i class="bi bi-cart fs-5" data-bs-toggle="offcanvas"
             data-bs-target="#offcanvasRight"></i></a>
@@ -38,15 +35,6 @@
 <!-- Left Offcanvas Menu -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
   <div class="offcanvas-header">
-    <div class="d-flex align-items-center">
-      <!-- user / brand -->
-      <img src="assets/avatar-placeholder.png" alt="User avatar" class="rounded-circle me-2" width="44" height="44">
-      <div>
-        <div class="fw-bold">Hello, Guest</div>
-        <small class="text-muted">Sign in to access orders & offers</small>
-      </div>
-    </div>
-
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
 
@@ -64,27 +52,13 @@
     <!-- Main nav list -->
     <div class="p-3 flex-grow-1 overflow-auto">
       <nav class="nav flex-column gap-2">
-
         <!-- Home / Offers -->
         <a class="nav-link d-flex align-items-center">
           <i class="bi bi-house me-2"></i> Home
         </a>
-        <a class="nav-link d-flex align-items-center">
-          <i class="bi bi-tag me-2"></i> Offers & Deals
-          <span class="badge bg-success ms-auto">20% OFF</span>
-        </a>
-
-        <!-- Account shortcuts -->
-        <div class="mt-2">
-          <div class="small text-uppercase text-muted mb-1">Account</div>
-          <a class="nav-link d-flex align-items-center"><i class="bi bi-person me-2"></i> My Profile</a>
           <a class="nav-link d-flex align-items-center" routerLink="/my-orders"><i class="bi bi-bag me-2"></i> My Orders</a>
           <a class="nav-link d-flex align-items-center"><i class="bi bi-heart me-2"></i> Wishlist <span
               class="badge bg-outline ms-auto">3</span></a>
-          <a class="nav-link d-flex align-items-center"><i class="bi bi-geo-alt me-2"></i> Saved Addresses</a>
-          <a class="nav-link d-flex align-items-center"><i class="bi bi-credit-card-2-front me-2"></i> Payment
-            Methods</a>
-        </div>
 
         <hr>
 
@@ -159,15 +133,6 @@
 
         <hr>
 
-        <!-- Promo / vouchers -->
-        <div class="mb-2">
-          <div class="small text-uppercase text-muted mb-1">Deals & Wallet</div>
-          <a class="nav-link d-flex align-items-center"><i class="bi bi-ticket-perforated me-2"></i> Coupons &
-            Vouchers</a>
-          <a class="nav-link d-flex align-items-center"><i class="bi bi-wallet2 me-2"></i> Gift Cards</a>
-        </div>
-
-        <hr>
 
         <!-- Help & settings -->
         <div class="mb-2">
@@ -184,19 +149,9 @@
 
     <!-- Footer actions -->
     <div class="p-3 border-top">
-      <div class="d-flex gap-2">
-        <button class="btn btn-outline-primary w-100">Sign In</button>
-        <button class="btn btn-primary w-100">Create Account</button>
-      </div>
-
       <div class="d-flex justify-content-between align-items-center mt-3 small text-muted">
         <div><i class="bi bi-globe me-1"></i> English</div>
         <div><i class="bi bi-currency-rupee me-1"></i> INR</div>
-      </div>
-
-      <div class="mt-3 d-flex gap-2">
-        <a class="btn btn-sm btn-outline-secondary w-100"><i class="bi bi-phone me-1"></i> Download App</a>
-        <a class="btn btn-sm btn-outline-secondary w-100"><i class="bi bi-share me-1"></i> Share</a>
       </div>
     </div>
   </div>

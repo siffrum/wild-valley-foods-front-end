@@ -2,6 +2,8 @@
 <div class="text-center mt-3 div1">
     <h1>Products</h1>
     <h4>Explore our wide range of products</h4>
+</div>
+<div class="text-center mt-3 div1">
     <div class="products-row">
         @for (product of dummuyProducts; track product) {
         <app-product class="product-item" [product]="product" (addToCart)="onAddToCart($event)"
@@ -12,6 +14,8 @@
 <div class="text-center mt-3 div2">
     <h1>New Arrivals</h1>
     <h4>Explore our wide range of New Arrivals</h4>
+</div>
+<div class="text-center mt-3 div2">
     <div class="products-row">
         @for (product of dummuyProducts; track product) {
         <app-product class="product-item" [product]="product" (addToCart)="onAddToCart($event)"

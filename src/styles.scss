@@ -15,7 +15,9 @@ html {
   height: 100%;
   margin: 0;
 }
-
+a,i{
+  cursor: pointer;
+}
 app-root {
   display: flex;
   flex-direction: column;
