@@ -1,11 +1,45 @@
+<div class="topbar  border-bottom py-1">
+  <div class="container-fluid">
+    <div class="d-flex align-items-center justify-content-between">
+      <!-- left: email & phone -->
+      <div class="d-flex align-items-center topbar-left">
+        <a class="me-3 contact-item" href="mailto:hello@example.com" aria-label="Email">
+          <i class="bi bi-envelope-fill me-1 text-white"></i>
+          <span class="d-none d-sm-inline text-white">hello@example.com</span>
+        </a>
+
+        <a class="me-3 contact-item" href="tel:+911234567890" aria-label="Phone">
+          <i class="bi bi-telephone-fill me-1 text-white"></i>
+          <span class="d-none d-sm-inline text-white">+91 12345 67890</span>
+        </a>
+      </div>
+
+      <!-- right: address and social (address hidden on xs) -->
+      <div class="d-flex align-items-center topbar-right">
+        <div class="me-3 contact-item d-none d-md-flex align-items-center" aria-hidden="false">
+          <i class="bi bi-geo-alt-fill me-1 text-white"></i>
+          <span>123, MG Road, Srinagar</span>
+        </div>
+
+        <!-- optional small social icons -->
+        <div class="d-flex align-items-center">
+          <a class="me-2 text-muted small" href="#" aria-label="Facebook"><i class="bi bi-facebook text-white"></i></a>
+          <a class="me-2 text-muted small" href="#" aria-label="Twitter"><i class="bi bi-twitter text-white"></i></a>
+          <a class="text-muted small" href="#" aria-label="Instagram"><i class="bi bi-instagram text-white"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
   <div class="container-fluid">
-    <button class="btn btn-outline-secondary  me-2" type="button" data-bs-toggle="offcanvas"
+    <button class="btn btn-outline-secondary  me-2 d-lg-none border-0 p-0" type="button" data-bs-toggle="offcanvas"
       data-bs-target="#offcanvasLeft">
       <i class="bi bi-list"></i>
     </button>
 
-    <a class="navbar-brand d-flex align-items-center" [routerLink]="['/home']" routerLinkActive="router-link-active" >
+    <a class="navbar-brand d-flex align-items-center" [routerLink]="['/home']" routerLinkActive="router-link-active">
       <img src="assets/logo.png" alt="Logo" width="50" class="me-2">
     </a>
 
@@ -14,7 +48,7 @@
       <button class="btn btn-link text-success" type="submit"><i class="bi bi-search"></i></button>
     </form>
 
-    <button class="btn btn-outline-secondary d-lg-none ms-auto" type="button" data-bs-toggle="offcanvas"
+    <button class="btn btn-outline-secondary d-lg-none ms-auto border-0" type="button" data-bs-toggle="offcanvas"
       data-bs-target="#offcanvasRight">
       <i class="bi bi-three-dots-vertical"></i>
     </button>
@@ -22,7 +56,17 @@
     <!-- Icons (desktop only) -->
     <ul class="navbar-nav ms-auto d-none d-lg-flex flex-row align-items-center">
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/wishlist"><i class="bi bi-heart fs-5"></i></a></li>
+        <a class="nav-link" routerLink="/">Home</a>
+      </li>
+      <li class="nav-item me-3">
+        <a class="nav-link" routerLink="/shop">Shop</a>
+      </li>
+      <li class="nav-item me-3">
+        <a class="nav-link" routerLink="/contact">Contact us</a>
+      </li>
+      <li class="nav-item me-3">
+        <a class="nav-link" routerLink="/wishlist"><i class="bi bi-heart fs-5"></i></a>
+      </li>
       <li class="nav-item position-relative">
         <a class="nav-link"><i class="bi bi-cart fs-5" data-bs-toggle="offcanvas"
             data-bs-target="#offcanvasRight"></i></a>
@@ -35,6 +79,7 @@
 <!-- Left Offcanvas Menu -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
   <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasLeftLabel">Wild Valley Fruits</h5>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
 
@@ -56,9 +101,10 @@
         <a class="nav-link d-flex align-items-center">
           <i class="bi bi-house me-2"></i> Home
         </a>
-          <a class="nav-link d-flex align-items-center" routerLink="/my-orders"><i class="bi bi-bag me-2"></i> My Orders</a>
-          <a class="nav-link d-flex align-items-center"><i class="bi bi-heart me-2"></i> Wishlist <span
-              class="badge bg-outline ms-auto">3</span></a>
+        <a class="nav-link d-flex align-items-center" routerLink="/my-orders"><i class="bi bi-bag me-2"></i> My
+          Orders</a>
+        <a class="nav-link d-flex align-items-center"><i class="bi bi-heart me-2"></i> Wishlist <span
+            class="badge bg-outline ms-auto">3</span></a>
 
         <hr>
 

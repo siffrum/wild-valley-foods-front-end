@@ -1,25 +1,53 @@
-<app-banner [banners]="viewModel.banners"></app-banner>
-<div class="text-center mt-3 div1">
-    <h1>Products</h1>
-    <h4>Explore our wide range of products</h4>
-</div>
-<div class="text-center mt-3 div1">
-    <div class="products-row">
-        @for (product of dummuyProducts; track product) {
-        <app-product class="product-item" [product]="product" (addToCart)="onAddToCart($event)"
-            (view)="openProduct($event)" (wishlist)="toggleWishlist($event)"></app-product>
-        }
+<div class="hero row ">
+    <div class="col-lg-3 d-none d-lg-block p-0">
+        <app-category [categories]="categories"></app-category>
+    </div>
+
+    <div class="col-12 col-lg-9 p-0">
+        <app-banner [banners]="viewModel.banners"></app-banner>
     </div>
 </div>
-<div class="text-center mt-3 div2">
-    <h1>New Arrivals</h1>
-    <h4>Explore our wide range of New Arrivals</h4>
+<div>
+    <app-service-banner></app-service-banner>
 </div>
-<div class="text-center mt-3 div2">
-    <div class="products-row">
+
+
+<div class="container-fluid m-0 products">
+    <div class="row text-center mb-4">
+        <h1 class="fw-bold">Products</h1>
+        <h4 class="text-muted">Explore our wide range of products</h4>
+    </div>
+
+    <div class="row justify-content-center">
         @for (product of dummuyProducts; track product) {
-        <app-product class="product-item" [product]="product" (addToCart)="onAddToCart($event)"
-            (view)="openProduct($event)" (wishlist)="toggleWishlist($event)"></app-product>
+        <div class="col-6 col-md-4 col-lg-3 mb-4 d-flex justify-content-center">
+            <app-product [product]="product" (addToCart)="onAddToCart($event)" (view)="openProduct($event)"
+                (wishlist)="toggleWishlist($event)">
+            </app-product>
+        </div>
         }
     </div>
+
+</div>
+<div class="container-fluid m-0 newarrivals">
+    <div class="row text-center mb-4">
+        <h1 class="fw-bold">New Arrivals</h1>
+        <h4 class="text-muted">Explore our wide range of products</h4>
+    </div>
+
+    <div class="row justify-content-center">
+        @for (product of dummuyProducts; track product) {
+        <div class="col-6 col-md-4 col-lg-3 mb-4 d-flex justify-content-center">
+            <app-product [product]="product" (addToCart)="onAddToCart($event)" (view)="openProduct($event)"
+                (wishlist)="toggleWishlist($event)">
+            </app-product>
+        </div>
+        }
+    </div>
+
+</div>
+
+
+<div>
+    <app-testimonial></app-testimonial>
 </div>

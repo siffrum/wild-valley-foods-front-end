@@ -9,14 +9,17 @@
 
 body,
 html {
-  font-family: "Inter", sans-serif;
-  background: var(--color-bg);
-  color: var(--color-text);
+  font-family: "Montserrat, sans-serif";
+  background: white;
+  color: black;
   height: 100%;
   margin: 0;
+  overflow-x: hidden !important;
 }
-a,i{
+a,
+i {
   cursor: pointer;
+  text-decoration: none;
 }
 app-root {
   display: flex;
@@ -26,4 +29,9 @@ app-root {
 
 main {
   flex: 1; // takes remaining space
+}
+.btn-primary {
+  background-color: #f9aa3c !important;
+  border: none;
+  color: rgb(255, 255, 255);
 }

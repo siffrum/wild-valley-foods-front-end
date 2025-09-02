@@ -1,53 +1,11 @@
-.div1 {
-  background-color: azure;
-  padding: 1rem 2rem;
+.container-fluid {
+  width: 100%;
 }
-.div2 {
-  padding: 1rem 2rem;
-  background-color: #c9f9e9;
+.products {
+  width: 100%;
 }
-
-.products-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: space-evenly;
-  padding: 1rem;
-}
-
-.product-item {
-  box-sizing: border-box;
-}
-
-.text-center {
-  margin-top: 2rem;
-
-  h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #2c3e50; // dark gray/blue
-    margin-bottom: 0.5rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-
-  h4 {
-    font-size: 1.3rem;
-    font-weight: 500;
-    font-style: italic; // gives it a sleek look
-    color: #555; // softer dark gray
-    letter-spacing: 0.5px;
-    margin-bottom: 2rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .product-item {
-    flex: 0 0 180px;
-    max-width: 180px;
-  }
-  .div1,
-  .div2 {
-    padding: 1rem 0;
-  }
+.newarrivals {
+  width: 100%;
+  background-color: aliceblue;
+  padding-top: 1rem;
 }

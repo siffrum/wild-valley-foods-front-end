@@ -3,6 +3,8 @@
   width: 18rem;
   border-radius: 0.5rem;
   overflow: hidden;
+  padding: 1rem;
+  border: 1px solid rgb(234, 228, 228);
 }
 .product-img {
   object-fit: cover;
@@ -35,11 +37,17 @@
   }
   .product-card {
     max-width: 100%;
+    width: 11rem;
+    padding: 0.5rem;
   }
   .card-body {
     padding: 0.5rem;
   }
   button {
     font-size: 0.5rem;
+  }
+  .price .currency {
+    font-size: 0.4rem;
+    margin-right: 0.25rem;
   }
 }

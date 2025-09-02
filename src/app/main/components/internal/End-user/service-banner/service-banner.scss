@@ -1,0 +1,36 @@
+.features {
+  background: #ffffff;
+
+  .feature-box {
+    background: #f0efef;
+    border-radius: 10px;
+    transition: all 0.2s ease-in-out;
+    cursor: default;
+    padding: 2rem 1rem !important;
+
+    &:hover {
+      background: #fff;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+      transform: translateY(-4px);
+    }
+
+    .icon-wrap {
+      font-size: 2rem;
+      color: #f9aa3c; // green accent
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .title {
+      font-weight: 600;
+      font-size: 1rem;
+      color: #111;
+    }
+
+    .desc {
+      font-size: 0.9rem;
+      color: #555;
+    }
+  }
+}

@@ -8,10 +8,19 @@ import { HomeViewModel } from '../../../../../models/view/end-user/home.viewmode
 import { CommonService } from '../../../../../services/common.service';
 import { LogHandlerService } from '../../../../../services/log-handler.service';
 import { BannerService } from '../../../../../services/banner.service';
+import { CategoryComponent } from '../../../internal/End-user/category/category';
+import { ServiceBanner } from '../../../internal/End-user/service-banner/service-banner';
+import { Testimonial } from '../../../internal/End-user/testimonial/testimonial';
 
 @Component({
   selector: 'app-home',
-  imports: [Banner, ProductCardComponent],
+  imports: [
+    Banner,
+    ProductCardComponent,
+    CategoryComponent,
+    ServiceBanner,
+    Testimonial,
+  ],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
@@ -29,6 +38,17 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
   async ngOnInit() {
     await this.getAllBanners();
   }
+
+  categories: any[] = [
+    { id: 1, name: 'Fruits', image: 'assets/sample/categories/fruits.jpg' },
+    { id: 2, name: 'Vegetables', image: 'assets/sample/categories/vegs.jpg' },
+    { id: 3, name: 'Dairy', image: 'assets/sample/categories/dairy.jpg' },
+    {
+      id: 4,
+      name: 'Beverages',
+      image: 'assets/sample/categories/beverages.jpg',
+    },
+  ];
   dummyBanners = [
     {
       title: 'Welcome to Our Sale',
@@ -85,27 +105,7 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
       },
       isVisible: true,
     },
-    {
-      id: 102,
-      name: 'Red Apples (1 kg)',
-      description: 'Crisp red apples — ideal for snacking and baking.',
-      price: 129.0,
-      sku: 'FR-0002',
-      stock: 12,
-      weight: 1,
-      imageBase64: '',
-      link: 'https://example.com/products/102',
-      ctaText: 'Buy Now',
-      badge: 'Fresh',
-      categoryId: 1,
-      category: {
-        id: 1,
-        name: 'Fruits & Vegetables',
-        description: 'Fresh produce',
-        status: 'active',
-      },
-      isVisible: true,
-    },
+
     {
       id: 103,
       name: 'Baby Spinach (250 g)',

@@ -1,0 +1,12 @@
+<div class="categories" *ngIf="categories?.length; else empty">
+    <div class="category-item" *ngFor="let c of categories; trackBy: trackById">
+        <div class="img-wrap">
+            <img [src]=" 'assets/logo.png'" [alt]="c.name" loading="lazy" />
+        </div>
+        <div class="name">{{ c.name }}</div>
+    </div>
+</div>
+
+<ng-template #empty>
+    <div class="empty">No categories</div>
+</ng-template>
