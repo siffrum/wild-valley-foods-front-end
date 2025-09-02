@@ -179,7 +179,7 @@ export class WishlistComponent implements OnInit {
     this.saveToStorage();
   }
 
-  toggleSelectAll(value: boolean) {
+  toggleSelectAll(value: boolean | any) {
     this.wishlist.forEach(i => i.selected = !!value);
     this.onSelectionChange();
   }

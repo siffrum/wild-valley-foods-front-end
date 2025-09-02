@@ -55,7 +55,7 @@
 
     <!-- Icons (desktop only) -->
     <ul class="navbar-nav ms-auto d-none d-lg-flex flex-row align-items-center">
-      <li class="nav-item me-3">
+      <li class="nav-item me-3">       
         <a class="nav-link" routerLink="/">Home</a>
       </li>
       <li class="nav-item me-3">
@@ -79,7 +79,7 @@
 <!-- Left Offcanvas Menu -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="offcanvasLeftLabel">Wild Valley Fruits</h5>
+    <h5 class="offcanvas-title" id="offcanvasLeftLabel">Wild Valley Foods</h5>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
 
@@ -98,14 +98,16 @@
     <div class="p-3 flex-grow-1 overflow-auto">
       <nav class="nav flex-column gap-2">
         <!-- Home / Offers -->
-        <a class="nav-link d-flex align-items-center">
+        <a class="nav-link d-flex align-items-center" routerLink="/home" data-bs-dismiss="offcanvas" aria-label="Close">
           <i class="bi bi-house me-2"></i> Home
         </a>
-        <a class="nav-link d-flex align-items-center" routerLink="/my-orders"><i class="bi bi-bag me-2"></i> My
+               <a class="nav-link d-flex align-items-center" routerLink="/shop" data-bs-dismiss="offcanvas" aria-label="Close">
+          <i class="bi bi-basket-fill me-2"></i> Shop
+        </a>
+        <a class="nav-link d-flex align-items-center" routerLink="/my-orders" data-bs-dismiss="offcanvas" aria-label="Close"><i class="bi bi-bag me-2"></i> My
           Orders</a>
-        <a class="nav-link d-flex align-items-center"><i class="bi bi-heart me-2"></i> Wishlist <span
+        <a class="nav-link d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close" routerLink="/wishlist"><i class="bi bi-heart me-2" ></i> Wishlist <span
             class="badge bg-outline ms-auto">3</span></a>
-
         <hr>
 
         <!-- Categories accordion -->
@@ -118,17 +120,17 @@
               <h2 class="accordion-header" id="headingOne">
                 <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse"
                   data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                  <i class="bi bi-apple me-2"></i> Fruits & Vegetables
+                  <i class="bi bi-apple me-2"></i> Dry Fruits
                 </button>
               </h2>
               <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
                 data-bs-parent="#leftCategories">
                 <div class="accordion-body p-2">
                   <ul class="list-unstyled mb-0">
-                    <li><a class="d-block py-1">Bananas</a></li>
-                    <li><a class="d-block py-1">Apples</a></li>
-                    <li><a class="d-block py-1">Leafy Greens</a></li>
-                    <li><a class="d-block py-1">Herbs</a></li>
+                    <li><a class="d-block py-1">Cashew</a></li>
+                    <li><a class="d-block py-1">Almonds</a></li>
+                    <li><a class="d-block py-1">Walnuts</a></li>
+                    <li><a class="d-block py-1">Resins</a></li>
                   </ul>
                 </div>
               </div>
@@ -139,16 +141,16 @@
               <h2 class="accordion-header" id="headingTwo">
                 <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse"
                   data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                  <i class="bi bi-cup-straw me-2"></i> Dairy & Eggs
+                  <i class="bi bi-cup-straw me-2"></i> Spices
                 </button>
               </h2>
               <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
                 data-bs-parent="#leftCategories">
                 <div class="accordion-body p-2">
                   <ul class="list-unstyled mb-0">
-                    <li><a class="d-block py-1">Milk</a></li>
-                    <li><a class="d-block py-1">Cheese & Paneer</a></li>
-                    <li><a class="d-block py-1">Eggs</a></li>
+                    <li><a class="d-block py-1">Saffron</a></li>
+                    <li><a class="d-block py-1">Kehwa Masala</a></li>
+                    <li><a class="d-block py-1"></a></li>
                   </ul>
                 </div>
               </div>
@@ -159,16 +161,16 @@
               <h2 class="accordion-header" id="headingThree">
                 <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse"
                   data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                  <i class="bi bi-box-seam me-2"></i> Pantry & Staples
+                  <i class="bi bi-box-seam me-2"></i> Oils
                 </button>
               </h2>
               <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
                 data-bs-parent="#leftCategories">
                 <div class="accordion-body p-2">
                   <ul class="list-unstyled mb-0">
-                    <li><a class="d-block py-1">Rice & Grains</a></li>
-                    <li><a class="d-block py-1">Spices & Masalas</a></li>
-                    <li><a class="d-block py-1">Oils & Ghee</a></li>
+                    <li><a class="d-block py-1">Almond Oil</a></li>
+                    <li><a class="d-block py-1">Walnut Oil</a></li>
+                    <li><a class="d-block py-1">Edible Oil</a></li>
                   </ul>
                 </div>
               </div>
@@ -255,8 +257,8 @@
         <div class="fw-semibold">₹0.00</div>
       </div>
       <div class="d-flex gap-2">
-        <a href="/cart" class="btn btn-outline-secondary w-50">View Cart</a>
-        <a href="/checkout" class="btn btn-primary w-50">Checkout</a>
+        <a routerLink="/cart" data-bs-dismiss="offcanvas" aria-label="Close" class="btn btn-outline-secondary w-50">View Cart</a>
+        <a routerLink="/checkout" data-bs-dismiss="offcanvas" aria-label="Close" class="btn btn-primary w-50">Checkout</a>
       </div>
 
       <div class="small text-muted mt-2">Shipping & taxes calculated at checkout</div>
