@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "node dist/wild-valley-food/server/server.mjs",
+    "dev-start": "ng serve -o",
     "build": "ng build",
     "build-prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",

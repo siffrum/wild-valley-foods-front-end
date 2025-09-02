@@ -76,10 +76,10 @@
 
             <!-- grid -->
             <!-- grid -->
-            <div class="row g-3">
+            <div class="row justify-content-center">
                 @if (pagedProducts && pagedProducts.length) {
                 @for ( p of pagedProducts; track p) {
-                <div class="col-6 col-md-4 col-lg-3">
+                 <div class="col-6 col-md-4 col-lg-4 m-2 d-flex justify-content-center">
                     <!-- PASS the single product `p` to the child component -->
                     <app-product class="product-item" [product]="p" (addToCart)="onAddToCart($event)"
                         (view)="openProduct($event)" (wishlist)="toggleWishlist($event)">
