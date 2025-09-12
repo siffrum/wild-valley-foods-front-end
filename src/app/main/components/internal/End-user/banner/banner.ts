@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { BannerSM } from '../../../../../models/service-models/app/v1/website-resource/banner-s-m';
 
 @Component({
   selector: 'app-banner',
@@ -8,15 +9,7 @@ import { Component, Input } from '@angular/core';
   styleUrl: './banner.scss',
 })
 export class Banner {
-  @Input() banners: {
-    title: string;
-    description: string;
-    image_base64: string;
-    link?: string;
-    ctaText?: string;
-    bannerType: 'Slider' | 'ShortAdd' | 'LongAdd' | 'Sales' | 'Voucher';
-    isVisible: boolean;
-  }[] = [];
+  @Input() banners: BannerSM[] = [];
 
   @Input() isVisible: boolean = true;
 }
