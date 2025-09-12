@@ -14,7 +14,6 @@ import {
   AdditionalRequestDetails,
   Authentication,
 } from '../models/internal/additional-request-details';
-import { productSM } from '../models/service-models/app/v1/dummy-teacher-s-m';
 
 @Injectable({
   providedIn: 'root',

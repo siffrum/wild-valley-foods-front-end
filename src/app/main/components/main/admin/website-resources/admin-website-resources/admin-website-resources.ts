@@ -1,42 +1,40 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { BannerSM } from '../../../../../../models/service-models/app/v1/website-resource/banner-s-m';
+import { BannerViewModel } from '../../../../../../models/view/website-resource/banner.viewmodel';
 import { BaseComponent } from '../../../../../../base.component';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { CategorySM } from '../../../../../../models/service-models/app/v1/categories-s-m';
-import { AdminCategoriesViewModel } from '../../../../../../models/view/Admin/admin.categories.viewmodel';
-import { CategoryService } from '../../../../../../services/category.service';
 import { CommonService } from '../../../../../../services/common.service';
 import { LogHandlerService } from '../../../../../../services/log-handler.service';
+import { BannerService } from '../../../../../../services/banner.service';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-admin-category-form',
+  selector: 'app-admin-website-resources',
   imports: [CommonModule, FormsModule],
-  templateUrl: './admin-category-form.html',
-  styleUrl: './admin-category-form.scss'
+  templateUrl: './admin-website-resources.html',
+  styleUrl: './admin-website-resources.scss'
 })
-export class AdminCategoryForm extends BaseComponent<AdminCategoriesViewModel> implements OnInit {
-  @Input() category: CategorySM | null = null;
+export class AdminWebsiteResources extends BaseComponent<BannerViewModel> implements OnInit {
+  @Input() banner: BannerSM | null = null;
   isSubmitting = false;
   selectedFile: File | null = null;
 
   constructor(
     commonService: CommonService,
     private logHandler: LogHandlerService,
-    private categoryService: CategoryService,
+    private bannerService: BannerService,
     public activeModal: NgbActiveModal,
   ) {
     super(commonService, logHandler);
-    this.viewModel = new AdminCategoriesViewModel();
+    this.viewModel = new BannerViewModel();
   }
 
   ngOnInit() {
-    if (this.category) {
-      this.getCategoryById(this.category.id);
+    if (this.banner) {
+      this.getBannerById(this.banner.id);
     } else {
-      this.viewModel.categoryFormData.status = 'active';
-      this.viewModel.categoryFormData.slider = false;
-      this.viewModel.categoryFormData.sequence = 0;
+      this.viewModel.bannerFormData.isVisible = true;
     }
   }
 
@@ -53,26 +51,27 @@ export class AdminCategoryForm extends BaseComponent<AdminCategoriesViewModel> i
 
     this.isSubmitting = true;
     try {
-      if (this.category && this.category.id) {
-        await this.updateCategory();
+      if (this.banner && this.banner.id) {
+        await this.updateBanner();
       } else {
-        await this.addCategory();
+        await this.addBanner();
       }
     } finally {
       this.isSubmitting = false;
     }
   }
 
-  private async addCategory() {
-    try {
-      this._commonService.presentLoading();
-      const formData = new FormData();
-      formData.append("reqData", JSON.stringify(this.viewModel.categoryFormData));
-      if (this.selectedFile) {
-        formData.append("category_icon", this.selectedFile);
-      }
+private async addBanner() {
+  try {
+    this._commonService.presentLoading();
 
-      const resp = await this.categoryService.addCategory(formData);
+     const formData = new FormData();
+      formData.append("reqData", JSON.stringify(this.viewModel.bannerFormData));
+    if (this.selectedFile) {
+      formData.append("imagePath", this.selectedFile);  // ✅ send as "image"
+    }
+
+      const resp = await this.bannerService.addBanner(formData);
       if (resp.isError) {
         await this.logHandler.logObject(resp.errorData);
         this._commonService.showSweetAlertToast({
@@ -84,7 +83,7 @@ export class AdminCategoryForm extends BaseComponent<AdminCategoriesViewModel> i
       } else {
         this._commonService.showSweetAlertToast({
           title: 'Success',
-          text: 'Category added successfully.',
+          text: 'Banner added successfully.',
           icon: 'success',
           confirmButtonText: 'OK',
         });
@@ -94,7 +93,7 @@ export class AdminCategoryForm extends BaseComponent<AdminCategoriesViewModel> i
       await this.logHandler.logObject(error);
       this._commonService.showSweetAlertToast({
         title: 'Error',
-        text: 'Failed to add category.',
+        text: 'Failed to add banner.',
         icon: 'error',
         confirmButtonText: 'OK',
       });
@@ -103,16 +102,15 @@ export class AdminCategoryForm extends BaseComponent<AdminCategoriesViewModel> i
     }
   }
 
-  private async updateCategory() {
+  private async updateBanner() {
     try {
       this._commonService.presentLoading();
       const formData = new FormData();
-      formData.append("reqData", JSON.stringify(this.viewModel.categoryFormData));
+      formData.append("reqData", JSON.stringify(this.viewModel.bannerFormData));
       if (this.selectedFile) {
-        formData.append("category_icon", this.selectedFile);
+        formData.append("image_base64", this.selectedFile);
       }
-
-      const resp = await this.categoryService.updateCategory(formData, this.viewModel.categoryFormData.id);
+      const resp = await this.bannerService.updateBanner(formData, this.viewModel.bannerFormData.id);
       if (resp.isError) {
         await this.logHandler.logObject(resp.errorData);
         this._commonService.showSweetAlertToast({
@@ -124,7 +122,7 @@ export class AdminCategoryForm extends BaseComponent<AdminCategoriesViewModel> i
       } else {
         this._commonService.showSweetAlertToast({
           title: 'Success',
-          text: 'Category updated successfully.',
+          text: 'Banner updated successfully.',
           icon: 'success',
           confirmButtonText: 'OK',
         });
@@ -134,7 +132,7 @@ export class AdminCategoryForm extends BaseComponent<AdminCategoriesViewModel> i
       await this.logHandler.logObject(error);
       this._commonService.showSweetAlertToast({
         title: 'Error',
-        text: 'Failed to update category.',
+        text: 'Failed to update banner.',
         icon: 'error',
         confirmButtonText: 'OK',
       });
@@ -143,10 +141,10 @@ export class AdminCategoryForm extends BaseComponent<AdminCategoriesViewModel> i
     }
   }
 
-  private async getCategoryById(id: number) {
+  private async getBannerById(id: number) {
     try {
       this._commonService.presentLoading();
-      const resp = await this.categoryService.getCategoryById(id);
+      const resp = await this.bannerService.getBannerById(id);
       if (resp.isError) {
         await this.logHandler.logObject(resp.errorData);
         this._commonService.showSweetAlertToast({
@@ -156,13 +154,13 @@ export class AdminCategoryForm extends BaseComponent<AdminCategoriesViewModel> i
           confirmButtonText: 'OK',
         });
       } else {
-        this.viewModel.categoryFormData = resp.successData;
+        this.viewModel.bannerFormData = resp.successData;
       }
     } catch (error) {
       await this.logHandler.logObject(error);
       this._commonService.showSweetAlertToast({
         title: 'Error',
-        text: 'Failed to load category details.',
+        text: 'Failed to load banner details.',
         icon: 'error',
         confirmButtonText: 'OK',
       });

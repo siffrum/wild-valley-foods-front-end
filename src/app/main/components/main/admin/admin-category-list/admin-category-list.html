@@ -1,15 +1,15 @@
-<!-- Button & Search -->
-<div class="d-flex justify-content-between align-items-center mb-3">
+<!-- Header: Button & Search -->
+<div class="header-actions">
   <button class="btn btn-success" (click)="openFormModal()">Add New Item</button>
 
-  <div class="input-group search-box w-25">
+  <div class="input-group search-box">
     <span class="input-group-text bg-light border-end-0">
       <i class="bi bi-search"></i>
     </span>
     <input 
       type="text" 
       class="form-control border-start-0" 
-      placeholder="Search categories..." 
+      placeholder="Search categories..."
       [(ngModel)]="viewModel.searchTerm"
       (input)="applyFilter()">
   </div>
@@ -25,6 +25,7 @@
           Name <i class="bi ms-2" [ngClass]="getSortIcon('name')"></i>
         </th>
         <th>Description</th>
+        <th>Icon</th>
         <th (click)="sortData('status')">
           Status <i class="bi ms-2" [ngClass]="getSortIcon('status')"></i>
         </th>
@@ -37,6 +38,9 @@
         <td>{{ i + 1 }}</td>
         <td>{{ category.name }}</td>
         <td>{{ category.description }}</td>
+        <td>
+          <img [src]="category.category_icon_base64" alt="Icon" class="table-icon">
+        </td>
         <td>
           <span 
             class="badge" 
@@ -53,15 +57,15 @@
   </table>
 
   <!-- Empty State -->
-  <div *ngIf="viewModel.filteredCategories.length === 0" class="text-center py-5">
-    <i class="bi bi-folder-x display-6 text-muted"></i>
-    <h4 class="mt-3">No categories found</h4>
-    <p class="text-muted">Try adjusting your search or add a new category</p>
+  <div *ngIf="viewModel.filteredCategories.length === 0" class="empty-state">
+    <i class="bi bi-folder-x"></i>
+    <h4>No categories found</h4>
+    <p>Try adjusting your search or add a new category</p>
   </div>
 
   <!-- Pagination -->
   <div 
-    class="col-12 d-flex justify-content-center pt-3"
+    class="pagination-container"
     *ngIf="viewModel.pagination && viewModel.pagination.totalCount > 0">
     <pagination 
       (selectedPageNum)="loadPagedataWithPagination($event)" 

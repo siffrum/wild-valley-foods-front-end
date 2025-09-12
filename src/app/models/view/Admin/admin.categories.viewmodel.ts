@@ -5,6 +5,7 @@ import { ProductCategorySM } from '../../service-models/app/v1/product-category-
 export class AdminCategoriesViewModel extends BaseViewModel {
   fileName: string = '';
   updateMode: boolean = false;
+  categoryFormData:CategorySM=new CategorySM()
   singleCategory = new ProductCategorySM();
   categories: CategorySM[] = [];
   filteredCategories: CategorySM[] = [];

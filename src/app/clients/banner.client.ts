@@ -39,27 +39,26 @@ export class BannerClient extends BaseApiClient {
     return resp;
   };
 
-  GetTotatBannerCount = async (): Promise<ApiResponse<number>> => {
-    let resp = await this.GetResponseAsync<null, number>(
+  GetTotatBannerCount = async (): Promise<ApiResponse<IntResponseRoot>> => {
+    let resp = await this.GetResponseAsync<null, IntResponseRoot>(
       `${AppConstants.ApiUrls.Banner}/count`,
       'GET',
       null,
-      new AdditionalRequestDetails<number>(false, Authentication.false)
+      new AdditionalRequestDetails<IntResponseRoot>(false, Authentication.false)
     );
     return resp;
   };
 
-  AddBanner = async (
-    addBanner: ApiRequest<BannerSM>
-  ): Promise<ApiResponse<BannerSM>> => {
-    let resp = await this.GetResponseAsync<BannerSM, BannerSM>(
-      `${AppConstants.ApiUrls.Banner}/create`,
-      'POST',
-      addBanner
-    );
-    return resp;
-  };
-
+   /** Add a new category */
+    AddBanner = async (formData: FormData): Promise<ApiResponse<BannerSM>> => {
+      const details = new AdditionalRequestDetails<BannerSM>(true); // enable auth
+      return await this.GetResponseAsync<FormData, BannerSM>(
+        `${AppConstants.ApiUrls.Banner}/create`,
+        'POST',
+        formData,
+        details
+      );
+    };
   /**delete Banner by id */
   DeleteBannerById = async (
     Id: number
@@ -88,14 +87,20 @@ export class BannerClient extends BaseApiClient {
    * const updatedBanner = new BannerSM();
   
    */
-  UpdateBanner = async (
-    updateBanner: ApiRequest<BannerSM>
-  ): Promise<ApiResponse<BannerSM>> => {
-    let resp = await this.GetResponseAsync<BannerSM, BannerSM>(
-      `${AppConstants.ApiUrls.Banner}/update/${updateBanner.reqData.id}`,
-      'PUT',
-      updateBanner
-    );
-    return resp;
-  };
+
+ 
+  
+    /** Update existing Category */
+    UpdateBanner = async (
+      formData: FormData,
+      id: number
+    ): Promise<ApiResponse<BannerSM>> => {
+      const details = new AdditionalRequestDetails<BannerSM>(true); // enable auth
+      return await this.GetResponseAsync<FormData, BannerSM>(
+        `${AppConstants.ApiUrls.Banner}/update/${id}`,
+        'PUT',
+        formData,
+        details
+      );
+    };
 }

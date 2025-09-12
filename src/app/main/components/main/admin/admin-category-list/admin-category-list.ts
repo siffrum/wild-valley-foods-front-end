@@ -28,10 +28,11 @@ export class AdminCategoryList extends BaseComponent<AdminCategoriesViewModel> i
   // filteredCategories: Category[] = [];
 
   ngOnInit(){
+this.loadPageData()
   }
 
   // Additional methods for handling categories can be added here
-  async loadCategories(){
+   override async loadPageData(){
      try {
       this._commonService.presentLoading();
       let resp=await this.categoryService.getAllCategories(this.viewModel);
@@ -67,15 +68,6 @@ export class AdminCategoryList extends BaseComponent<AdminCategoriesViewModel> i
      finally{
       this._commonService.dismissLoader();
      }
-
-    // this.categoryService.getAll().subscribe({
-    //   next: (data) => {
-    //     this.categories = data;
-    //     this.filteredCategories = [...data];
-    //     this.sortData();
-    //   },
-    //   error: (err) => console.error('Error loading categories', err)
-    // });
   }
 
     /**this function is used to create an event for pagination */
@@ -144,6 +136,7 @@ export class AdminCategoryList extends BaseComponent<AdminCategoriesViewModel> i
         });
       } else {
         this.viewModel.pagination.totalCount = resp.successData.intResponse;
+        console.log(this.viewModel.pagination.totalCount)
       }
     } catch (error) {
       await this._logHandler.logObject(error);
@@ -164,11 +157,10 @@ openFormModal(category?: CategorySM): void {
       centered: true,
       size: 'lg'
     });
-    modalRef.componentInstance.category = category || null;
-    
+    modalRef.componentInstance.category = category || null;    
     modalRef.result.then((result) => {
       if (result === 'saved') {
-        this.loadCategories();
+        this.loadPageData();
       }
     }).catch(() => {});
   }
@@ -176,10 +168,7 @@ openFormModal(category?: CategorySM): void {
 confirmDelete(id: number): void {
     if (confirm('Are you sure you want to delete this category?')) {
       this.categoryService.deleteCategory(id);
-         this.loadCategories();
+         this.loadPageData();
     }
   }
-
-
-
 }

@@ -35,7 +35,7 @@ export class BannerService extends BaseService {
     return await this.BannerClient.GetAllBanners(queryFilter);
   }
 
-  async getTotalBannersCount(): Promise<ApiResponse<number>> {
+  async getTotalBannersCount(): Promise<ApiResponse<IntResponseRoot>> {
     return await this.BannerClient.GetTotatBannerCount();
   }
   async deleteBanner(id: number): Promise<ApiResponse<DeleteResponseRoot>> {
@@ -52,22 +52,14 @@ export class BannerService extends BaseService {
     return await this.BannerClient.GetBannerById(id);
   }
 
-  async addBanner(warehouseData: BannerSM): Promise<ApiResponse<BannerSM>> {
-    if (!warehouseData) {
-      throw new Error(AppConstants.ErrorPrompts.Invalid_Input_Data);
-    } else {
-      let apiRequest = new ApiRequest<BannerSM>();
-      apiRequest.reqData = warehouseData;
-      return await this.BannerClient.AddBanner(apiRequest);
-    }
-  }
-  async updateBanner(BannerData: BannerSM): Promise<ApiResponse<BannerSM>> {
-    if (!BannerData) {
-      throw new Error(AppConstants.ErrorPrompts.Invalid_Input_Data);
-    } else {
-      let apiRequest = new ApiRequest<BannerSM>();
-      apiRequest.reqData = BannerData;
-      return await this.BannerClient.UpdateBanner(apiRequest);
-    }
-  }
+
+async addBanner(formData: FormData): Promise<ApiResponse<BannerSM>> {
+  let apiRequest = formData; // direct pass
+  
+  return await this.BannerClient.AddBanner(apiRequest);
+}
+async updateBanner(formData: FormData, id: number): Promise<ApiResponse<BannerSM>> {
+  let apiRequest = formData; // direct pass
+  return await this.BannerClient.UpdateBanner(apiRequest, id);
+}
 }

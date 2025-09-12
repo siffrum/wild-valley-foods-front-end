@@ -1,67 +1,127 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';   // ✅ Use template-driven forms
 import { BaseComponent } from '../../../../../base.component';
 import { BannerViewModel } from '../../../../../models/view/website-resource/banner.viewmodel';
 import { CommonService } from '../../../../../services/common.service';
 import { LogHandlerService } from '../../../../../services/log-handler.service';
 import { BannerService } from '../../../../../services/banner.service';
 import { PaginationComponent } from '../../../internal/pagination/pagination.component';
+import { BannerSM } from '../../../../../models/service-models/app/v1/website-resource/banner-s-m';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { CategoryService } from '../../../../../services/category.service';
+import { AdminWebsiteResources } from './admin-website-resources/admin-website-resources';
 
 @Component({
   selector: 'app-website-resources',
-  imports: [CommonModule, ReactiveFormsModule, PaginationComponent],
+  imports: [CommonModule, FormsModule, PaginationComponent],
   templateUrl: './website-resources.component.html',
-  styleUrl: './website-resources.component.scss',
+  styleUrls: ['./website-resources.component.scss'],
+  standalone: true,
 })
-export class WebsiteResourcesComponent
-  extends BaseComponent<BannerViewModel>
-  implements OnInit
-{
+export class WebsiteResourcesComponent extends BaseComponent<BannerViewModel> implements OnInit {
   protected _logHandler: LogHandlerService;
-
-  constructor(
-    private fb: FormBuilder,
-    commonService: CommonService,
-    logHandler: LogHandlerService,
-    private bannerService: BannerService
-  ) {
-    super(commonService, logHandler);
+  constructor(commonService:CommonService,logHandler:LogHandlerService, private modalService: NgbModal,private bannerService: BannerService) {
+    super(commonService,logHandler);
     this._logHandler = logHandler;
     this.viewModel = new BannerViewModel();
   }
-
-  ngOnInit(): void {
-    this.initForm();
-    this.loadPageData();
+  ngOnInit(){
+   this.loadPageData()
   }
 
-  override async loadPageData(): Promise<void> {
-    try {
+  // Additional methods for handling categories can be added here
+   override async loadPageData(){
+     try {
       this._commonService.presentLoading();
-      await this.getTotalCount();
-      let resp = await this.bannerService.getAllBanners(this.viewModel);
-      if (resp.isError) {
-        await this._logHandler.logObject(resp.errorData);
+      let resp=await this.bannerService.getAllBanners(this.viewModel);
+      if(resp.isError){
+       await this._logHandler.logObject(resp.errorData);
         this._commonService.showSweetAlertToast({
           title: 'Error',
           text: resp.errorData.displayMessage,
           icon: 'error',
           confirmButtonText: 'OK',
         });
-      } else {
-        this.viewModel.bannerSMList = resp.successData;
-        console.log('Banners loaded:', this.viewModel.bannerSMList);
-
-        // this.viewModel.pagination.totalCount = resp.totalCount;
       }
-    } catch (error) {
-      throw error;
-    } finally {
+      else{
+        this.viewModel.bannerSMList = resp.successData;
+        //     this.categories = data;
+        this.viewModel.filteredBanners = [...resp.successData];
+        console.log('Categories loaded:', this.viewModel.filteredBanners);
+         this.sortData();
+         this.TotalCategoryCount();
+      }
+
+     } catch (error) {
+      
+        await this._logHandler.logObject(error);
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: 'Failed to load categories.',
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+      }
+    
+     finally{
       this._commonService.dismissLoader();
+     }
+  }
+
+    /**this function is used to create an event for pagination */
+  async loadPagedataWithPagination(pageNumber: number) {
+    if (pageNumber && pageNumber > 0) {
+      // this.viewModel.PageNo = pageNumber;
+      this.viewModel.pagination.PageNo = pageNumber;
+      await this.loadPageData();
     }
   }
-  async getTotalCount(): Promise<void> {
+ applyFilter(): void {
+    if (!this.viewModel.searchTerm) {
+      this.viewModel.filteredBanners = [...this.viewModel.bannerSMList];
+    } else {
+      const term = this.viewModel.searchTerm.toLowerCase();
+      this.viewModel.filteredBanners  = this.viewModel.bannerSMList.filter(cat => 
+        cat.title.toLowerCase().includes(term) || 
+        (cat.description && cat.description.toLowerCase().includes(term))
+      );
+    }
+    this.sortData();
+  }
+
+  sortData(field?: string): void {
+    if (field) {
+      if (this.viewModel.sortField === field) {
+        this.viewModel.sortDirection = this.viewModel.sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.viewModel.sortField = field;
+        this.viewModel.sortDirection = 'asc';
+      }
+    }
+    
+    this.viewModel.filteredBanners.sort((a, b) => {
+      let valueA = a[this.viewModel.sortField as keyof BannerSM];
+      let valueB = b[this.viewModel.sortField as keyof BannerSM];
+      
+      if (typeof valueA === 'string') valueA = valueA.toLowerCase();
+      if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+      
+      if (valueA === undefined && valueB === undefined) return 0;
+      if (valueA === undefined) return this.viewModel.sortDirection === 'asc' ? 1 : -1;
+      if (valueB === undefined) return this.viewModel.sortDirection === 'asc' ? -1 : 1;
+      if (valueA < valueB) return this.viewModel.sortDirection === 'asc' ? -1 : 1;
+      if (valueA > valueB) return this.viewModel.sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
+  getSortIcon(field: string): string {
+    if (this.viewModel.sortField !== field) return 'bi-sort';
+    return this.viewModel.sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down';
+  }
+
+  async TotalCategoryCount(){
     try {
       this._commonService.presentLoading();
       let resp = await this.bannerService.getTotalBannersCount();
@@ -74,210 +134,40 @@ export class WebsiteResourcesComponent
           confirmButtonText: 'OK',
         });
       } else {
-        console.log('Banners loaded:', resp.successData);
-        let count = resp.successData;
-        this.viewModel.pagination.totalCount = count;
-        // alert(`Total Banners Count: ${resp.successData}`);
-
-        // this.viewModel.pagination.totalCount = resp.totalCount;
+        this.viewModel.pagination.totalCount = resp.successData.intResponse;
+        console.log(this.viewModel.pagination.totalCount)
       }
     } catch (error) {
-      throw error;
+      await this._logHandler.logObject(error);
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: 'Failed to load total category count.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
     } finally {
       this._commonService.dismissLoader();
     }
   }
 
-  /**this function is used to create an event for pagination */
-  async loadPagedataWithPagination(pageNumber: number) {
-    if (pageNumber && pageNumber > 0) {
-      // this.viewModel.PageNo = pageNumber;
-      this.viewModel.pagination.PageNo = pageNumber;
-      await this.loadPageData();
-    }
-  }
-  initForm(): void {
-    this.viewModel.bannerForm = this.fb.group({
-      title: ['', Validators.required],
-      description: ['', Validators.required],
-      imageBase64: ['', Validators.required],
-      link: [''],
-      ctaText: [''],
-      bannerType: ['Slider'],
-      isVisible: [true],
+  
+openFormModal(banner?: BannerSM): void {
+    const modalRef = this.modalService.open(AdminWebsiteResources, {
+      centered: true,
+      size: 'lg'
     });
-  }
-
-  onImageSelected(event: any): void {
-    const file: File = event.target.files[0];
-    if (file) {
-      if (file.size > 1 * 1024 * 1024) {
-        // 1 MB limit
-        alert('Image is too large. Max size is 1MB.');
-        return;
+    modalRef.componentInstance.banner = banner || null;    
+    modalRef.result.then((result) => {
+      if (result === 'saved') {
+        this.loadPageData();
       }
-      this._commonService
-        .convertFileToBase64(file)
-        .subscribe((base64: string) => {
-          this.viewModel.bannerForm.get('imageBase64')?.setValue(base64);
-          console.log('Base64 image:', base64); // optional
-        });
-    }
+    }).catch(() => {});
   }
 
-  onDebugClick(event: Event): void {
-    console.log('Debug click fired!');
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (file) {
-      console.log('Selected file:', file.name);
-    }
-  }
-  onToggleVisibility() {
-    const current = this.viewModel.bannerForm.get('isVisible')?.value;
-    console.log('Checkbox toggled, new value:', current);
-  }
-  openAddModal(): void {
-    this.viewModel.bannerForm.reset({
-      bannerType: 'Slider',
-      isVisible: true,
-    });
-    this.viewModel.showAddModal = true;
-  }
-
-  openEditModal(bannerId: number): void {
-    // Ensure ID is set for edit
-    this.getBannerById(bannerId);
-    this.viewModel.showEditModal = true;
-  }
-
-  closeAddModal(): void {
-    this.viewModel.showAddModal = false;
-    this.viewModel.showEditModal = false;
-  }
-
-  closeEditModal(): void {
-    this.viewModel.showAddModal = false;
-    this.viewModel.showEditModal = false;
-  }
-
-  async addItem(): Promise<void> {
-    try {
-      this._commonService.presentLoading();
-      if (this.viewModel.bannerForm.valid) {
-        const newBanner = this.viewModel.bannerForm.value;
-        let resp = await this.bannerService.addBanner(newBanner);
-        if (resp.isError) {
-          this._commonService.showSweetAlertToast({
-            title: 'Error',
-            text: resp.errorData?.displayMessage || 'An error occurred',
-            icon: 'error',
-            confirmButtonText: 'OK',
-          });
-        } else {
-          this._commonService.showSweetAlertToast({
-            title: 'Success',
-            text: 'Banner added successfully',
-            icon: 'success',
-            confirmButtonText: 'OK',
-          });
-          this.viewModel.bannerSM = resp.successData;
-          this.loadPageData();
-          this.closeAddModal();
-        }
-      }
-    } catch (error) {
-      throw error;
-    } finally {
-      this._commonService.dismissLoader();
-    }
-  }
-
-  async updateItem() {
-    try {
-      this._commonService.presentLoading();
-      if (this.viewModel.bannerForm.valid) {
-        this.viewModel.bannerSM = this.viewModel.bannerForm.value;
-        this.viewModel.bannerSM.id = this.viewModel.bannerId; // Ensure ID is set for update
-        let resp = await this.bannerService.updateBanner(
-          this.viewModel.bannerSM
-        );
-        if (resp.isError) {
-          this._commonService.showSweetAlertToast({
-            title: 'Error',
-            text: resp.errorData?.displayMessage || 'An error occurred',
-            icon: 'error',
-            confirmButtonText: 'OK',
-          });
-        } else {
-          this._commonService.showSweetAlertToast({
-            title: 'Success',
-            text: 'Banner updated successfully',
-            icon: 'success',
-            confirmButtonText: 'OK',
-          });
-          this.viewModel.bannerSM = resp.successData;
-          this.loadPageData();
-          this.closeAddModal();
-        }
-      }
-    } catch (error) {
-      throw error;
-    } finally {
-      this._commonService.dismissLoader();
-    }
-  }
-
-  async deleteItem(bannerId: number) {
-    try {
-      this._commonService.presentLoading();
-      if (this.viewModel.bannerForm.valid) {
-        this.viewModel.bannerSM = this.viewModel.bannerForm.value;
-        let resp = await this.bannerService.deleteBanner(bannerId);
-        if (resp.isError) {
-          this._commonService.showSweetAlertToast({
-            title: 'Error',
-            text: resp.errorData?.displayMessage || 'An error occurred',
-            icon: 'error',
-            confirmButtonText: 'OK',
-          });
-        } else {
-          this._commonService.showSweetAlertToast({
-            title: 'Success',
-            text: 'Banner Deleted successfully',
-            icon: 'success',
-            confirmButtonText: 'OK',
-          });
-          //  this.viewModel.bannerSM=resp.successData;
-        }
-      }
-    } catch (error) {
-      throw error;
-    } finally {
-      this._commonService.dismissLoader();
-    }
-  }
-
-  async getBannerById(bannerId: number) {
-    try {
-      this._commonService.presentLoading();
-      let resp = await this.bannerService.getBannerById(bannerId);
-      if (resp.isError) {
-        this._commonService.showSweetAlertToast({
-          title: 'Error',
-          text: resp.errorData?.displayMessage || 'An error occurred',
-          icon: 'error',
-          confirmButtonText: 'OK',
-        });
-      } else {
-        this.viewModel.bannerSM = resp.successData;
-        this.viewModel.bannerId = this.viewModel.bannerSM.id;
-        console.log('Banner loaded:', this.viewModel.bannerSM);
-        this.viewModel.bannerForm.patchValue(this.viewModel.bannerSM);
-      }
-    } catch (error) {
-      throw error;
-    } finally {
-      this._commonService.dismissLoader();
+confirmDelete(id: number): void {
+    if (confirm('Are you sure you want to delete this category?')) {
+      this.bannerService.deleteBanner(id);
+         this.loadPageData();
     }
   }
 }

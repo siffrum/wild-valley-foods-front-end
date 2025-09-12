@@ -9,6 +9,7 @@ import { CategoryClient } from '../clients/category.client';
 import { AppConstants } from '../../app-constants';
 import { CategorySM } from '../models/service-models/app/v1/categories-s-m';
 import { AdminCategoriesViewModel } from '../models/view/Admin/admin.categories.viewmodel';
+import { log } from 'console';
 
 @Injectable({
   providedIn: 'root',
@@ -52,26 +53,13 @@ export class CategoryService extends BaseService {
     return await this.categoryClient.GetCategoryById(id);
   }
 
-  async addCategory(
-    categoryData: CategorySM
-  ): Promise<ApiResponse<CategorySM>> {
-    if (!categoryData) {
-      throw new Error(AppConstants.ErrorPrompts.Invalid_Input_Data);
-    } else {
-      let apiRequest = new ApiRequest<CategorySM>();
-      apiRequest.reqData = categoryData;
-      return await this.categoryClient.AddCategory(apiRequest);
-    }
-  }
-  async updateCategory(
-    categoryData: CategorySM
-  ): Promise<ApiResponse<CategorySM>> {
-    if (!categoryData) {
-      throw new Error(AppConstants.ErrorPrompts.Invalid_Input_Data);
-    } else {
-      let apiRequest = new ApiRequest<CategorySM>();
-      apiRequest.reqData = categoryData;
-      return await this.categoryClient.UpdateCategory(apiRequest);
-    }
-  }
+async addCategory(formData: FormData): Promise<ApiResponse<CategorySM>> {
+  let apiRequest = formData; // direct pass
+  
+  return await this.categoryClient.AddCategory(apiRequest);
+}
+async updateCategory(formData: FormData, id: number): Promise<ApiResponse<CategorySM>> {
+  let apiRequest = formData; // direct pass
+  return await this.categoryClient.UpdateCategory(apiRequest, id);
+}
 }

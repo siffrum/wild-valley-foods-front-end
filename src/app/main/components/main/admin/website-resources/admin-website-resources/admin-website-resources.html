@@ -1,0 +1,100 @@
+<form #bannerForm="ngForm" (ngSubmit)="onSubmit(bannerForm)">
+  <div class="modal-header bg-primary text-white">
+    <h5 class="modal-title">
+      {{ banner ? 'Edit Banner' : 'Add New Banner' }}
+    </h5>
+    <button type="button" class="btn-close btn-close-white" aria-label="Close"
+            (click)="activeModal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body modal-scroll">
+    <!-- title -->
+    <div class="mb-3">
+      <label class="form-label">Title</label>
+      <input type="text" class="form-control"
+             name="title"
+             [(ngModel)]="viewModel.bannerFormData.title"
+             required
+             #titleCtrl="ngModel"
+             [ngClass]="{ 'is-invalid': titleCtrl.invalid && titleCtrl.touched }">
+      <div class="invalid-feedback">Name is required</div>
+    </div>
+
+    <!-- Description -->
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea class="form-control"
+                name="description"
+                [(ngModel)]="viewModel.bannerFormData.description"
+                rows="3"></textarea>
+    </div>
+
+    <!-- Sequence & Status -->
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Link</label>
+        <input type="text" class="form-control"
+               name="link"
+               [(ngModel)]="viewModel.bannerFormData.link"
+               required
+               #linkCtrl="ngModel"
+               [ngClass]="{ 'is-invalid': linkCtrl.invalid && linkCtrl.touched }">
+        <div class="invalid-feedback">link must valid</div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Banner type</label>
+        <select class="form-select"
+                name="status"
+                [(ngModel)]="viewModel.bannerFormData.bannerType"
+                required>
+          <option value="Slider">Slider</option>
+          <option value="ShortAdd">ShortAdd</option>
+             <option value="LongAdd">LongAdd</option>
+          <option value="Sales">Sales</option>
+             <option value="Voucher">Voucher</option>
+        </select>
+      </div>
+
+    <!-- Slider Switch -->
+    <div class="mb-3">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox"
+               id="sliderSwitch"
+               name="slider"
+               [(ngModel)]="viewModel.bannerFormData.isVisible">
+        <label class="form-check-label" for="sliderSwitch">Show</label>
+      </div>
+    </div>
+
+    <!-- Category Icon -->
+    <div class="mb-3">
+      <label class="form-label">Image <span class="text-danger">*</span></label>
+      <input type="file" class="form-control"
+             accept="image/*"
+             (change)="onFileChange($event)"
+             [ngClass]="{ 'is-invalid': !viewModel.bannerFormData.image_base64 && !selectedFile && bannerForm.submitted }">
+      <div class="invalid-feedback">Banner is required</div>
+    </div>
+  </div>
+<div class="mb-3">
+      <label class="form-label">Cta</label>
+      <input type="text" class="form-control"
+             name="title"
+             [(ngModel)]="viewModel.bannerFormData.ctaText"
+             #ctaTextCtrl="ngModel">
+    </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary"
+            [disabled]="isSubmitting"
+            (click)="activeModal.dismiss()">Cancel</button>
+    <button type="submit" class="btn btn-primary"
+            [disabled]="isSubmitting || bannerForm.invalid || (!selectedFile && !banner)">
+      <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1"></span>
+      {{ banner ? 'Update' : 'Create' }}
+    </button>
+  </div>
+</div>
+
+</form>
+
