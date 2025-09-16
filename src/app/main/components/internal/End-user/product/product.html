@@ -1,7 +1,12 @@
 <article class="card product-card h-100" role="group">
     <div class="position-relative">
-        <img [src]="product.imageBase64" (error)="onImageError($event)" class="card-img-top product-img"
-            [attr.alt]="product.name || 'product image'" loading="lazy" />
+   <img *ngFor="let img of product.images; let idx = index"
+     [src]="img"
+     (error)="onImageError($event)"
+     class="card-img-top product-img"
+     [attr.alt]="product.name || 'product image ' + idx"
+     loading="lazy">
+
 
         <!-- Badge -->
         @if (product.badge) {

@@ -11,6 +11,8 @@ import { BannerService } from '../../../../../services/banner.service';
 import { CategoryComponent } from '../../../internal/End-user/category/category';
 import { ServiceBanner } from '../../../internal/End-user/service-banner/service-banner';
 import { Testimonial } from '../../../internal/End-user/testimonial/testimonial';
+import { ProductService } from '../../../../../services/product.service';
+import { CategoryService } from '../../../../../services/category.service';
 
 @Component({
   selector: 'app-home',
@@ -29,7 +31,9 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
     commonService: CommonService,
     logHandlerService: LogHandlerService,
     private router: Router,
-    private bannerService: BannerService
+    private bannerService: BannerService,
+    private productService:ProductService,
+    private categoryService:CategoryService
   ) {
     super(commonService, logHandlerService);
     this.viewModel = new HomeViewModel();
@@ -293,6 +297,70 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
         });
       } else {
         this.viewModel.banners = resp.successData;
+        console.log(this.viewModel.banners);
+        this.getAllProducts();
+      }
+    } catch (error) {
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: 'An error occurred',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    } finally {
+      this._commonService.dismissLoader();
+    }
+  }
+
+  
+  async getAllProducts(): Promise<void> {
+    try {
+      this._commonService.presentLoading();
+      let resp = await this.productService.getAllProducts(
+        this.viewModel.productsViewModel
+      );
+      if (resp.isError) {
+        await this._exceptionHandler.logObject(resp.errorData);
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData.displayMessage,
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+      } else {
+        this.viewModel.productsViewModel.products = resp.successData;
+        console.log(this.viewModel.productsViewModel.products);
+        this.getAllCategories();
+      }
+    } catch (error) {
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: 'An error occurred',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    } finally {
+      this._commonService.dismissLoader();
+    }
+  }
+
+    async getAllCategories(): Promise<void> {
+    try {
+      this._commonService.presentLoading();
+      let resp = await this.categoryService.getAllCategories(
+        this.viewModel.categoryViewModel
+      );
+      if (resp.isError) {
+        await this._exceptionHandler.logObject(resp.errorData);
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData.displayMessage,
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+      } else {
+        this.viewModel.categoryViewModel.categories = resp.successData;
+        console.log(this.viewModel.categoryViewModel.categories);
       }
     } catch (error) {
       this._commonService.showSweetAlertToast({

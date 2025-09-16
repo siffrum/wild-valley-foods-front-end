@@ -9,8 +9,12 @@
             <div class="col-md-6">
                 <div class="card image-card p-3">
                     <div class="main-image-wrapper mb-2">
-                        <img [src]="viewModel.product.imageBase64" class="img-fluid main-image"
-                            [attr.alt]="viewModel.product.name" (error)="_commonService.onImageError($event)" />
+                      <img *ngIf="viewModel.product.images && viewModel.product.images.length > 0"
+     [src]="viewModel.product.images[0]"
+     class="img-fluid main-image"
+     [attr.alt]="viewModel.product.name || 'product image'"
+     (error)="_commonService.onImageError($event)" />
+
                     </div>
 
                     <div class="d-flex gap-2 thumbnails">
@@ -36,15 +40,20 @@
                         </div>
 
                         <div class="text-end">
-                            <span *ngIf="viewModel.product.badge" class="badge bg-success me-1">{{
-                                viewModel.product.badge }}</span>
-                            <div class="stock" [class.text-muted]="viewModel.product.stock === 0"
-                                [class.text-danger]="viewModel.product.stock === 0">
-                                <small *ngIf="viewModel.product.stock > 0">In stock: {{ viewModel.product.stock
-                                    }}</small>
-                                <small *ngIf="viewModel.product.stock === 0">Out of stock</small>
+                            <span class="badge me-1" [ngClass]="{'bg-success': viewModel.product.stock > 0,'bg-danger': viewModel.product.stock === 0 }">
+                                {{ viewModel.product.stock > 0 ? 'In Stock' : 'Out of Stock' }}
+                            </span>
+
+                            <div class="stock">
+                                <small *ngIf="viewModel.product.stock > 0">
+                                    {{ viewModel.product.stock }} available
+                                </small>
+                                <small *ngIf="viewModel.product.stock === 0">
+                                    Currently unavailable
+                                </small>
                             </div>
                         </div>
+
                     </div>
 
                     <div class="price-row mb-3">
@@ -88,73 +97,14 @@
                         <h3>Description</h3>
                         <p>{{ viewModel.product.description }}</p>
                     </div>
-                    <!-- accordions for more info -->
-                    <!-- <div class="accordion" id="productDetailsAcc">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingDesc">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseDesc" aria-expanded="false" aria-controls="collapseDesc">
-                                    Product details
-                                </button>
-                            </h2>
-                            <div id="collapseDesc" class="accordion-collapse collapse" aria-labelledby="headingDesc"
-                                data-bs-parent="#productDetailsAcc">
-                                <div class="accordion-body">
-                                    <p *ngIf="product.description; else noDesc">{{ product.description }}</p>
-                                    <ng-template #noDesc>
-                                        <p class="text-muted">No additional description provided.</p>
-                                    </ng-template>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingShipping">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseShipping" aria-expanded="false"
-                                    aria-controls="collapseShipping">
-                                    Shipping & packaging
-                                </button>
-                            </h2>
-                            <div id="collapseShipping" class="accordion-collapse collapse"
-                                aria-labelledby="headingShipping" data-bs-parent="#productDetailsAcc">
-                                <div class="accordion-body">
-                                    <pre class="mb-0"
-                                        *ngIf="product.packageDetails">{{ product.packageDetails | json }}</pre>
-                                    <p *ngIf="!product.packageDetails" class="text-muted">Shipping details not provided.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingPayment">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapsePayment" aria-expanded="false"
-                                    aria-controls="collapsePayment">
-                                    Payment options
-                                </button>
-                            </h2>
-                            <div id="collapsePayment" class="accordion-collapse collapse"
-                                aria-labelledby="headingPayment" data-bs-parent="#productDetailsAcc">
-                                <div class="accordion-body">
-                                    <pre class="mb-0"
-                                        *ngIf="product.paymentOptions">{{ product.paymentOptions | json }}</pre>
-                                    <p *ngIf="!product.paymentOptions" class="text-muted">Payment options are not
-                                        listed.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
-                </div> <!-- card -->
-            </div> <!-- col-md-6 -->
-        </div> <!-- row -->
+                </div>
+            </div>
+        </div>
 
         <!-- related products placeholder -->
         <div class="mt-5">
             <h5>Related products</h5>
             <div class="row g-3">
-                <!-- implement real related-products using ProductService.getRelatedProducts -->
                 <div class="col-6 col-md-3" *ngFor="let r of []">
                     <!-- placeholder -->
                 </div>

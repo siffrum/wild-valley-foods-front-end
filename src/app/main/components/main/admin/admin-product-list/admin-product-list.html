@@ -1,1 +1,78 @@
-<p>admin-product-list works!</p>
+<!-- Header: Button & Search -->
+<div class="header-actions">
+  <button class="btn btn-success" (click)="openFormModal()">Add New Product</button>
+
+  <div class="input-group search-box w-25">
+    <span class="input-group-text bg-light border-end-0">
+      <i class="bi bi-search"></i>
+    </span>
+    <input 
+      type="text" 
+      class="form-control border-start-0" 
+      placeholder="Search products..." 
+      [(ngModel)]="viewModel.searchTerm"
+      (input)="applyFilter()">
+  </div>
+</div>
+
+<!-- Table -->
+<div class="table-responsive">
+  <table class="table table-striped table-hover align-middle">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th (click)="sortData('name')">
+          Name <i class="bi ms-2" [ngClass]="getSortIcon('name')"></i>
+        </th>
+        <th>SKU</th>
+        <th (click)="sortData('price')">
+          Price <i class="bi ms-2" [ngClass]="getSortIcon('price')"></i>
+        </th>
+        <th (click)="sortData('stock')">
+          Stock <i class="bi ms-2" [ngClass]="getSortIcon('stock')"></i>
+        </th>
+        <th>Category</th>
+        <th>Images</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let p of viewModel.filteredProducts; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.sku }}</td>
+        <td>{{ p.price }} {{ p.currency || 'INR' }}</td>
+        <td>{{ p.stock }}</td>
+        <td>{{ p.category.name || '-' }}</td>
+
+        <td>
+       <img *ngIf="p.images && p.images.length > 0"
+     [src]="p.images[0]"
+     alt="product image"
+     class="table-img me-1"
+     height="40" width="40">
+
+        </td>
+        <td>
+          <button class="btn btn-sm btn-primary me-1" (click)="openFormModal(p)">Edit</button>
+          <button class="btn btn-sm btn-danger" (click)="confirmDelete(p.id!)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="viewModel.filteredProducts.length === 0" class="empty-state">
+    <i class="bi bi-folder-x"></i>
+    <h4>No products found</h4>
+    <p>Try adjusting your search or add a new product</p>
+  </div>
+
+  <div class="col-12 d-flex justify-content-center pt-3"
+       *ngIf="viewModel.pagination && viewModel.pagination.totalCount > 0">
+    <pagination 
+      (selectedPageNum)="loadPagedataWithPagination($event)" 
+      [viewModel]="viewModel.pagination">
+    </pagination>
+  </div>
+</div>

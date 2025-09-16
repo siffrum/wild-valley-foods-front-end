@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from './base.service';
-import { ApiResponse } from '../models/service-models/foundation/api-contracts/base/api-response';
-import { DeleteResponseRoot } from '../models/service-models/foundation/common-response/delete-response-root';
-import { ApiRequest } from '../models/service-models/foundation/api-contracts/base/api-request';
-import { QueryFilter } from '../models/service-models/foundation/api-contracts/query-filter';
-import { IntResponseRoot } from '../models/service-models/foundation/common-response/int-response-root';
-import { AppConstants } from '../../app-constants';
 import { ProductClient } from '../clients/product.client';
+import { QueryFilter } from '../models/service-models/foundation/api-contracts/query-filter';
+import { ApiResponse } from '../models/service-models/foundation/api-contracts/base/api-response';
+import { IntResponseRoot } from '../models/service-models/foundation/common-response/int-response-root';
+import { DeleteResponseRoot } from '../models/service-models/foundation/common-response/delete-response-root';
+import { AdminProductsViewModel } from '../models/view/Admin/admin-product.viewmodel';
 import { ProductSM } from '../models/service-models/app/v1/product-s-m';
-import { AdminProductComponentViewModel } from '../models/view/Admin/admin-product-component.viewmodel';
 
 @Injectable({
   providedIn: 'root',
@@ -18,55 +16,36 @@ export class ProductService extends BaseService {
     super();
   }
 
-  /**
-   * Retrieves all Products from the server.
-   *
-   * @returns A promise that resolves to an ApiResponse containing an array of ProductSM objects.
-   *
-   * @throws Will throw an error if the server request fails.
-   */
-  async getAllProducts(
-    viewModel: AdminProductComponentViewModel
-  ): Promise<ApiResponse<ProductSM[]>> {
-    let queryFilter = new QueryFilter();
-    queryFilter.skip =
-      (viewModel.pagination.PageNo - 1) * viewModel.pagination.PageSize;
+  async getAllProducts(viewModel: AdminProductsViewModel): Promise<ApiResponse<ProductSM[]>> {
+    const queryFilter = new QueryFilter();
+    queryFilter.skip = (viewModel.pagination.PageNo - 1) * viewModel.pagination.PageSize;
     queryFilter.top = viewModel.pagination.PageSize;
     return await this.productClient.GetAllProduct(queryFilter);
   }
 
-  async getTotalProductsCount(): Promise<ApiResponse<IntResponseRoot>> {
+  async getTotatProductCount(): Promise<ApiResponse<IntResponseRoot>> {
     return await this.productClient.GetTotatProductCount();
   }
+
   async deleteProduct(id: number): Promise<ApiResponse<DeleteResponseRoot>> {
     if (id <= 0) {
-      throw new Error(AppConstants.ErrorPrompts.Delete_Data_Error);
+      throw new Error('Invalid id for delete');
     }
     return await this.productClient.DeleteProductById(id);
   }
 
   async getProductById(id: number): Promise<ApiResponse<ProductSM>> {
+    if (id <= 0) {
+      throw new Error('Invalid id for getProductById');
+    }
     return await this.productClient.GetProductById(id);
   }
 
-  async addCategory(categoryData: ProductSM): Promise<ApiResponse<ProductSM>> {
-    if (!categoryData) {
-      throw new Error(AppConstants.ErrorPrompts.Invalid_Input_Data);
-    } else {
-      let apiRequest = new ApiRequest<ProductSM>();
-      apiRequest.reqData = categoryData;
-      return await this.productClient.AddProduct(apiRequest);
-    }
+  async addProduct(formData: FormData): Promise<ApiResponse<ProductSM>> {
+    return await this.productClient.AddProduct(formData);
   }
-  async updateProducts(
-    categoryData: ProductSM
-  ): Promise<ApiResponse<ProductSM>> {
-    if (!categoryData) {
-      throw new Error(AppConstants.ErrorPrompts.Invalid_Input_Data);
-    } else {
-      let apiRequest = new ApiRequest<ProductSM>();
-      apiRequest.reqData = categoryData;
-      return await this.productClient.UpdateProduct(apiRequest);
-    }
+
+  async updateProduct(formData: FormData, id: number): Promise<ApiResponse<ProductSM>> {
+    return await this.productClient.UpdateProduct(formData, id);
   }
 }

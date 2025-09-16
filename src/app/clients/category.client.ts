@@ -8,7 +8,7 @@ import { DeleteResponseRoot } from '../models/service-models/foundation/common-r
 import { IntResponseRoot } from '../models/service-models/foundation/common-response/int-response-root';
 import { CategorySM } from '../models/service-models/app/v1/categories-s-m';
 import { AppConstants } from '../../app-constants';
-import { AdditionalRequestDetails } from '../models/internal/additional-request-details';
+import { AdditionalRequestDetails, Authentication } from '../models/internal/additional-request-details';
 import { QueryFilter } from '../models/service-models/foundation/api-contracts/query-filter';
 
 @Injectable({
@@ -54,7 +54,7 @@ export class CategoryClient extends BaseApiClient {
   ): Promise<ApiResponse<CategorySM[]>> => {
     return await this.GetResponseAsync<null, CategorySM[]>(
       `${AppConstants.ApiUrls.BASE}/categories/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`,
-      'GET'
+      'GET',null, new AdditionalRequestDetails<CategorySM[]>(false, Authentication.false  )
     );
   };
 
@@ -62,7 +62,7 @@ export class CategoryClient extends BaseApiClient {
   GetTotatCategoryCount = async (): Promise<ApiResponse<IntResponseRoot>> => {
     return await this.GetResponseAsync<null, IntResponseRoot>(
       `${AppConstants.ApiUrls.BASE}/categories/count`,
-      'GET'
+      'GET', null, new AdditionalRequestDetails<IntResponseRoot>(false, Authentication.false  )
     );
   };
 

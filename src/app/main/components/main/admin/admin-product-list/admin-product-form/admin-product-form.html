@@ -1,1 +1,148 @@
-<p>admin-product-form works!</p>
+<form #productForm="ngForm" (ngSubmit)="onSubmit(productForm)">
+  <div class="modal-header bg-primary text-white">
+    <h5 class="modal-title">{{ product ? 'Edit Product' : 'Add New Product' }}</h5>
+    <button type="button" class="btn-close btn-close-white" aria-label="Close"
+            (click)="activeModal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body modal-scroll">
+    <!-- Name -->
+    <div class="mb-3">
+      <label class="form-label">Name</label>
+      <input type="text" class="form-control"
+             name="name"
+             [(ngModel)]="viewModel.productFormData.name"
+             required
+             #nameCtrl="ngModel"
+             [ngClass]="{ 'is-invalid': nameCtrl.invalid && nameCtrl.touched }" />
+      <div class="invalid-feedback">Name is required</div>
+    </div>
+
+    <!-- Description -->
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea class="form-control" rows="3"
+                name="description"
+                [(ngModel)]="viewModel.productFormData.description"></textarea>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Price</label>
+        <input type="number" class="form-control"
+               name="price"
+               [(ngModel)]="viewModel.productFormData.price"
+               required
+               min="0"
+               #priceCtrl="ngModel"
+               [ngClass]="{ 'is-invalid': priceCtrl.invalid && priceCtrl.touched }" />
+        <div class="invalid-feedback">Price is required and must be >= 0</div>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Currency</label>
+        <input type="text" class="form-control"
+               name="currency"
+               [(ngModel)]="viewModel.productFormData.currency" />
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label class="form-label">SKU</label>
+        <input type="text" class="form-control"
+               name="sku"
+               [(ngModel)]="viewModel.productFormData.sku"
+               required
+               #skuCtrl="ngModel"
+               [ngClass]="{ 'is-invalid': skuCtrl.invalid && skuCtrl.touched }" />
+        <div class="invalid-feedback">SKU is required</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Stock</label>
+        <input type="number" class="form-control"
+               name="stock"
+               [(ngModel)]="viewModel.productFormData.stock"
+               min="0" />
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Unit</label>
+        <input type="text" class="form-control"
+               name="unit"
+               [(ngModel)]="viewModel.productFormData.unit" />
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Weight</label>
+        <input type="number" class="form-control"
+               name="weight"
+               [(ngModel)]="viewModel.productFormData.weight" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">HSN Code</label>
+        <input type="text" class="form-control"
+               name="hsnCode"
+               [(ngModel)]="viewModel.productFormData.hsnCode" />
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Tax Rate (%)</label>
+        <input type="number" class="form-control"
+               name="taxRate"
+               [(ngModel)]="viewModel.productFormData.taxRate" />
+      </div>
+    </div>
+
+    <!-- Category Dropdown -->
+    <div class="mb-3">
+      <label class="form-label">Category</label>
+      <select class="form-select"
+              name="categoryId"
+              [(ngModel)]="viewModel.productFormData.categoryId"
+              required>
+        <option [value]="null" disabled *ngIf="!product">-- Select Category --</option>
+        <option *ngFor="let c of viewModel.categories" [value]="c.id">{{ c.name }}</option>
+      </select>
+    </div>
+
+    <!-- Images (multiple) -->
+   <div class="mb-3">
+  <label class="form-label">Product Images 
+    <small class="text-muted">(you can select multiple)</small>
+  </label>
+  
+  <input 
+    type="file" 
+    class="form-control"
+    accept=".jpg,.jpeg,.png,.webp"
+    multiple
+    (change)="onFileChange($event)"
+    [ngClass]="{ 'is-invalid': !hasImages() && viewModel.FormSubmitted }">
+
+  <div class="invalid-feedback">
+    Please provide at least one product image
+  </div>
+
+
+      <!-- Indicate existing images if editing (no inline preview as requested) -->
+      <div *ngIf="product && viewModel.productFormData.images?.length" class="mt-2 small text-muted">
+        {{ viewModel.productFormData.images?.length || 0 }} existing image(s) present. Selecting files will replace them.
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" [disabled]="isSubmitting" (click)="activeModal.dismiss()">Cancel</button>
+    <button type="submit"
+            class="btn btn-primary"
+            [disabled]="isSubmitting || productForm.invalid || (!hasImages())">
+      <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1"></span>
+      {{ product ? 'Update' : 'Create' }}
+    </button>
+  </div>
+</form>

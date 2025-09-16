@@ -1,20 +1,26 @@
-import { WildValleyFoodsServiceModelBase } from '../base/WildValleyFoods-service-model-base';
-import { CategorySM } from './categories-s-m';
+import { WildValleyFoodsServiceModelBase } from "../base/WildValleyFoods-service-model-base";
+import { CategorySM } from "./categories-s-m";
 
 export class ProductSM extends WildValleyFoodsServiceModelBase<number> {
   name!: string;
   description?: string;
+  richDescription?: string;
+  itemId?: string;
   price!: number;
   sku!: string;
-  stock: number = 0;
+  stock!: number;
   weight?: number;
-  packageDetails?: any; // can refine later if structure is fixed
-  shippingOptions?: any; // same here
-  paymentOptions?: any; // same here
-  razorpayOrderId?: string;
+  shippingOptions?: any;
+  paymentOptions?: any;
+  currency!: string;
+  category!:CategorySM;
+  razorpayItemId?: string;
+  hsnCode?: string;
+  taxRate?: number;
+  unit?: string;
+
   categoryId!: number;
-  imageBase64?: string;
-  badge?: string;
-  images?: string[];
-  category = new CategorySM();
+  // backend returns base64 images array as `images` (converted by server)
+  images?: string[]; // e.g. ["data:image/png;base64,...", ...]
+
 }

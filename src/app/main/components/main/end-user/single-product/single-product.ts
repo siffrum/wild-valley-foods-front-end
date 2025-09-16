@@ -42,7 +42,6 @@ export class SingleProduct
       await this._commonService.presentLoading();
       let resp = await this.productService.getProductById(id);
       await this._commonService.dismissLoader();
-
       if (resp.isError == false) {
         this.viewModel.product = resp.successData;
       } else {
