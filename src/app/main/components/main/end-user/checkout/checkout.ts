@@ -29,8 +29,8 @@ export class Checkout extends BaseComponent<CheckoutViewModel> implements OnInit
 
   async loadCart(): Promise<void> {
     // // Load cart items from localStorage
-    const cart = JSON.parse(await this.indexDBStorageService.getFromStorage('cart') || '[]');
-    this.viewModel.cartItems = cart;
+    // const cart = JSON.parse(await this.indexDBStorageService.getFromStorage('cart') || '[]');
+    // this.viewModel.cartItems = cart;
     this.calculateTotalPrice();
   }
 
@@ -41,7 +41,7 @@ export class Checkout extends BaseComponent<CheckoutViewModel> implements OnInit
   async onSubmit(): Promise<void> {
     // Save address to localStorage or proceed to payment
     // localStorage.setItem('shippingAddress', JSON.stringify(this.viewModel.address));
-    await this.indexDBStorageService.saveToStorage('shippingAddress', JSON.stringify(this.viewModel.address))
+    // await this.indexDBStorageService.saveToStorage('shippingAddress', JSON.stringify(this.viewModel.address))
     // Redirect to payment page or show success message
   }
 

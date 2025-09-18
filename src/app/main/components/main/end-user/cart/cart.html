@@ -11,7 +11,7 @@
             <div class="list-group">
                 <div class="list-group-item d-flex flex-column flex-md-row align-items-center gap-3"
                     *ngFor="let item of viewModel.cartItems" role="listitem">
-                    <img src="https://picsum.photos/80/80?random=1" [alt]="item.name" class="cart-item-img rounded" loading="lazy" />
+                    <img [src]="item.image" [alt]="item.name" class="cart-item-img rounded" loading="lazy" />
                     <div class="flex-grow-1 px-3">
                         <h5 class="mb-2">{{ item.name }}</h5>
                         <p class="mb-1 text-muted small">Price: {{ item.price | currency }}</p>
@@ -30,7 +30,7 @@
                         </div>
                     </div>
                     <div class="text-end">
-                        <p class="mb-2 fw-bold">{{ (item.price * item.quantity) | currency }}</p>
+                        <p class="mb-2 fw-bold">{{ (item.price) | currency }}</p>
                         <button class="btn btn-danger btn-sm" aria-label="Remove item" (click)="removeItem(item)">
                             Remove
                         </button>

@@ -4,6 +4,7 @@ import { BaseComponent } from '../../../../../base.component';
 import { CartItem, CartViewModel } from '../../../../../models/view/end-user/cart.viewmodel';
 import { CommonService } from '../../../../../services/common.service';
 import { LogHandlerService } from '../../../../../services/log-handler.service';
+import { IndexDBStorageService } from '../../../../../services/indexdb.service';
 
 @Component({
   selector: 'app-cart',
@@ -15,46 +16,46 @@ export class CartComponent
   extends BaseComponent<CartViewModel>
   implements OnInit
 {
-  constructor(commonService: CommonService, loghandler: LogHandlerService) {
+  constructor(commonService: CommonService, loghandler: LogHandlerService, private IndexDbStorageService:IndexDBStorageService) {
     super(commonService, loghandler);
     this.viewModel = new CartViewModel();
   }
-
-  ngOnInit(): void {
-    // this.loadCart();
+ cartItems: CartItem[] = [];
+  total: number = 0;
+  subtotal: number = 0;
+  tax: number = 0;
+  async ngOnInit() {
+    await this.loadCart();
   }
 
-  loadCart() {
-    const data = localStorage.getItem('cart');
-
-    this.saveCart(); // Save dummy products to localStorage
+  async loadCart() {
+    const rawCart = await this.IndexDbStorageService.getCart();
+    // Map CartItem to ensure UI fields present
+    this.viewModel.cartItems = rawCart.map(item => ({
+      ...item,
+      name: item.product.name,
+      price: item.product.price,
+      image: item.product.images?.[0] || ''
+    }));
+    this.subtotal = this.viewModel.cartItems.reduce((sum, item) => sum + (item.price ?? 0) * item.quantity, 0);
+    this.tax = this.subtotal * this.viewModel.taxRate;
+    this.total = this.subtotal + this.tax;
   }
 
-  saveCart() {
-    localStorage.setItem('cart', JSON.stringify(this.viewModel.cartItems));
+  async updateQuantity(item: CartItem, event: any) {
+    const qty = Number(event.target.value) || item.quantity;
+    await this.IndexDbStorageService.updateCartItem(item.id, qty);
+    await this.loadCart();
   }
 
-  get subtotal(): number {
-    return this.viewModel.cartItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
+  async removeItem(item: CartItem) {
+    await this.IndexDbStorageService.removeCartItem(item.id);
+    await this.loadCart();
   }
 
-  get tax(): number {
-    return this.subtotal * this.viewModel.taxRate;
-  }
-
-  get total(): number {
-    return this.subtotal + this.tax;
-  }
-
-  updateQuantity(item: CartItem, event: Event) {
-    const input = event.target as HTMLInputElement;
-    let quantity = Number(input.value);
-    if (quantity < 1) quantity = 1;
-    item.quantity = quantity;
-    this.saveCart();
+  async clearCart() {
+    await this.IndexDbStorageService.clearCart();
+    await this.loadCart();
   }
 
   increment(item: CartItem) {
@@ -69,13 +70,10 @@ export class CartComponent
     }
   }
 
-  removeItem(item: CartItem) {
-    this.viewModel.cartItems = this.viewModel.cartItems.filter((i) => i.id !== item.id);
-    this.saveCart();
-  }
-
-  clearCart() {
-    this.viewModel.cartItems = [];
-    this.saveCart();
+  async saveCart() {
+    for (const item of this.viewModel.cartItems) {
+      await this.IndexDbStorageService.updateCartItem(item.id, item.quantity);
+    }
+    await this.loadCart();
   }
 }

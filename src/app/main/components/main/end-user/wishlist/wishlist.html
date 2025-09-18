@@ -44,14 +44,12 @@
       </div>
 
       <!-- Select all -->
-      <label class="select-all">
-        <input
-          type="checkbox"
-          [checked]="allSelected"
-          (change)="toggleSelectAll($event.target.checked)"
-        />
-        Select all
-      </label>
+     <input
+  type="checkbox"
+  #selectAllCheckbox
+  [checked]="allSelected"
+  (change)="toggleSelectAll(selectAllCheckbox.checked)"
+/>
 
       <!-- Bulk actions -->
       <button
@@ -88,7 +86,7 @@
     <h2>Your wishlist is empty</h2>
     <p>
       Add products to your wishlist from the store — or
-      <button class="link" (click)="loadSample()">load sample</button>
+      <button class="link" (click)="loadWishlist()">load sample</button>
     </p>
   </div>
 

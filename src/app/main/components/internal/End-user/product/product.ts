@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './product.scss',
 })
 export class ProductCardComponent {
-  @Input({ required: true }) product!: any;
+  @Input({ required: true }) product!: ProductSM;
 
   @Input() currency = '₹';
   @Input() weightUnit = 'kg';
@@ -25,8 +25,9 @@ export class ProductCardComponent {
   }
 
   onAddToCart() {
-    if (this.isOutOfStock) return;
-    this.addToCart.emit(this.product);
+    if (!this.isOutOfStock) {
+      this.addToCart.emit(this.product);
+    }
   }
 
   onView() {
