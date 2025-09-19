@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AdminComponentLayoutComponent } from './admin-components-layout/admin-component-layout.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { WebsiteResourcesComponent } from './website-resources/website-resources.component';
+import { WebsiteResourcesComponent } from './website-resources/Banner/website-resources.component';
 import { AdminCategoryList } from './admin-category-list/admin-category-list';
 import { AdminProductList } from './admin-product-list/admin-product-list';
 const routes: Routes = [

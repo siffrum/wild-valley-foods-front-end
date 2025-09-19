@@ -1,16 +1,16 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';   // ✅ Use template-driven forms
-import { BaseComponent } from '../../../../../base.component';
-import { BannerViewModel } from '../../../../../models/view/website-resource/banner.viewmodel';
-import { CommonService } from '../../../../../services/common.service';
-import { LogHandlerService } from '../../../../../services/log-handler.service';
-import { BannerService } from '../../../../../services/banner.service';
-import { PaginationComponent } from '../../../internal/pagination/pagination.component';
-import { BannerSM } from '../../../../../models/service-models/app/v1/website-resource/banner-s-m';
+import { BaseComponent } from '../../../../../../base.component';
+import { BannerViewModel } from '../../../../../../models/view/website-resource/banner.viewmodel';
+import { CommonService } from '../../../../../../services/common.service';
+import { LogHandlerService } from '../../../../../../services/log-handler.service';
+import { BannerService } from '../../../../../../services/banner.service';
+import { PaginationComponent } from '../../../../internal/pagination/pagination.component';
+import { BannerSM } from '../../../../../../models/service-models/app/v1/website-resource/banner-s-m';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { CategoryService } from '../../../../../services/category.service';
-import { AdminWebsiteResources } from './admin-website-resources/admin-website-resources';
+import { CategoryService } from '../../../../../../services/category.service';
+import { AdminWebsiteResources } from './AddEditForm/admin-website-resources';
 
 @Component({
   selector: 'app-website-resources',

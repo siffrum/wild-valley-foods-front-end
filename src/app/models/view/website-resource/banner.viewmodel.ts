@@ -9,8 +9,8 @@ export class BannerViewModel extends BaseViewModel {
   bannerSMList :BannerSM [] = [];
   showAddModal = false;
   showEditModal = false;
-    fileName: string = '';
-    updateMode: boolean = false;
+  fileName: string = '';
+   updateMode: boolean = false;
     filteredBanners: BannerSM[] = [];
     searchTerm = '';
     sortField = 'name';

@@ -1,10 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { BannerSM } from '../../../../../../models/service-models/app/v1/website-resource/banner-s-m';
-import { BannerViewModel } from '../../../../../../models/view/website-resource/banner.viewmodel';
-import { BaseComponent } from '../../../../../../base.component';
-import { CommonService } from '../../../../../../services/common.service';
-import { LogHandlerService } from '../../../../../../services/log-handler.service';
-import { BannerService } from '../../../../../../services/banner.service';
+import { BannerSM } from '../../../../../../../models/service-models/app/v1/website-resource/banner-s-m';
+import { BannerViewModel } from '../../../../../../../models/view/website-resource/banner.viewmodel';
+import { BaseComponent } from '../../../../../../../base.component';
+import { CommonService } from '../../../../../../../services/common.service';
+import { LogHandlerService } from '../../../../../../../services/log-handler.service';
+import { BannerService } from '../../../../../../../services/banner.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -21,7 +21,7 @@ export class AdminWebsiteResources extends BaseComponent<BannerViewModel> implem
   selectedFile: File | null = null;
 
   constructor(
-    commonService: CommonService,
+    private commonService: CommonService,
     private logHandler: LogHandlerService,
     private bannerService: BannerService,
     public activeModal: NgbActiveModal,
