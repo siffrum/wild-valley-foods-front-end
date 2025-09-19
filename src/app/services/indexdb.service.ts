@@ -115,7 +115,7 @@ export class IndexedDBStorageService extends BaseService {
       typeof val !== 'string' ? JSON.stringify(val) : (val as string);
 
     // Encrypt the raw JSON/string before storing
-    const encrypted: string = await this.encrypt(rawString);
+    const encrypted: string = this.encrypt(rawString);
     await db.put('majorData', encrypted, key);
   }
 

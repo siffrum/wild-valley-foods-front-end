@@ -55,7 +55,7 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
   }
 
   async toggleWishlist(product: ProductSM) {
-    await this.wishlistService.addOrUpdate(product);
+    await this.wishlistService.toggleWishlist(product);
   }
 
   openProduct(product: ProductSM) {

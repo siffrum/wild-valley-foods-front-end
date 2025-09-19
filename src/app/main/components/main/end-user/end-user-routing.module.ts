@@ -25,8 +25,9 @@ const routes: Routes = [
       { path: 'checkout', component: Checkout },
       { path: 'wishlist', component: WishlistComponent },
       {
-        path:'my-orders',component:MyOrders
-      }
+        path: 'my-orders',
+        component: MyOrders,
+      },
     ],
   },
 ];

@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="text-end">
-                    @if (product?.weight) {
+                    @if (product.weight) {
                     <small class="d-block">Wt: {{ product.weight }}{{ weightUnit }}</small>
                     } @else {
                     <small class="text-muted">—</small>
@@ -57,10 +57,12 @@
                 <button type="button" class="btn btn-sm btn-outline-secondary" (click)="onView()">
                     View
                 </button>
-
-                <button type="button" class="btn btn-sm btn-outline-danger" (click)="onToggleWishlist()">
+                <button type="button" class="btn btn-sm" [class.btn-success]="product.isWishlisted"
+                    [class.btn-outline-danger]="!product.isWishlisted" (click)="onToggleWishlist()">
                     ♥
                 </button>
+
+
             </div>
         </div>
     </div>
