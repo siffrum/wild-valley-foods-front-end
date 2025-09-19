@@ -53,6 +53,8 @@ export const AppConstants = {
     USER_ID: '',
     PASSWORD: 'pwd',
     REMEMBER_PWD: 'REMEMBER_PWD',
+    WISHLIST: 'WISHLIST',
+    CART: 'CART',
   },
   DbDefaultValues: {},
   ErrorPrompts: {

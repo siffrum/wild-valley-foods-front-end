@@ -6,19 +6,22 @@ import { CheckoutViewModel } from '../../../../../models/view/end-user/checkout.
 import { CommonService } from '../../../../../services/common.service';
 import { LogHandlerService } from '../../../../../services/log-handler.service';
 import { StorageService } from '../../../../../services/storage.service';
-import { IndexDBStorageService } from '../../../../../services/indexdb.service';
+import { IndexedDBStorageService } from '../../../../../services/indexdb.service';
 
 @Component({
   selector: 'app-checkout',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './checkout.html',
-  styleUrl: './checkout.scss'
+  styleUrl: './checkout.scss',
 })
-export class Checkout extends BaseComponent<CheckoutViewModel> implements OnInit {
- constructor(
+export class Checkout
+  extends BaseComponent<CheckoutViewModel>
+  implements OnInit
+{
+  constructor(
     commonService: CommonService,
     logHandlerService: LogHandlerService,
-    private indexDBStorageService:IndexDBStorageService
+    private indexDBStorageService: IndexedDBStorageService
   ) {
     super(commonService, logHandlerService);
     this.viewModel = new CheckoutViewModel();
@@ -35,7 +38,10 @@ export class Checkout extends BaseComponent<CheckoutViewModel> implements OnInit
   }
 
   calculateTotalPrice(): void {
-    this.viewModel.totalPrice = this.viewModel.cartItems.reduce((total, item) => total + item.quantity * item.price, 0);
+    this.viewModel.totalPrice = this.viewModel.cartItems.reduce(
+      (total, item) => total + item.quantity * item.price,
+      0
+    );
   }
 
   async onSubmit(): Promise<void> {

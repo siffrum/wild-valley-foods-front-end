@@ -7,7 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { IndexDBStorageService } from './services/indexdb.service';
+import { IndexedDBStorageService } from './services/indexdb.service';
 import { NgxUiLoaderModule } from 'ngx-ui-loader';
 
 @Component({
@@ -19,7 +19,7 @@ import { NgxUiLoaderModule } from 'ngx-ui-loader';
 export class App {
   protected readonly title = signal('wild-valley-food');
   isBrowser: boolean;
-  indexDBStorageService: IndexDBStorageService | undefined;
+  indexDBStorageService: IndexedDBStorageService | undefined;
 
   constructor(
     private injector: Injector,
@@ -29,7 +29,7 @@ export class App {
 
     if (this.isBrowser) {
       // lazy-resolve only when running in the browser
-      this.indexDBStorageService = this.injector.get(IndexDBStorageService);
+      this.indexDBStorageService = this.injector.get(IndexedDBStorageService);
     }
   }
 }

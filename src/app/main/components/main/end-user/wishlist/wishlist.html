@@ -11,12 +11,7 @@
     </div>
 
     <div class="controls">
-      <input
-        type="search"
-        placeholder="Search products, titles..."
-        [(ngModel)]="searchTerm"
-        class="search"
-      />
+      <input type="search" placeholder="Search products, titles..." [(ngModel)]="searchTerm" class="search" />
 
       <!-- Filter -->
       <div class="dropdown">
@@ -44,26 +39,14 @@
       </div>
 
       <!-- Select all -->
-     <input
-  type="checkbox"
-  #selectAllCheckbox
-  [checked]="allSelected"
-  (change)="toggleSelectAll(selectAllCheckbox.checked)"
-/>
+      <input type="checkbox" #selectAllCheckbox [checked]="allSelected"
+        (change)="toggleSelectAll(selectAllCheckbox.checked)" />
 
       <!-- Bulk actions -->
-      <button
-        class="btn primary"
-        (click)="bulkMoveToCart()"
-        [disabled]="!hasSelection()"
-      >
+      <button class="btn primary" (click)="bulkMoveToCart()" [disabled]="!hasSelection()">
         Move to Cart
       </button>
-      <button
-        class="btn danger ghost"
-        (click)="bulkRemove()"
-        [disabled]="!hasSelection()"
-      >
+      <button class="btn danger ghost" (click)="bulkRemove()" [disabled]="!hasSelection()">
         Remove
       </button>
     </div>
@@ -75,18 +58,11 @@
   </div>
 
   <!-- Empty state -->
-  <div
-    class="empty-state"
-    *ngIf="!isLoading && filteredWishlist.length === 0"
-  >
-    <img
-      src="https://cdn-icons-png.flaticon.com/512/4076/4076549.png"
-      alt=""
-    />
+  <div class="empty-state" *ngIf="!isLoading && filteredWishlist.length === 0">
+    <img src="https://cdn-icons-png.flaticon.com/512/4076/4076549.png" alt="" />
     <h2>Your wishlist is empty</h2>
     <p>
-      Add products to your wishlist from the store — or
-      <button class="link" (click)="loadWishlist()">load sample</button>
+      Add products to your wishlist from the store
     </p>
   </div>
 
@@ -106,37 +82,22 @@
         </tr>
       </thead>
       <tbody>
-        <tr
-          *ngFor="let item of pagedWishlist; let i = index"
-          [class.selected]="item.selected"
-        >
+        <tr *ngFor="let item of pagedWishlist; let i = index" [class.selected]="item.selected">
           <td class="checkbox-cell">
-            <input
-              type="checkbox"
-              [(ngModel)]="item.selected"
-              (ngModelChange)="onSelectionChange()"
-            />
+            <input type="checkbox" [(ngModel)]="item.selected" (ngModelChange)="onSelectionChange()" />
           </td>
           <td>
-            <img
-              [src]="item.image"
-              [alt]="item.title"
-              class="product-img"
-              loading="lazy"
-            />
+            <img [src]="item.images" [alt]="item.name" class="product-img" loading="lazy" />
           </td>
           <td class="title-col">
-            <div class="title">{{ item.title }}</div>
-            <div class="muted small">{{ item.notes }}</div>
+            <div class="title">{{ item.name }}</div>
           </td>
           <td class="muted small">
             {{ item.addedAt | date : "mediumDate" }}
           </td>
           <td class="price-col">{{ item.price | currency : "INR" }}</td>
           <td>
-            <span class="badge" [ngClass]="statusClass(item.status)">{{
-              item.status
-            }}</span>
+            <span class="badge" [ngClass]="statusClass(item.status || '')">{{ item.status }}</span>
           </td>
           <td class="actions text-right">
             <button class="icon" (click)="moveToCart(item)">🛒</button>
@@ -151,20 +112,12 @@
 
     <!-- Mobile cards -->
     <div class="card-grid" *ngIf="isMobile">
-      <div
-        class="card"
-        *ngFor="let item of pagedWishlist"
-        [class.selected]="item.selected"
-      >
+      <div class="card" *ngFor="let item of pagedWishlist" [class.selected]="item.selected">
         <div class="card-head">
-          <input
-            type="checkbox"
-            [(ngModel)]="item.selected"
-            (ngModelChange)="onSelectionChange()"
-          />
-          <img [src]="item.image" [alt]="item.title" loading="lazy" />
+          <input type="checkbox" [(ngModel)]="item.selected" (ngModelChange)="onSelectionChange()" />
+          <img [src]="item.images" [alt]="item.name" loading="lazy" />
           <div class="card-info">
-            <div class="title">{{ item.title }}</div>
+            <div class="title">{{ item.name }}</div>
             <div class="muted small">
               {{ item.addedAt | date : "shortDate" }}
             </div>
@@ -172,7 +125,7 @@
         </div>
         <div class="card-body">
           <div class="price">{{ item.price | currency : "INR" }}</div>
-          <div class="badge" [ngClass]="statusClass(item.status)">
+          <div class="badge" [ngClass]="statusClass(item.status || '')">
             {{ item.status }}
           </div>
         </div>
@@ -194,11 +147,7 @@
         Prev
       </button>
       <span class="muted">Page {{ page }} of {{ totalPages }}</span>
-      <button
-        class="btn ghost"
-        (click)="nextPage()"
-        [disabled]="page === totalPages"
-      >
+      <button class="btn ghost" (click)="nextPage()" [disabled]="page === totalPages">
         Next
       </button>
       <button class="btn primary" (click)="loadMore()" *ngIf="page < totalPages">
@@ -209,7 +158,7 @@
 
   <!-- Undo toast -->
   <div class="undo-toast" *ngIf="undoVisible">
-    <div>Removed "<strong>{{ lastRemoved?.item?.title }}</strong>"</div>
+    <div>Removed "<strong>{{ lastRemoved.name }}</strong>"</div>
     <div class="toast-actions">
       <button class="btn ghost" (click)="undoRemove()">Undo</button>
       <button class="btn danger ghost" (click)="dismissUndo()">Dismiss</button>

@@ -1,5 +1,5 @@
-import { WildValleyFoodsServiceModelBase } from "../base/WildValleyFoods-service-model-base";
-import { CategorySM } from "./categories-s-m";
+import { WildValleyFoodsServiceModelBase } from '../base/WildValleyFoods-service-model-base';
+import { CategorySM } from './categories-s-m';
 
 export class ProductSM extends WildValleyFoodsServiceModelBase<number> {
   name!: string;
@@ -13,14 +13,15 @@ export class ProductSM extends WildValleyFoodsServiceModelBase<number> {
   shippingOptions?: any;
   paymentOptions?: any;
   currency!: string;
-  category!:CategorySM;
+  category!: CategorySM;
   razorpayItemId?: string;
   hsnCode?: string;
   taxRate?: number;
   unit?: string;
-
+  addedAt?: number;
+  status?: string;
   categoryId!: number;
   // backend returns base64 images array as `images` (converted by server)
   images?: string[]; // e.g. ["data:image/png;base64,...", ...]
-
+  selected?: boolean;
 }

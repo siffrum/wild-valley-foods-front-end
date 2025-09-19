@@ -13,7 +13,7 @@ import { ServiceBanner } from '../../../internal/End-user/service-banner/service
 import { Testimonial } from '../../../internal/End-user/testimonial/testimonial';
 import { ProductService } from '../../../../../services/product.service';
 import { CategoryService } from '../../../../../services/category.service';
-import { IndexDBStorageService } from '../../../../../services/indexdb.service';
+import { WishlistService } from '../../../../../services/wishlist.service';
 
 @Component({
   selector: 'app-home',
@@ -33,9 +33,9 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
     logHandlerService: LogHandlerService,
     private router: Router,
     private bannerService: BannerService,
-    private productService:ProductService,
-    private categoryService:CategoryService,
-    private indexDBStorageService:IndexDBStorageService
+    private productService: ProductService,
+    private categoryService: CategoryService,
+    private wishlistService: WishlistService
   ) {
     super(commonService, logHandlerService);
     this.viewModel = new HomeViewModel();
@@ -49,15 +49,14 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
     // return item.id ?? item.sku;
   }
 
-   async onAddToCart(product: ProductSM) {
-    await this.indexDBStorageService.addToCart(product, 1);
-    alert(`${product.name} added to cart ✅`);
+  async onAddToCart(product: ProductSM) {
+    // await this.indexDBStorageService.addToCart(product, 1);
+    // alert(`${product.name} added to cart ✅`);
   }
 
-async toggleWishlist(product: ProductSM) {
-  await this.indexDBStorageService.toggleWishlist(product);
-  alert(`${product.name} wishlist updated ⭐`);
-}
+  async toggleWishlist(product: ProductSM) {
+    await this.wishlistService.addOrUpdate(product);
+  }
 
   openProduct(product: ProductSM) {
     this.router.navigate(['/product', product.id]);
@@ -94,7 +93,6 @@ async toggleWishlist(product: ProductSM) {
     }
   }
 
-  
   async getAllProducts(): Promise<void> {
     try {
       this._commonService.presentLoading();
@@ -126,7 +124,7 @@ async toggleWishlist(product: ProductSM) {
     }
   }
 
-    async getAllCategories(): Promise<void> {
+  async getAllCategories(): Promise<void> {
     try {
       this._commonService.presentLoading();
       let resp = await this.categoryService.getAllCategories(
