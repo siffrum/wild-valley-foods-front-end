@@ -1,3 +1,4 @@
+import { Testimonial } from './app/main/components/internal/End-user/testimonial/testimonial';
 import { environment } from './environments/environment.localqa';
 
 // TODO: MOVE ALL CONSTANTS HERE
@@ -37,8 +38,12 @@ export const AppConstants = {
     PERMISSIONS: '/api/v1/Permission',
     PAYMENT_URL: 'api/v1/Payment',
     LICENSE_TYPE_URL: '/api/v1/LicenseType',
-    CONTACT_US: 'api/v1/ContactUs',
+    CONTACT_US: 'api/v1/contactus',
     PRODUCT: 'api/v1/Product',
+    ADMIN_REVIEW: 'api/v1/AdminReview',
+    REVIEW: 'api/v1/Review',
+    TESTIMONIAL: 'api/v1/Testimonial',
+    VIDEO: 'api/v1/Video',
   },
   DbKeys: {
     ACCESS_TOKEN: 'ACCESS_TOKEN',

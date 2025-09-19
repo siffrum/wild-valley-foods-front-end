@@ -8,12 +8,12 @@ export class ContactUsViewModel extends BaseViewModel {
   TestmonialFormData: ContactUsSM = new ContactUsSM();
   ContactUsForm!: FormGroup;
   ContactUsId: number = 0;
-  ContactUsSMList :ContactUsSM [] = [];
+  ContactUsList :ContactUsSM [] = [];
   showAddModal = false;
   showEditModal = false;
   fileName: string = '';
   updateMode: boolean = false;
-    filteredContactUss: ContactUsSM[] = [];
+    filteredContactUs: ContactUsSM[] = [];
     searchTerm = '';
     sortField = 'name';
     sortDirection: 'asc' | 'desc' = 'asc';
