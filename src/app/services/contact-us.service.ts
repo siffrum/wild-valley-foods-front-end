@@ -53,13 +53,16 @@ export class ContactUsService extends BaseService {
   }
 
 
-async addContactUs(formData: FormData): Promise<ApiResponse<ContactUsSM>> {
-  let apiRequest = formData; // direct pass
-  
+async addContactUs(formData: ContactUsSM): Promise<ApiResponse<ContactUsSM>> {
+let apiRequest = new ApiRequest<ContactUsSM>();
+      apiRequest.reqData = formData;
   return await this.ContactUsClient.AddContactUs(apiRequest);
 }
-async updateContactUs(formData: FormData, id: number): Promise<ApiResponse<ContactUsSM>> {
-  let apiRequest = formData; // direct pass
-  return await this.ContactUsClient.UpdateContactUs(apiRequest, id);
+async updateContactUs(formData: ContactUsSM): Promise<ApiResponse<ContactUsSM>> {
+  const apiRequest = new ApiRequest<ContactUsSM>();
+  apiRequest.reqData = formData;   // ✅ properly wrap
+
+  return await this.ContactUsClient.UpdateContactUs(apiRequest);
 }
+
 }

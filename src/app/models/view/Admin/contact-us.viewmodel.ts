@@ -5,8 +5,7 @@ import { ContactUsSM } from '../../service-models/app/v1/contact-us-s-m';
 
 
 export class ContactUsViewModel extends BaseViewModel {
-  TestmonialFormData: ContactUsSM = new ContactUsSM();
-  ContactUsForm!: FormGroup;
+  contactUsFormData: ContactUsSM = new ContactUsSM();
   ContactUsId: number = 0;
   ContactUsList :ContactUsSM [] = [];
   showAddModal = false;

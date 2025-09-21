@@ -1,1 +1,47 @@
-<p>add-edit-contact-us works!</p>
+<form #contactUsForm="ngForm" (ngSubmit)="onSubmit(contactUsForm)">
+    <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">
+            {{ contactUs ? 'Edit contactUs' : 'Add New contactUs' }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close"
+            (click)="activeModal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body modal-scroll">
+        <!-- Name -->
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" name="name" [(ngModel)]="viewModel.contactUsFormData.name" required
+                #nameCtrl="ngModel" [ngClass]="{ 'is-invalid': nameCtrl.invalid && nameCtrl.touched }">
+            <div class="invalid-feedback">Name is required</div>
+        </div>
+
+
+
+        <!-- email & Status -->
+        <div class="row">
+            <div class="col-12 col-md-6 mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" name="email" [(ngModel)]="viewModel.contactUsFormData.email"
+                    min="0" required #emailCtrl="ngModel"
+                    [ngClass]="{ 'is-invalid': emailCtrl.invalid && emailCtrl.touched }">
+                <div class="invalid-feedback">email must be a valid</div>
+            </div>
+        </div>
+        <!-- Description -->
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="description" [(ngModel)]="viewModel.contactUsFormData.description"
+                rows="3"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" [disabled]="isSubmitting"
+                (click)="activeModal.dismiss()">Cancel</button>
+            <button type="submit" class="btn btn-primary"
+                [disabled]="isSubmitting || contactUsForm.invalid">
+                <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1"></span>
+                {{ contactUs ? 'Update' : 'Create' }}
+            </button>
+        </div>
+    </div>
+</form>

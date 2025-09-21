@@ -160,7 +160,7 @@ openFormModal(ContactUs?: ContactUsSM): void {
       centered: true,
       size: 'lg'
     });
-    modalRef.componentInstance.ContactUs = ContactUs || null;    
+    modalRef.componentInstance.contactUs = ContactUs || null;    
     modalRef.result.then((result) => {
       if (result === 'saved') {
         this.loadPageData();

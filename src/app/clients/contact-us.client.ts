@@ -13,6 +13,8 @@ import {
   Authentication,
 } from '../models/internal/additional-request-details';
 import { ContactUsSM } from '../models/service-models/app/v1/contact-us-s-m';
+import { ApiRequest } from '../models/service-models/foundation/api-contracts/base/api-request';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -44,15 +46,35 @@ export class ContactUsClient extends BaseApiClient {
   };
 
    /** Add a new category */
-    AddContactUs = async (formData: FormData): Promise<ApiResponse<ContactUsSM>> => {
-      const details = new AdditionalRequestDetails<ContactUsSM>(true); // enable auth
-      return await this.GetResponseAsync<FormData, ContactUsSM>(
-        `${AppConstants.ApiUrls.CONTACT_US}/create`,
-        'POST',
-        formData,
-        details
-      );
-    };
+    AddContactUs  = async (contactUsFormData: ApiRequest<ContactUsSM>): Promise<ApiResponse<ContactUsSM>> => {
+        let resp = await this.GetResponseAsync<ContactUsSM, ContactUsSM>(
+          `${AppConstants.ApiUrls.CONTACT_US}/create`,
+          'POST',
+          contactUsFormData, new AdditionalRequestDetails<ContactUsSM>(false, Authentication.false  ));
+        return resp;
+      };
+
+    UpdateContactUs = async (
+  apiRequest: ApiRequest<ContactUsSM>
+): Promise<ApiResponse<ContactUsSM>> => {
+  return await this.GetResponseAsync<ContactUsSM, ContactUsSM>(
+    `${AppConstants.ApiUrls.CONTACT_US}/update/${apiRequest.reqData.id}`,
+    'PUT',
+    apiRequest,   // ✅ this is now valid JSON
+    new AdditionalRequestDetails<ContactUsSM>(true, Authentication.true)
+  );
+};
+
+
+        /**
+   * Update existing ContactUs
+   * 
+   * @param updateContactUs ContactUs data to update
+   * @returns Promise<ApiResponse<ContactUsSM>>
+   * @example
+   * const updatedContactUs = new ContactUsSM();
+  
+   */
   /**delete ContactUs by id */
   DeleteContactUsById = async (
     Id: number
@@ -72,29 +94,5 @@ export class ContactUsClient extends BaseApiClient {
     return resp;
   };
 
-  /**
-   * Update existing ContactUs
-   * 
-   * @param updateContactUs ContactUs data to update
-   * @returns Promise<ApiResponse<ContactUsSM>>
-   * @example
-   * const updatedContactUs = new ContactUsSM();
-  
-   */
 
- 
-  
-    /** Update existing Category */
-    UpdateContactUs = async (
-      formData: FormData,
-      id: number
-    ): Promise<ApiResponse<ContactUsSM>> => {
-      const details = new AdditionalRequestDetails<ContactUsSM>(true); // enable auth
-      return await this.GetResponseAsync<FormData, ContactUsSM>(
-        `${AppConstants.ApiUrls.CONTACT_US}/update/${id}`,
-        'PUT',
-        formData,
-        details
-      );
-    };
 }

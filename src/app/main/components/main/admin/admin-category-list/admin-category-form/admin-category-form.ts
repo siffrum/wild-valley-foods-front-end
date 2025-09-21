@@ -49,8 +49,9 @@ export class AdminCategoryForm extends BaseComponent<AdminCategoriesViewModel> i
 
   async onSubmit(form: any): Promise<void> {
     this.viewModel.FormSubmitted = true;
+    console.log(form);
+    
     if (form.invalid) return;
-
     this.isSubmitting = true;
     try {
       if (this.category && this.category.id) {
