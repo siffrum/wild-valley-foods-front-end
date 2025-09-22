@@ -9,6 +9,7 @@ import { BaseComponent } from '../../../../../base.component';
 import { WishListViewModel } from '../../../../../models/view/end-user/wishlist.viewmodel';
 import { CommonService } from '../../../../../services/common.service';
 import { LogHandlerService } from '../../../../../services/log-handler.service';
+import { CartService } from '../../../../../services/cart.service';
 
 @Component({
   selector: 'app-wishlist',
@@ -24,7 +25,8 @@ export class WishlistComponent
   constructor(
     commonService: CommonService,
     loghandlerService: LogHandlerService,
-    private wishlistService: WishlistService
+    private wishlistService: WishlistService,
+    private cartService: CartService
   ) {
     super(commonService, loghandlerService);
     this.viewModel = new WishListViewModel();
@@ -49,8 +51,9 @@ export class WishlistComponent
     try {
       const removed = await this.wishlistService.removeById(item.id);
       if (removed) {
-        //todo add ot cart
-        alert(`${item.name} added to cart ✅`);
+        this.cartService.toggleCart(item);
+        this.viewModel.allItems = await this.getAllWishlistItems();
+        this.viewModel.totalCount = this.viewModel.allItems.length;
       }
     } catch (error) {
       console.error('Error removing item from wishlist:', error);

@@ -42,7 +42,7 @@ export const AppConstants = {
     PRODUCT: 'api/v1/Product',
     ADMIN_REVIEW: 'api/v1/AdminReview',
     REVIEW: 'api/v1/Review',
-    TESTIMONIAL: 'api/v1/testimonial',
+    TESTIMONIAL: 'api/v1/Testimonial',
     VIDEO: 'api/v1/Video',
   },
   DbKeys: {

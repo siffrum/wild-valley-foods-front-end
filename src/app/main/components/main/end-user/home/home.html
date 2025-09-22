@@ -21,7 +21,7 @@
     <div class="row justify-content-center">
         @for (product of viewModel.productsViewModel.products; track product) {
         <div class="col-6 col-md-4 col-lg-3 mb-4 d-flex justify-content-center">
-            <app-product [product]="product" (addToCart)="onAddToCart($event)" (view)="openProduct($event)"
+            <app-product [product]="product" (addToCart)="onAddToCart(product)" (view)="openProduct($event)"
                 (wishlist)="toggleWishlist(product)">
             </app-product>
         </div>

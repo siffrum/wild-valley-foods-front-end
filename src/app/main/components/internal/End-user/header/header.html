@@ -55,7 +55,7 @@
 
     <!-- Icons (desktop only) -->
     <ul class="navbar-nav ms-auto d-none d-lg-flex flex-row align-items-center">
-      <li class="nav-item me-3">       
+      <li class="nav-item me-3">
         <a class="nav-link" routerLink="/">Home</a>
       </li>
       <li class="nav-item me-3">
@@ -70,7 +70,8 @@
       <li class="nav-item position-relative">
         <a class="nav-link"><i class="bi bi-cart fs-5" data-bs-toggle="offcanvas"
             data-bs-target="#offcanvasRight"></i></a>
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">2</span>
+        <span
+          class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">{{cartItems.length}}</span>
       </li>
     </ul>
   </div>
@@ -101,12 +102,14 @@
         <a class="nav-link d-flex align-items-center" routerLink="/home" data-bs-dismiss="offcanvas" aria-label="Close">
           <i class="bi bi-house me-2"></i> Home
         </a>
-               <a class="nav-link d-flex align-items-center" routerLink="/shop" data-bs-dismiss="offcanvas" aria-label="Close">
+        <a class="nav-link d-flex align-items-center" routerLink="/shop" data-bs-dismiss="offcanvas" aria-label="Close">
           <i class="bi bi-basket-fill me-2"></i> Shop
         </a>
-        <a class="nav-link d-flex align-items-center" routerLink="/my-orders" data-bs-dismiss="offcanvas" aria-label="Close"><i class="bi bi-bag me-2"></i> My
+        <a class="nav-link d-flex align-items-center" routerLink="/my-orders" data-bs-dismiss="offcanvas"
+          aria-label="Close"><i class="bi bi-bag me-2"></i> My
           Orders</a>
-        <a class="nav-link d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close" routerLink="/wishlist"><i class="bi bi-heart me-2" ></i> Wishlist <span
+        <a class="nav-link d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close"
+          routerLink="/wishlist"><i class="bi bi-heart me-2"></i> Wishlist <span
             class="badge bg-outline ms-auto">3</span></a>
         <hr>
 
@@ -217,48 +220,53 @@
     <!-- cart list -->
     <div class="p-3 flex-grow-1 overflow-auto">
       <!-- cart item (repeat for each product in cart) -->
+      @for (item of cartItems; track $index) {
       <div class="d-flex gap-3 mb-3 align-items-start">
-        <img src="https://picsum.photos/80/80?random=1" alt="product" width="80" height="80" class="rounded">
+        <img [src]="item.images && item.images.length > 0 ? item.images[0] : 'assets/logo.png'" alt="product" width="80"
+          height="80" class="rounded">
         <div class="flex-fill">
           <div class="d-flex justify-content-between align-items-start">
-            <div class="fw-semibold">Organic Bananas (1 kg)</div>
+            <div class="fw-semibold">{{item.name}}</div>
             <div class="text-end">
-              <div class="fw-bold">₹79.00</div>
-              <small class="text-muted">SKU: FR-0001</small>
+              <div class="fw-bold">{{ (item.price) | currency : 'INR' }}</div>
+              <small class="text-muted">{{item.sku}}</small>
             </div>
           </div>
 
           <div class="d-flex gap-2 align-items-center mt-2">
             <!-- quantity controls -->
             <div class="input-group input-group-sm" style="width:110px;">
-              <button class="btn btn-outline-secondary" type="button">−</button>
-              <input type="text" class="form-control text-center" value="1" aria-label="Quantity">
-              <button class="btn btn-outline-secondary" type="button">+</button>
+              <button class="btn btn-outline-secondary" type="button" (click)="decrement(item)">−</button>
+              <input type="text" class="form-control text-center" [value]="item.cartQuantity" aria-label="Quantity">
+              <button class="btn btn-outline-secondary" type="button" (click)="increment(item)">+</button>
             </div>
 
-            <button class="btn btn-sm btn-outline-danger ms-2">Remove</button>
+            <button class="btn btn-sm btn-outline-danger ms-2" (click)="removeItem(item)">Remove</button>
           </div>
         </div>
       </div>
-
+      }
+      @if (cartItems.length == 0) {
       <!-- repeat / no-items fallback -->
       <div class="text-center text-muted my-5">
         <i class="bi bi-cart-x fs-1"></i>
         <div class="mt-2">Your cart is empty</div>
         <small class="text-muted">Add products to see them here</small>
       </div>
-
+      }
     </div>
 
     <!-- footer with totals and CTA -->
     <div class="p-3 border-top">
       <div class="d-flex justify-content-between align-items-center mb-2">
         <div class="small text-muted">Subtotal</div>
-        <div class="fw-semibold">₹0.00</div>
+        <div class="fw-semibold">{{subTotal | currency : 'INR' }}</div>
       </div>
       <div class="d-flex gap-2">
-        <a routerLink="/cart" data-bs-dismiss="offcanvas" aria-label="Close" class="btn btn-outline-secondary w-50">View Cart</a>
-        <a routerLink="/checkout" data-bs-dismiss="offcanvas" aria-label="Close" class="btn btn-primary w-50">Checkout</a>
+        <a routerLink="/cart" data-bs-dismiss="offcanvas" aria-label="Close" class="btn btn-outline-secondary w-50">View
+          Cart</a>
+        <a routerLink="/checkout" data-bs-dismiss="offcanvas" aria-label="Close"
+          class="btn btn-primary w-50">Checkout</a>
       </div>
 
       <div class="small text-muted mt-2">Shipping & taxes calculated at checkout</div>

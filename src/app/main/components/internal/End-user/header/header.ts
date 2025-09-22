@@ -1,65 +1,89 @@
 import { CommonModule, NgIf } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { CartService } from '../../../../../services/cart.service';
+import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
-  standalone: true,              
-  imports: [CommonModule,RouterModule],      
+  standalone: true,
+  imports: [CommonModule, RouterModule],
   templateUrl: './header.html',
-  styleUrls: ['./header.scss']   
+  styleUrls: ['./header.scss'],
 })
-export class Header {
+export class Header implements OnInit {
+  constructor(private cartService: CartService) {}
   isLoggedIn: boolean = false;
   categories = [
-  {
-    name: 'Dry Fruits',
-    icon: 'bi bi-nut',
-    items: ['Almonds', 'Cashews', 'Walnuts', 'Pistachios']
-  },
-  {
-    name: 'Seeds',
-    icon: 'bi bi-droplet',
-    items: ['Chia Seeds', 'Flax Seeds', 'Pumpkin Seeds']
-  },
-  {
-    name: 'Beverages',
-    icon: 'bi bi-cup-straw',
-    items: ['Herbal Tea', 'Green Tea', 'Fruit Juices']
-  },
-  {
-    name: 'Gift Packs',
-    icon: 'bi bi-gift',
-    items: ['Festive Hampers', 'Corporate Packs']
-  }
-];
-  // Dummy cart items
-  cartItems = [
     {
-      name: 'Organic Almonds (500g)',
-      image: 'https://picsum.photos/80/80?random=1',
-      price: 499,
-      sku: 'DF-0001',
-      qty: 1
+      name: 'Dry Fruits',
+      icon: 'bi bi-nut',
+      items: ['Almonds', 'Cashews', 'Walnuts', 'Pistachios'],
     },
     {
-      name: 'Cashews Premium (250g)',
-      image: 'https://picsum.photos/80/80?random=2',
-      price: 299,
-      sku: 'DF-0002',
-      qty: 2
+      name: 'Seeds',
+      icon: 'bi bi-droplet',
+      items: ['Chia Seeds', 'Flax Seeds', 'Pumpkin Seeds'],
     },
     {
-      name: 'Walnuts (200g)',
-      image: 'https://picsum.photos/80/80?random=3',
-      price: 399,
-      sku: 'DF-0003',
-      qty: 1
-    }
+      name: 'Beverages',
+      icon: 'bi bi-cup-straw',
+      items: ['Herbal Tea', 'Green Tea', 'Fruit Juices'],
+    },
+    {
+      name: 'Gift Packs',
+      icon: 'bi bi-gift',
+      items: ['Festive Hampers', 'Corporate Packs'],
+    },
   ];
+  cartItems: ProductSM[] = [];
+  subTotal = 0;
+  private sub: Subscription | null = null;
+  ngOnInit(): void {
+    this.sub = this.cartService.cart$.subscribe((items) => {
+      this.cartItems = items || [];
+      // optionally compute subtotal live here
+      this.subTotal = this.cartItems.reduce(
+        (sum, item) => sum + (item.price ?? 0) * item.cartQuantity,
+        0
+      );
+    });
+  }
 
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
   // Compute total price
-  cartTotal(): number {
-    return this.cartItems.reduce((total, item) => total + item.price * item.qty, 0);
+  async cartTotal() {
+    return await this.cartService.cartTotal();
+  }
+  async getCartItems() {
+    this.cartItems = await this.cartService.getAll();
+    console.log(this.cartItems);
+  }
+  increment(item: ProductSM) {
+    item.cartQuantity++;
+
+    this.saveCart();
+  }
+
+  decrement(item: ProductSM) {
+    if (item.cartQuantity > 1) {
+      item.cartQuantity--;
+      this.saveCart();
+    }
+  }
+
+  async saveCart() {
+    for (const item of this.cartItems) {
+      await this.cartService.updateCartItem(item.id, item.cartQuantity);
+    }
+    await this.getCartItems();
+  }
+
+  removeItem(item: ProductSM) {
+    this.cartService.removeById(item.id);
+    this.getCartItems();
   }
 }

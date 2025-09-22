@@ -6,9 +6,8 @@ import { QueryFilter } from '../models/service-models/foundation/api-contracts/q
 import { IntResponseRoot } from '../models/service-models/foundation/common-response/int-response-root';
 import { AppConstants } from '../../app-constants';
 import { TestimonialClient } from '../clients/testimonial.client';
-import { TestimonialViewModel } from '../models/view/website-resource/testimonial.viewmodel';
 import { TestimonialSM } from '../models/service-models/app/v1/website-resource/testimonial-s-m';
-import { ApiRequest } from '../models/service-models/foundation/api-contracts/base/api-request';
+import { TestimonialViewModel } from '../models/view/website-resource/testimonial.viewmodel';
 
 
 @Injectable({
@@ -19,7 +18,7 @@ export class TestimonialService extends BaseService {
     super();
   }
 
-/**
+  /**
    * Retrieves all Testimonials from the server.
    *
    * @returns A promise that resolves to an ApiResponse containing an array of TestimonialSM objects.
@@ -54,16 +53,13 @@ export class TestimonialService extends BaseService {
   }
 
 
-async addTestimonial(formData: TestimonialSM): Promise<ApiResponse<TestimonialSM>> {
-let apiRequest = new ApiRequest<TestimonialSM>();
-      apiRequest.reqData = formData;
+async addTestimonial(formData: FormData): Promise<ApiResponse<TestimonialSM>> {
+  let apiRequest = formData; // direct pass
+  
   return await this.TestimonialClient.AddTestimonial(apiRequest);
 }
-async updateTestimonial(formData: TestimonialSM): Promise<ApiResponse<TestimonialSM>> {
-  const apiRequest = new ApiRequest<TestimonialSM>();
-  apiRequest.reqData = formData;   // ✅ properly wrap
-
-  return await this.TestimonialClient.UpdateTestimonial(apiRequest);
+async updateTestimonial(formData: FormData, id: number): Promise<ApiResponse<TestimonialSM>> {
+  let apiRequest = formData; // direct pass
+  return await this.TestimonialClient.UpdateTestimonial(apiRequest, id);
 }
-
 }

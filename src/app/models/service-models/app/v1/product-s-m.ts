@@ -25,4 +25,6 @@ export class ProductSM extends WildValleyFoodsServiceModelBase<number> {
   images?: string[]; // e.g. ["data:image/png;base64,...", ...]
   selected?: boolean;
   isWishlisted: boolean = false;
+  cartQuantity: number = 1;
+  isInCart: boolean = false;
 }

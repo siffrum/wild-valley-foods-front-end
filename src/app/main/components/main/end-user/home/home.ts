@@ -14,6 +14,7 @@ import { Testimonial } from '../../../internal/End-user/testimonial/testimonial'
 import { ProductService } from '../../../../../services/product.service';
 import { CategoryService } from '../../../../../services/category.service';
 import { WishlistService } from '../../../../../services/wishlist.service';
+import { CartService } from '../../../../../services/cart.service';
 
 @Component({
   selector: 'app-home',
@@ -35,7 +36,8 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
     private bannerService: BannerService,
     private productService: ProductService,
     private categoryService: CategoryService,
-    private wishlistService: WishlistService
+    private wishlistService: WishlistService,
+    private cartService: CartService
   ) {
     super(commonService, logHandlerService);
     this.viewModel = new HomeViewModel();
@@ -50,8 +52,8 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
   }
 
   async onAddToCart(product: ProductSM) {
-    // await this.indexDBStorageService.addToCart(product, 1);
-    // alert(`${product.name} added to cart ✅`);
+    product.cartQuantity = 1;
+    await this.cartService.toggleCart(product);
   }
 
   async toggleWishlist(product: ProductSM) {
@@ -110,7 +112,7 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
       } else {
         this.viewModel.productsViewModel.products = resp.successData;
         console.log(this.viewModel.productsViewModel.products);
-        this.getAllCategories();
+        await this.getAllCategories();
       }
     } catch (error) {
       this._commonService.showSweetAlertToast({

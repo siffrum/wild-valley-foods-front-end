@@ -13,8 +13,6 @@ import {
   Authentication,
 } from '../models/internal/additional-request-details';
 import { ReviewSM } from '../models/service-models/app/v1/review-s-m';
-import { ApiRequest } from '../models/service-models/foundation/api-contracts/base/api-request';
-import { TestimonialSM } from '../models/service-models/app/v1/website-resource/testimonial-s-m';
 @Injectable({
   providedIn: 'root',
 })
@@ -26,72 +24,93 @@ export class ReviewClient extends BaseApiClient {
   ) {
     super(storageService, storageCache, commonResponseCodeHandler);
   }
-  GetAllPaginatedTestimonial = async (
-     queryFilter: QueryFilter
-   ): Promise<ApiResponse<TestimonialSM[]>> => {
-     let resp = await this.GetResponseAsync<null, TestimonialSM[]>(
-       `${AppConstants.ApiUrls.CONTACT_US}/getall/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`,
-       'GET'
-     );
-     
-     return resp;
-   };
- 
-   GetTotatTestimonialCount = async (): Promise<ApiResponse<IntResponseRoot>> => {
-     let resp = await this.GetResponseAsync<null, IntResponseRoot>(
-       `${AppConstants.ApiUrls.CONTACT_US}/count`,
-       'GET'
-     );
-     return resp;
-   };
- 
-    /** Add a new category */
-     AddTestimonial  = async (TestimonialFormData: ApiRequest<TestimonialSM>): Promise<ApiResponse<TestimonialSM>> => {
-         let resp = await this.GetResponseAsync<TestimonialSM, TestimonialSM>(
-           `${AppConstants.ApiUrls.CONTACT_US}/create`,
-           'POST',
-           TestimonialFormData, new AdditionalRequestDetails<TestimonialSM>(false, Authentication.false  ));
-         return resp;
-       };
- 
-     UpdateTestimonial = async (
-   apiRequest: ApiRequest<TestimonialSM>
- ): Promise<ApiResponse<TestimonialSM>> => {
-   return await this.GetResponseAsync<TestimonialSM, TestimonialSM>(
-     `${AppConstants.ApiUrls.CONTACT_US}/update/${apiRequest.reqData.id}`,
-     'PUT',
-     apiRequest,   // ✅ this is now valid JSON
-     new AdditionalRequestDetails<TestimonialSM>(true, Authentication.true)
-   );
- };
- 
- 
-         /**
-    * Update existing Testimonial
-    * 
-    * @param updateTestimonial Testimonial data to update
-    * @returns Promise<ApiResponse<TestimonialSM>>
-    * @example
-    * const updatedTestimonial = new TestimonialSM();
-   
-    */
-   /**delete Testimonial by id */
-   DeleteTestimonialById = async (
-     Id: number
-   ): Promise<ApiResponse<DeleteResponseRoot>> => {
-     let resp = await this.GetResponseAsync<number, DeleteResponseRoot>(
-       `${AppConstants.ApiUrls.CONTACT_US}/delete/${Id}`,
-       'DELETE'
-     );
-     return resp;
-   };
- 
-   GetTestimonialById = async (Id: number): Promise<ApiResponse<TestimonialSM>> => {
-     let resp = await this.GetResponseAsync<number, TestimonialSM>(
-       `${AppConstants.ApiUrls.CONTACT_US}/getbyid/${Id}`,
-       'GET'
-     );
-     return resp;
-   };
+  GetAllPaginatedReviewsByProductId = async (
+    queryFilter: QueryFilter
+  ): Promise<ApiResponse<ReviewSM[]>> => {
+    let resp = await this.GetResponseAsync<null, ReviewSM[]>(
+      `${AppConstants.ApiUrls.REVIEW}/GetAllProductreviewsByProductId/1/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`,
+      'GET',
+      null,
+      new AdditionalRequestDetails<ReviewSM[]>(false, Authentication.false)
+    );
+    
+    return resp;
+  };
 
+    GetAllPaginatedReviews = async (
+    queryFilter: QueryFilter
+  ): Promise<ApiResponse<ReviewSM[]>> => {
+    let resp = await this.GetResponseAsync<null, ReviewSM[]>(
+      `${AppConstants.ApiUrls.REVIEW}/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`,
+      'GET',
+      null,
+      new AdditionalRequestDetails<ReviewSM[]>(false, Authentication.false)
+    );
+    
+    return resp;
+  };
+  GetTotatReviewCount = async (): Promise<ApiResponse<IntResponseRoot>> => {
+    let resp = await this.GetResponseAsync<null, IntResponseRoot>(
+      `${AppConstants.ApiUrls.REVIEW}/count`,
+      'GET',
+      null,
+      new AdditionalRequestDetails<IntResponseRoot>(false, Authentication.false)
+    );
+    return resp;
+  };
+
+   /** Add a new category */
+    AddReview = async (formData: FormData): Promise<ApiResponse<ReviewSM>> => {
+      const details = new AdditionalRequestDetails<ReviewSM>(true); // enable auth
+      return await this.GetResponseAsync<FormData, ReviewSM>(
+        `${AppConstants.ApiUrls.REVIEW}/CreateProductReviewByProductId/1`,
+        'POST',
+        formData,
+        details
+      );
+    };
+  /**delete Review by id */
+  DeleteReviewById = async (
+    Id: number
+  ): Promise<ApiResponse<DeleteResponseRoot>> => {
+    let resp = await this.GetResponseAsync<number, DeleteResponseRoot>(
+      `${AppConstants.ApiUrls.ADMIN_REVIEW}/ByReviewId/${Id}`,
+      'DELETE'
+    );
+    return resp;
+  };
+
+  GetReviewById = async (Id: number): Promise<ApiResponse<ReviewSM>> => {
+    let resp = await this.GetResponseAsync<number, ReviewSM>(
+      `${AppConstants.ApiUrls.CONTACT_US}/${Id}`,
+      'GET'
+    );
+    return resp;
+  };
+
+  /**
+   * Update existing Review
+   * 
+   * @param updateReview Review data to update
+   * @returns Promise<ApiResponse<ReviewSM>>
+   * @example
+   * const updatedReview = new ReviewSM();
+  
+   */
+
+ 
+  
+    /** Update existing Category */
+    UpdateReviewByReviewId = async (
+      formData: FormData,
+      id: number
+    ): Promise<ApiResponse<ReviewSM>> => {
+      const details = new AdditionalRequestDetails<ReviewSM>(true); // enable auth
+      return await this.GetResponseAsync<FormData, ReviewSM>(
+        `${AppConstants.ApiUrls.ADMIN_REVIEW}/ByReviewId//${id}`,
+        'PUT',
+        formData,
+        details
+      );
+    };
 }
