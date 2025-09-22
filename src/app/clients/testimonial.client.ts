@@ -29,7 +29,7 @@ export class TestimonialClient extends BaseApiClient {
      queryFilter: QueryFilter
    ): Promise<ApiResponse<TestimonialSM[]>> => {
      let resp = await this.GetResponseAsync<null, TestimonialSM[]>(
-       `${AppConstants.ApiUrls.CONTACT_US}/getall/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`,
+       `${AppConstants.ApiUrls.TESTIMONIAL}/getall/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`,
        'GET'
      );
      
@@ -38,7 +38,7 @@ export class TestimonialClient extends BaseApiClient {
  
    GetTotatTestimonialCount = async (): Promise<ApiResponse<IntResponseRoot>> => {
      let resp = await this.GetResponseAsync<null, IntResponseRoot>(
-       `${AppConstants.ApiUrls.CONTACT_US}/count`,
+       `${AppConstants.ApiUrls.TESTIMONIAL}/count`,
        'GET'
      );
      return resp;
@@ -47,7 +47,7 @@ export class TestimonialClient extends BaseApiClient {
     /** Add a new category */
      AddTestimonial  = async (TestimonialFormData: ApiRequest<TestimonialSM>): Promise<ApiResponse<TestimonialSM>> => {
          let resp = await this.GetResponseAsync<TestimonialSM, TestimonialSM>(
-           `${AppConstants.ApiUrls.CONTACT_US}/create`,
+           `${AppConstants.ApiUrls.TESTIMONIAL}/create`,
            'POST',
            TestimonialFormData, new AdditionalRequestDetails<TestimonialSM>(false, Authentication.false  ));
          return resp;
@@ -57,7 +57,7 @@ export class TestimonialClient extends BaseApiClient {
    apiRequest: ApiRequest<TestimonialSM>
  ): Promise<ApiResponse<TestimonialSM>> => {
    return await this.GetResponseAsync<TestimonialSM, TestimonialSM>(
-     `${AppConstants.ApiUrls.CONTACT_US}/update/${apiRequest.reqData.id}`,
+     `${AppConstants.ApiUrls.TESTIMONIAL}/update/${apiRequest.reqData.id}`,
      'PUT',
      apiRequest,   // ✅ this is now valid JSON
      new AdditionalRequestDetails<TestimonialSM>(true, Authentication.true)
@@ -79,7 +79,7 @@ export class TestimonialClient extends BaseApiClient {
      Id: number
    ): Promise<ApiResponse<DeleteResponseRoot>> => {
      let resp = await this.GetResponseAsync<number, DeleteResponseRoot>(
-       `${AppConstants.ApiUrls.CONTACT_US}/delete/${Id}`,
+       `${AppConstants.ApiUrls.TESTIMONIAL}/delete/${Id}`,
        'DELETE'
      );
      return resp;
@@ -87,7 +87,7 @@ export class TestimonialClient extends BaseApiClient {
  
    GetTestimonialById = async (Id: number): Promise<ApiResponse<TestimonialSM>> => {
      let resp = await this.GetResponseAsync<number, TestimonialSM>(
-       `${AppConstants.ApiUrls.CONTACT_US}/getbyid/${Id}`,
+       `${AppConstants.ApiUrls.TESTIMONIAL}/getbyid/${Id}`,
        'GET'
      );
      return resp;

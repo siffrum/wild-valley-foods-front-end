@@ -1,23 +1,25 @@
 <form #bannerForm="ngForm" (ngSubmit)="onSubmit(bannerForm)">
   <div class="modal-header bg-primary text-white">
-    <h5 class="modal-title">
-      {{ banner ? 'Edit Banner' : 'Add New Banner' }}
-    </h5>
+    <h5 class="modal-title">{{ banner ? 'Edit Banner' : 'Add New Banner' }}</h5>
     <button type="button" class="btn-close btn-close-white" aria-label="Close"
             (click)="activeModal.dismiss()"></button>
   </div>
 
   <div class="modal-body modal-scroll">
-    <!-- title -->
+    <!-- Title -->
     <div class="mb-3">
-      <label class="form-label">Title</label>
-      <input type="text" class="form-control"
+      <label class="form-label">Title <span class="text-danger">*</span></label>
+      <input type="text"
+             class="form-control"
              name="title"
+             placeholder="Enter banner title"
              [(ngModel)]="viewModel.bannerFormData.title"
              required
+             minlength="2"
+             maxlength="100"
              #titleCtrl="ngModel"
              [ngClass]="{ 'is-invalid': titleCtrl.invalid && titleCtrl.touched }">
-      <div class="invalid-feedback">Name is required</div>
+      <div class="invalid-feedback">Title is required (2–100 characters)</div>
     </div>
 
     <!-- Description -->
@@ -25,65 +27,86 @@
       <label class="form-label">Description</label>
       <textarea class="form-control"
                 name="description"
-                [(ngModel)]="viewModel.bannerFormData.description"
-                rows="3"></textarea>
+                placeholder="Enter banner description"
+                rows="3"
+                maxlength="300"
+                [(ngModel)]="viewModel.bannerFormData.description"></textarea>
     </div>
 
-    <!-- Sequence & Status -->
+    <!-- Link & Banner Type -->
     <div class="row">
       <div class="col-md-6 mb-3">
-        <label class="form-label">Link</label>
-        <input type="text" class="form-control"
+        <label class="form-label">Link <span class="text-danger">*</span></label>
+        <input type="url"
+               class="form-control"
                name="link"
+               placeholder="Enter URL (https://example.com)"
                [(ngModel)]="viewModel.bannerFormData.link"
                required
                #linkCtrl="ngModel"
                [ngClass]="{ 'is-invalid': linkCtrl.invalid && linkCtrl.touched }">
-        <div class="invalid-feedback">link must valid</div>
+        <div class="invalid-feedback">Please enter a valid URL</div>
       </div>
 
       <div class="col-md-6 mb-3">
-        <label class="form-label">Banner type</label>
+        <label class="form-label">Banner Type <span class="text-danger">*</span></label>
         <select class="form-select"
-                name="status"
+                name="bannerType"
                 [(ngModel)]="viewModel.bannerFormData.bannerType"
                 required>
+          <option value="" disabled *ngIf="!banner">-- Select Type --</option>
           <option value="Slider">Slider</option>
-          <option value="ShortAdd">ShortAdd</option>
-             <option value="LongAdd">LongAdd</option>
+          <option value="ShortAdd">Short Add</option>
+          <option value="LongAdd">Long Add</option>
           <option value="Sales">Sales</option>
-             <option value="Voucher">Voucher</option>
+          <option value="Voucher">Voucher</option>
         </select>
+        <div class="invalid-feedback">Banner type is required</div>
       </div>
+    </div>
 
-    <!-- Slider Switch -->
+    <!-- Visibility Switch -->
     <div class="mb-3">
       <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox"
                id="sliderSwitch"
-               name="slider"
+               name="isVisible"
                [(ngModel)]="viewModel.bannerFormData.isVisible">
-        <label class="form-check-label" for="sliderSwitch">Show</label>
+        <label class="form-check-label" for="sliderSwitch">Show Banner</label>
       </div>
     </div>
 
-    <!-- Category Icon -->
+    <!-- Banner Image -->
     <div class="mb-3">
       <label class="form-label">Image <span class="text-danger">*</span></label>
-      <input type="file" class="form-control"
+      <input type="file"
+             class="form-control"
              accept="image/*"
              (change)="onFileChange($event)"
              [ngClass]="{ 'is-invalid': !viewModel.bannerFormData.image_base64 && !selectedFile && bannerForm.submitted }">
-      <div class="invalid-feedback">Banner is required</div>
+      <div class="invalid-feedback">Banner image is required</div>
+
+      <!-- Existing image info -->
+      <div *ngIf="banner && viewModel.bannerFormData.image_base64" class="mt-2 small text-muted">
+        Existing image present. Selecting a new file will replace it.
+      </div>
+    </div>
+
+    <!-- CTA Text -->
+    <div class="mb-3">
+      <label class="form-label">CTA Text</label>
+      <input type="text"
+             class="form-control"
+             name="ctaText"
+             placeholder="Enter Call-to-Action text (optional)"
+             [(ngModel)]="viewModel.bannerFormData.ctaText"
+             maxlength="50"
+             #ctaTextCtrl="ngModel">
+      <div class="form-text">Optional, max 50 characters</div>
     </div>
   </div>
-<div class="mb-3">
-      <label class="form-label">Cta</label>
-      <input type="text" class="form-control"
-             name="title"
-             [(ngModel)]="viewModel.bannerFormData.ctaText"
-             #ctaTextCtrl="ngModel">
-    </div>
+
+  <!-- Footer -->
   <div class="modal-footer">
     <button type="button" class="btn btn-secondary"
             [disabled]="isSubmitting"
@@ -94,7 +117,4 @@
       {{ banner ? 'Update' : 'Create' }}
     </button>
   </div>
-</div>
-
 </form>
-

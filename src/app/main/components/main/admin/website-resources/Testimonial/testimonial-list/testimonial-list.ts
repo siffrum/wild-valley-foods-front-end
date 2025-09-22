@@ -87,7 +87,7 @@ this.loadPageData()
       const term = this.viewModel.searchTerm.toLowerCase();
       this.viewModel.filteredTestimonials  = this.viewModel.TestimonialSMList.filter(cat => 
         cat.name.toLowerCase().includes(term) || 
-        (cat.description && cat.description.toLowerCase().includes(term))
+        (cat.message && cat.message.toLowerCase().includes(term))
       );
     }
     this.sortData();
@@ -168,6 +168,7 @@ openFormModal(Testimonial?: TestimonialSM): void {
   }
 
 confirmDelete(id: number): void {
+   this._commonService.showConfirmationAlert
     if (confirm('Are you sure you want to delete this Testimonial?')) {
       this.testimonialService.deleteTestimonial(id);
          this.loadPageData();

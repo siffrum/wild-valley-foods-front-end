@@ -1,47 +1,96 @@
 <form #VideoForm="ngForm" (ngSubmit)="onSubmit(VideoForm)">
-    <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">
-            {{ Video ? 'Edit Video' : 'Add New Video' }}
-        </h5>
-        <button type="button" class="btn-close btn-close-white" aria-label="Close"
-            (click)="activeModal.dismiss()"></button>
+  <div class="modal-header bg-primary text-white">
+    <h5 class="modal-title">
+      {{ Video ? 'Edit Video' : 'Add New Video' }}
+    </h5>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      aria-label="Close"
+      (click)="activeModal.dismiss()"
+    ></button>
+  </div>
+
+  <div class="modal-body modal-scroll">
+    <!-- Title -->
+    <div class="mb-3">
+      <label class="form-label">Video Title <span class="text-danger">*</span></label>
+      <input
+        type="text"
+        class="form-control"
+        name="title"
+        placeholder="Enter video title"
+        [(ngModel)]="viewModel.VideoFormData.title"
+        required
+        minlength="3"
+        maxlength="100"
+        #titleCtrl="ngModel"
+        [ngClass]="{ 'is-invalid': titleCtrl.invalid && titleCtrl.touched }"
+      />
+      <div class="invalid-feedback">
+        Title is required (3–100 characters).
+      </div>
     </div>
 
-    <div class="modal-body modal-scroll">
-        <!-- Name -->
-        <div class="mb-3">
-            <label class="form-label">Title</label>
-            <input type="text" class="form-control" name="title" [(ngModel)]="viewModel.VideoFormData.title" required
-                #nameCtrl="ngModel" [ngClass]="{ 'is-invalid': nameCtrl.invalid && nameCtrl.touched }">
-            <div class="invalid-feedback">Title is required</div>
-        </div>
-
-
-
-        <!-- email & Status -->
-        <div class="row">
-            <div class="col-12 col-md-6 mb-3">
-                <label class="form-label">YoutubeUrl</label>
-                <input type="text" class="form-control" name="youtubeUrl" [(ngModel)]="viewModel.VideoFormData.youtubeUrl"
-                    min="0" required #youtubeUrlCtrl="ngModel"
-                    [ngClass]="{ 'is-invalid': youtubeUrlCtrl.invalid && youtubeUrlCtrl.touched }">
-                <div class="invalid-feedback">youtubeUrl must be a valid</div>
-            </div>
-        </div>
-        <!-- Description -->
-        <div class="mb-3">
-            <label class="form-label">Description</label>
-            <textarea class="form-control" name="description" [(ngModel)]="viewModel.VideoFormData.description"
-                rows="3"></textarea>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" [disabled]="isSubmitting"
-                (click)="activeModal.dismiss()">Cancel</button>
-            <button type="submit" class="btn btn-primary"
-                [disabled]="isSubmitting || VideoForm.invalid">
-                <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1"></span>
-                {{ Video ? 'Update' : 'Create' }}
-            </button>
-        </div>
+    <!-- YouTube URL -->
+    <div class="mb-3">
+      <label class="form-label">YouTube URL <span class="text-danger">*</span></label>
+      <input
+        type="url"
+        class="form-control"
+        name="youtubeUrl"
+        placeholder="https://www.youtube.com/watch?v=example"
+        [(ngModel)]="viewModel.VideoFormData.youtubeUrl"
+        required
+        pattern="^(https?\:\/\/)?(www\.youtube\.com|youtu\.be)\/.+$"
+        #youtubeUrlCtrl="ngModel"
+        [ngClass]="{ 'is-invalid': youtubeUrlCtrl.invalid && youtubeUrlCtrl.touched }"
+      />
+      <div class="invalid-feedback">
+        Please enter a valid YouTube video link.
+      </div>
     </div>
+
+    <!-- Description -->
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea
+        class="form-control"
+        name="description"
+        placeholder="Write a short description about this video"
+        [(ngModel)]="viewModel.VideoFormData.description"
+        rows="3"
+        minlength="10"
+        maxlength="300"
+        #descCtrl="ngModel"
+        [ngClass]="{ 'is-invalid': descCtrl.invalid && descCtrl.touched }"
+      ></textarea>
+      <div class="invalid-feedback">
+        Description must be at least 10 characters (max 300).
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      [disabled]="isSubmitting"
+      (click)="activeModal.dismiss()"
+    >
+      Cancel
+    </button>
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="isSubmitting || VideoForm.invalid"
+    >
+      <span
+        *ngIf="isSubmitting"
+        class="spinner-border spinner-border-sm me-1"
+      ></span>
+      {{ Video ? 'Update' : 'Create' }}
+    </button>
+  </div>
 </form>

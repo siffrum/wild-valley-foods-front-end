@@ -3,6 +3,6 @@ import { WildValleyFoodsServiceModelBase } from "../../base/WildValleyFoods-serv
 export class TestimonialSM extends WildValleyFoodsServiceModelBase<number> {
   name!: string;
   email!: string;
-  description!: string;
+  message!: string;
   rating?: number; 
 }

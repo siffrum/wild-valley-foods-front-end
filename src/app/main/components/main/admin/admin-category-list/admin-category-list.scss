@@ -15,7 +15,7 @@
 
   .search-box {
     min-width: 220px;
-    max-width: 350px;
+    max-width: 400px;
     flex: 1;
 
     .input-group-text {
@@ -37,11 +37,18 @@
 /* =======================
    Table Styling
    ======================= */
+.table-hover-wrapper {
+  overflow-x: auto;
+}
+
 .table {
+  min-width: 700px;
+
   th {
     cursor: pointer;
     white-space: nowrap;
     user-select: none;
+    position: relative;
 
     i {
       font-size: 0.85rem;
@@ -51,15 +58,33 @@
 
   td {
     vertical-align: middle;
+    max-width: 200px;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
-}
 
-.table-icon {
-  height: 40px;
-  width: 40px;
-  object-fit: contain;
-  border-radius: 6px;
-  border: 1px solid #dee2e6;
+  .table-icon {
+    height: 40px;
+    width: 40px;
+    object-fit: contain;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+  }
+
+  .text-wrap {
+    white-space: normal;
+  }
+
+  .table-row-hover:hover {
+    background-color: #f1f3f5;
+  }
+
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
 }
 
 /* =======================
@@ -92,4 +117,24 @@
   display: flex;
   justify-content: center;
   padding-top: 1rem;
+}
+
+/* =======================
+   Responsive adjustments
+   ======================= */
+@media (max-width: 768px) {
+  .table th, .table td {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+
+  .table-icon {
+    height: 30px;
+    width: 30px;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 }

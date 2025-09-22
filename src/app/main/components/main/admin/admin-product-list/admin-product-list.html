@@ -1,6 +1,8 @@
 <!-- Header: Button & Search -->
 <div class="header-actions">
-  <button class="btn btn-success" (click)="openFormModal()">Add New Product</button>
+  <button class="btn btn-success" (click)="openFormModal()">
+    <i class="bi bi-plus-lg me-1"></i> Add New Product
+  </button>
 
   <div class="input-group search-box w-25">
     <span class="input-group-text bg-light border-end-0">
@@ -16,9 +18,9 @@
 </div>
 
 <!-- Table -->
-<div class="table-responsive">
+<div class="table-responsive table-hover-wrapper">
   <table class="table table-striped table-hover align-middle">
-    <thead>
+    <thead class="table-light sticky-header">
       <tr>
         <th>#</th>
         <th (click)="sortData('name')">
@@ -38,38 +40,44 @@
     </thead>
 
     <tbody>
-      <tr *ngFor="let p of viewModel.filteredProducts; let i = index">
+      
+      <tr *ngFor="let p of viewModel.filteredProducts; let i = index" class="table-row-hover">
         <td>{{ i + 1 }}</td>
-        <td>{{ p.name }}</td>
-        <td>{{ p.sku }}</td>
+        <td class="text-wrap text-break" title="{{ p.name }}">{{ p.name }}</td>
+        <td class="text-wrap text-break">{{ p.sku }}</td>
         <td>{{ p.price }} {{ p.currency || 'INR' }}</td>
         <td>{{ p.stock }}</td>
-        <td>{{ p.category.name || '-' }}</td>
-
+        <td class="text-wrap text-break" title="{{ p.category.name }}">{{ p.category.name || '-' }}</td>
         <td>
-       <img *ngIf="p.images && p.images.length > 0"
-     [src]="p.images[0]"
-     alt="product image"
-     class="table-img me-1"
-     height="40" width="40">
-
+          <img *ngIf="p.images && p.images.length > 0"
+               [src]="p.images[0]"
+               alt="product image"
+               class="table-img me-1"
+               height="40" width="40">
         </td>
         <td>
-          <button class="btn btn-sm btn-primary me-1" (click)="openFormModal(p)">Edit</button>
-          <button class="btn btn-sm btn-danger" (click)="confirmDelete(p.id!)">Delete</button>
+          <div class="d-flex gap-1 flex-wrap">
+            <button class="btn btn-sm btn-primary" (click)="openFormModal(p)">
+              <i class="bi bi-pencil-fill"></i> Edit
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="confirmDelete(p.id!)">
+              <i class="bi bi-trash-fill"></i> Delete
+            </button>
+          </div>
         </td>
       </tr>
     </tbody>
   </table>
 
+  <!-- Empty State -->
   <div *ngIf="viewModel.filteredProducts.length === 0" class="empty-state">
     <i class="bi bi-folder-x"></i>
     <h4>No products found</h4>
     <p>Try adjusting your search or add a new product</p>
   </div>
 
-  <div class="col-12 d-flex justify-content-center pt-3"
-       *ngIf="viewModel.pagination && viewModel.pagination.totalCount > 0">
+  <!-- Pagination -->
+  <div class="pagination-container" *ngIf="viewModel.pagination && viewModel.pagination.totalCount > 0">
     <pagination 
       (selectedPageNum)="loadPagedataWithPagination($event)" 
       [viewModel]="viewModel.pagination">

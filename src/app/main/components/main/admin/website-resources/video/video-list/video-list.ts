@@ -88,7 +88,7 @@ this.loadPageData()
       const term = this.viewModel.searchTerm.toLowerCase();
       this.viewModel.filteredVideos  = this.viewModel.VideoSMList.filter(cat => 
         cat.title.toLowerCase().includes(term) || 
-        (cat.description && cat.description.toLowerCase().includes(term))
+        (cat.youtubeUrl && cat.youtubeUrl.toLowerCase().includes(term))
       );
     }
     this.sortData();

@@ -8,99 +8,129 @@
   <div class="modal-body modal-scroll">
     <!-- Name -->
     <div class="mb-3">
-      <label class="form-label">Name</label>
-      <input type="text" class="form-control"
+      <label class="form-label">Name <span class="text-danger">*</span></label>
+      <input type="text"
+             class="form-control"
              name="name"
+             placeholder="Enter product name"
              [(ngModel)]="viewModel.productFormData.name"
              required
+             minlength="2"
+             maxlength="100"
              #nameCtrl="ngModel"
-             [ngClass]="{ 'is-invalid': nameCtrl.invalid && nameCtrl.touched }" />
-      <div class="invalid-feedback">Name is required</div>
+             [ngClass]="{ 'is-invalid': nameCtrl.invalid && nameCtrl.touched }">
+      <div class="invalid-feedback">Name is required (2–100 characters)</div>
     </div>
 
     <!-- Description -->
     <div class="mb-3">
       <label class="form-label">Description</label>
-      <textarea class="form-control" rows="3"
+      <textarea class="form-control"
                 name="description"
+                rows="3"
+                placeholder="Enter product description"
+                maxlength="500"
                 [(ngModel)]="viewModel.productFormData.description"></textarea>
     </div>
 
+    <!-- Price, Currency, SKU -->
     <div class="row">
       <div class="col-md-4 mb-3">
-        <label class="form-label">Price</label>
-        <input type="number" class="form-control"
+        <label class="form-label">Price <span class="text-danger">*</span></label>
+        <input type="number"
+               class="form-control"
                name="price"
+               placeholder="Enter product price"
                [(ngModel)]="viewModel.productFormData.price"
                required
                min="0"
                #priceCtrl="ngModel"
-               [ngClass]="{ 'is-invalid': priceCtrl.invalid && priceCtrl.touched }" />
-        <div class="invalid-feedback">Price is required and must be >= 0</div>
+               [ngClass]="{ 'is-invalid': priceCtrl.invalid && priceCtrl.touched }">
+        <div class="invalid-feedback">Price is required and must be ≥ 0</div>
       </div>
 
       <div class="col-md-4 mb-3">
         <label class="form-label">Currency</label>
-        <input type="text" class="form-control"
+        <input type="text"
+               class="form-control"
                name="currency"
-               [(ngModel)]="viewModel.productFormData.currency" />
+               placeholder="Enter currency (e.g., INR)"
+               [(ngModel)]="viewModel.productFormData.currency"
+               maxlength="5">
       </div>
 
       <div class="col-md-4 mb-3">
-        <label class="form-label">SKU</label>
-        <input type="text" class="form-control"
+        <label class="form-label">SKU <span class="text-danger">*</span></label>
+        <input type="text"
+               class="form-control"
                name="sku"
+               placeholder="Enter product SKU"
                [(ngModel)]="viewModel.productFormData.sku"
                required
                #skuCtrl="ngModel"
-               [ngClass]="{ 'is-invalid': skuCtrl.invalid && skuCtrl.touched }" />
+               [ngClass]="{ 'is-invalid': skuCtrl.invalid && skuCtrl.touched }">
         <div class="invalid-feedback">SKU is required</div>
       </div>
     </div>
 
+    <!-- Stock, Unit, Weight -->
     <div class="row">
       <div class="col-md-4 mb-3">
         <label class="form-label">Stock</label>
-        <input type="number" class="form-control"
+        <input type="number"
+               class="form-control"
                name="stock"
+               placeholder="Enter available stock"
                [(ngModel)]="viewModel.productFormData.stock"
-               min="0" />
+               min="0">
       </div>
 
       <div class="col-md-4 mb-3">
         <label class="form-label">Unit</label>
-        <input type="text" class="form-control"
+        <input type="text"
+               class="form-control"
                name="unit"
-               [(ngModel)]="viewModel.productFormData.unit" />
+               placeholder="e.g., pcs, kg"
+               [(ngModel)]="viewModel.productFormData.unit">
       </div>
 
       <div class="col-md-4 mb-3">
         <label class="form-label">Weight</label>
-        <input type="number" class="form-control"
+        <input type="number"
+               class="form-control"
                name="weight"
-               [(ngModel)]="viewModel.productFormData.weight" />
+               placeholder="Enter weight if applicable"
+               [(ngModel)]="viewModel.productFormData.weight"
+               min="0">
       </div>
     </div>
 
+    <!-- HSN & Tax Rate -->
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label">HSN Code</label>
-        <input type="text" class="form-control"
+        <input type="text"
+               class="form-control"
                name="hsnCode"
-               [(ngModel)]="viewModel.productFormData.hsnCode" />
+               placeholder="Enter HSN code"
+               [(ngModel)]="viewModel.productFormData.hsnCode">
       </div>
 
       <div class="col-md-6 mb-3">
         <label class="form-label">Tax Rate (%)</label>
-        <input type="number" class="form-control"
+        <input type="number"
+               class="form-control"
                name="taxRate"
-               [(ngModel)]="viewModel.productFormData.taxRate" />
+               placeholder="Enter tax rate"
+               [(ngModel)]="viewModel.productFormData.taxRate"
+               min="0"
+               max="100">
       </div>
     </div>
 
-    <!-- Category Dropdown -->
+    <!-- Category -->
     <div class="mb-3">
-      <label class="form-label">Category</label>
+      <label class="form-label">Category <span class="text-danger">*</span></label>
       <select class="form-select"
               name="categoryId"
               [(ngModel)]="viewModel.productFormData.categoryId"
@@ -108,39 +138,37 @@
         <option [value]="null" disabled *ngIf="!product">-- Select Category --</option>
         <option *ngFor="let c of viewModel.categories" [value]="c.id">{{ c.name }}</option>
       </select>
+      <div class="invalid-feedback">Category is required</div>
     </div>
 
-    <!-- Images (multiple) -->
-   <div class="mb-3">
-  <label class="form-label">Product Images 
-    <small class="text-muted">(you can select multiple)</small>
-  </label>
-  
-  <input 
-    type="file" 
-    class="form-control"
-    accept=".jpg,.jpeg,.png,.webp"
-    multiple
-    (change)="onFileChange($event)"
-    [ngClass]="{ 'is-invalid': !hasImages() && viewModel.FormSubmitted }">
+    <!-- Product Images -->
+    <div class="mb-3">
+      <label class="form-label">Product Images
+        <small class="text-muted">(you can select multiple)</small>
+      </label>
+      <input type="file"
+             class="form-control"
+             accept=".jpg,.jpeg,.png,.webp"
+             multiple
+             (change)="onFileChange($event)"
+             [ngClass]="{ 'is-invalid': !hasImages() && viewModel.FormSubmitted }">
+      <div class="invalid-feedback">Please provide at least one product image</div>
 
-  <div class="invalid-feedback">
-    Please provide at least one product image
-  </div>
-
-
-      <!-- Indicate existing images if editing (no inline preview as requested) -->
+      <!-- Show existing image count when editing -->
       <div *ngIf="product && viewModel.productFormData.images?.length" class="mt-2 small text-muted">
         {{ viewModel.productFormData.images?.length || 0 }} existing image(s) present. Selecting files will replace them.
       </div>
     </div>
   </div>
 
+  <!-- Footer -->
   <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" [disabled]="isSubmitting" (click)="activeModal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-secondary"
+            [disabled]="isSubmitting"
+            (click)="activeModal.dismiss()">Cancel</button>
     <button type="submit"
             class="btn btn-primary"
-            [disabled]="isSubmitting || productForm.invalid || (!hasImages())">
+            [disabled]="isSubmitting || productForm.invalid || !hasImages()">
       <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1"></span>
       {{ product ? 'Update' : 'Create' }}
     </button>
