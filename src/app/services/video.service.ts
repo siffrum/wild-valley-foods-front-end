@@ -5,9 +5,10 @@ import { DeleteResponseRoot } from '../models/service-models/foundation/common-r
 import { QueryFilter } from '../models/service-models/foundation/api-contracts/query-filter';
 import { IntResponseRoot } from '../models/service-models/foundation/common-response/int-response-root';
 import { AppConstants } from '../../app-constants';
+import { ApiRequest } from '../models/service-models/foundation/api-contracts/base/api-request';
 import { VideoClient } from '../clients/video.client';
-import { VideoSM } from '../models/service-models/app/v1/website-resource/video-s-m';
 import { VideoViewModel } from '../models/view/website-resource/video.viewmodel';
+import { VideoSM } from '../models/service-models/app/v1/website-resource/video-s-m';
 
 
 @Injectable({
@@ -18,7 +19,7 @@ export class VideoService extends BaseService {
     super();
   }
 
-  /**
+/**
    * Retrieves all Videos from the server.
    *
    * @returns A promise that resolves to an ApiResponse containing an array of VideoSM objects.
@@ -53,13 +54,16 @@ export class VideoService extends BaseService {
   }
 
 
-async addVideo(formData: FormData): Promise<ApiResponse<VideoSM>> {
-  let apiRequest = formData; // direct pass
-  
+async addVideo(formData: VideoSM): Promise<ApiResponse<VideoSM>> {
+let apiRequest = new ApiRequest<VideoSM>();
+      apiRequest.reqData = formData;
   return await this.VideoClient.AddVideo(apiRequest);
 }
-async updateVideo(formData: FormData, id: number): Promise<ApiResponse<VideoSM>> {
-  let apiRequest = formData; // direct pass
-  return await this.VideoClient.UpdateVideo(apiRequest, id);
+async updateVideo(formData: VideoSM): Promise<ApiResponse<VideoSM>> {
+  const apiRequest = new ApiRequest<VideoSM>();
+  apiRequest.reqData = formData;   // ✅ properly wrap
+
+  return await this.VideoClient.UpdateVideo(apiRequest);
 }
+
 }

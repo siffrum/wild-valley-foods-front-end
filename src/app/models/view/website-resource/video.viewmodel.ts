@@ -5,7 +5,7 @@ import { VideoSM } from '../../service-models/app/v1/website-resource/video-s-m'
 
 
 export class VideoViewModel extends BaseViewModel {
-  TestmonialFormData: VideoSM = new VideoSM();
+  VideoFormData: VideoSM = new VideoSM();
   VideoForm!: FormGroup;
   VideoId: number = 0;
   VideoSMList :VideoSM [] = [];

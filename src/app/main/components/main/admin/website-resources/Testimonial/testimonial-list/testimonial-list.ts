@@ -26,14 +26,14 @@ export class TestimonialList extends BaseComponent<TestimonialViewModel> impleme
     this._logHandler = logHandler;
     this.viewModel = new TestimonialViewModel();
   }
-  // categories: Testimonial[] = [];
-  // filteredCategories: Testimonial[] = [];
+  // Testimonial: Testimonial[] = [];
+  // filteredTestimonial: Testimonial[] = [];
 
   ngOnInit(){
 this.loadPageData()
   }
 
-  // Additional methods for handling categories can be added here
+  // Additional methods for handling Testimonial can be added here
    override async loadPageData(){
      try {
       this._commonService.presentLoading();
@@ -49,8 +49,8 @@ this.loadPageData()
       }
       else{
         this.viewModel.TestimonialSMList = resp.successData;
-        console.log('Categories loaded:', this.viewModel.TestimonialSMList);
-          //     this.categories = data;
+        console.log('Testimonial loaded:', this.viewModel.TestimonialSMList);
+          //     this.Testimonial = data;
          this.viewModel.filteredTestimonials = [...resp.successData];
          this.sortData();
          this.TotalTestimonialCount();
@@ -61,7 +61,7 @@ this.loadPageData()
         await this._logHandler.logObject(error);
         this._commonService.showSweetAlertToast({
           title: 'Error',
-          text: 'Failed to load categories.',
+          text: 'Failed to load Testimonial.',
           icon: 'error',
           confirmButtonText: 'OK',
         });
@@ -87,7 +87,7 @@ this.loadPageData()
       const term = this.viewModel.searchTerm.toLowerCase();
       this.viewModel.filteredTestimonials  = this.viewModel.TestimonialSMList.filter(cat => 
         cat.name.toLowerCase().includes(term) || 
-        (cat.message && cat.message.toLowerCase().includes(term))
+        (cat.description && cat.description.toLowerCase().includes(term))
       );
     }
     this.sortData();

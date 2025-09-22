@@ -27,7 +27,7 @@
         <th (click)="sortData('email')">
           Email <i class="bi ms-2" [ngClass]="getSortIcon('email')"></i>
         </th>
-        <th>Message </th>
+        <th>Description </th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -37,7 +37,7 @@
         <td>{{ i + 1 }}</td>
         <td>{{ item.name }}</td>
         <td>{{item.email}}</td>
-        <td>{{ item.message }}</td>
+        <td>{{ item.description }}</td>
         <td>
           <button class="btn btn-sm btn-primary me-1" (click)="openFormModal(item)">Edit</button>
           <button class="btn btn-sm btn-danger" (click)="confirmDelete(item.id!)">Delete</button>

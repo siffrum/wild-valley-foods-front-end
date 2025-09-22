@@ -43,7 +43,7 @@ export const AppConstants = {
     ADMIN_REVIEW: 'api/v1/AdminReview',
     REVIEW: 'api/v1/Review',
     TESTIMONIAL: 'api/v1/testimonial',
-    VIDEO: 'api/v1/Video',
+    VIDEO: 'api/v1/video',
   },
   DbKeys: {
     ACCESS_TOKEN: 'ACCESS_TOKEN',
