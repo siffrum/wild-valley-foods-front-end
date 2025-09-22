@@ -5,7 +5,7 @@ import { TestimonialSM } from '../../service-models/app/v1/website-resource/test
 
 
 export class TestimonialViewModel extends BaseViewModel {
-  TestmonialFormData: TestimonialSM = new TestimonialSM();
+  TestimonialFormData: TestimonialSM = new TestimonialSM();
   TestimonialForm!: FormGroup;
   TestimonialId: number = 0;
   TestimonialSMList :TestimonialSM [] = [];
