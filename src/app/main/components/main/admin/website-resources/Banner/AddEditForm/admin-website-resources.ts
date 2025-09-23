@@ -108,7 +108,7 @@ private async addBanner() {
       const formData = new FormData();
       formData.append("reqData", JSON.stringify(this.viewModel.bannerFormData));
       if (this.selectedFile) {
-        formData.append("image_base64", this.selectedFile);
+        formData.append("imagePath", this.selectedFile);
       }
       const resp = await this.bannerService.updateBanner(formData, this.viewModel.bannerFormData.id);
       if (resp.isError) {
