@@ -65,13 +65,15 @@
         <a class="nav-link" routerLink="/contact">Contact us</a>
       </li>
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/wishlist"><i class="bi bi-heart fs-5"></i></a>
+        <a class="nav-link" routerLink="/wishlist"><i class="bi bi-heart fs-5"></i><span
+            class="position-absolute top-1 start-80 translate-middle badge rounded-pill bg-success">{{wishListItems.length}}</span></a>
+
       </li>
       <li class="nav-item position-relative">
-        <a class="nav-link"><i class="bi bi-cart fs-5" data-bs-toggle="offcanvas"
-            data-bs-target="#offcanvasRight"></i></a>
-        <span
-          class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">{{cartItems.length}}</span>
+        <a class="nav-link"><i class="bi bi-cart fs-5" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"></i>
+          <span
+            class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-success">{{cartItems.length}}</span></a>
+
       </li>
     </ul>
   </div>

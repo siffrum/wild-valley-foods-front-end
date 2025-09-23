@@ -16,9 +16,12 @@ export class ProductService extends BaseService {
     super();
   }
 
-  async getAllProducts(viewModel: AdminProductsViewModel): Promise<ApiResponse<ProductSM[]>> {
+  async getAllProducts(
+    viewModel: AdminProductsViewModel
+  ): Promise<ApiResponse<ProductSM[]>> {
     const queryFilter = new QueryFilter();
-    queryFilter.skip = (viewModel.pagination.PageNo - 1) * viewModel.pagination.PageSize;
+    queryFilter.skip =
+      (viewModel.pagination.PageNo - 1) * viewModel.pagination.PageSize;
     queryFilter.top = viewModel.pagination.PageSize;
     return await this.productClient.GetAllProduct(queryFilter);
   }
@@ -45,7 +48,13 @@ export class ProductService extends BaseService {
     return await this.productClient.AddProduct(formData);
   }
 
-  async updateProduct(formData: FormData, id: number): Promise<ApiResponse<ProductSM>> {
+  async updateProduct(
+    formData: FormData,
+    id: number
+  ): Promise<ApiResponse<ProductSM>> {
     return await this.productClient.UpdateProduct(formData, id);
+  }
+  async getAllNewArrivals(): Promise<ApiResponse<ProductSM[]>> {
+    return await this.productClient.GetAllNewArrivals();
   }
 }

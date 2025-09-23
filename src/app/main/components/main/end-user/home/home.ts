@@ -45,6 +45,8 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
 
   async ngOnInit() {
     await this.getAllBanners();
+    await this.getAllNewArrivals();
+    await this.getAllProducts();
   }
 
   trackById(index: number, item: ProductSM) {
@@ -80,8 +82,6 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
         });
       } else {
         this.viewModel.banners = resp.successData;
-        console.log(this.viewModel.banners);
-        this.getAllProducts();
       }
     } catch (error) {
       this._commonService.showSweetAlertToast({
@@ -111,7 +111,6 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
         });
       } else {
         this.viewModel.productsViewModel.products = resp.successData;
-        console.log(this.viewModel.productsViewModel.products);
         await this.getAllCategories();
       }
     } catch (error) {
@@ -125,7 +124,32 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
       this._commonService.dismissLoader();
     }
   }
-
+  async getAllNewArrivals(): Promise<void> {
+    try {
+      this._commonService.presentLoading();
+      let resp = await this.productService.getAllNewArrivals();
+      if (resp.isError) {
+        await this._exceptionHandler.logObject(resp.errorData);
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData.displayMessage,
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+      } else {
+        this.viewModel.newArrivals = resp.successData;
+      }
+    } catch (error) {
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: 'An error occurred',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    } finally {
+      this._commonService.dismissLoader();
+    }
+  }
   async getAllCategories(): Promise<void> {
     try {
       this._commonService.presentLoading();

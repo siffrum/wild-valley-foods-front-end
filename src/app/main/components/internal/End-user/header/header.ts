@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { CartService } from '../../../../../services/cart.service';
 import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
 import { Subscription } from 'rxjs';
+import { WishlistService } from '../../../../../services/wishlist.service';
 
 @Component({
   selector: 'app-header',
@@ -13,7 +14,10 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./header.scss'],
 })
 export class Header implements OnInit {
-  constructor(private cartService: CartService) {}
+  constructor(
+    private cartService: CartService,
+    private wishlistService: WishlistService
+  ) {}
   isLoggedIn: boolean = false;
   categories = [
     {
@@ -38,8 +42,10 @@ export class Header implements OnInit {
     },
   ];
   cartItems: ProductSM[] = [];
+  wishListItems: ProductSM[] = [];
   subTotal = 0;
   private sub: Subscription | null = null;
+  private wishListSub: Subscription | null = null;
   ngOnInit(): void {
     this.sub = this.cartService.cart$.subscribe((items) => {
       this.cartItems = items || [];
@@ -49,10 +55,14 @@ export class Header implements OnInit {
         0
       );
     });
+    this.wishListSub = this.wishlistService.wishlist$.subscribe((items) => {
+      this.wishListItems = items || [];
+    });
   }
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
+    this.wishListSub?.unsubscribe();
   }
   // Compute total price
   async cartTotal() {

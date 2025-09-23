@@ -7,7 +7,10 @@ import { ApiResponse } from '../models/service-models/foundation/api-contracts/b
 import { DeleteResponseRoot } from '../models/service-models/foundation/common-response/delete-response-root';
 import { IntResponseRoot } from '../models/service-models/foundation/common-response/int-response-root';
 import { AppConstants } from '../../app-constants';
-import { AdditionalRequestDetails, Authentication } from '../models/internal/additional-request-details';
+import {
+  AdditionalRequestDetails,
+  Authentication,
+} from '../models/internal/additional-request-details';
 import { QueryFilter } from '../models/service-models/foundation/api-contracts/query-filter';
 import { ProductSM } from '../models/service-models/app/v1/product-s-m';
 
@@ -74,7 +77,8 @@ export class ProductClient extends BaseApiClient {
   GetProductById = async (Id: number): Promise<ApiResponse<ProductSM>> => {
     return await this.GetResponseAsync<number, ProductSM>(
       `${AppConstants.ApiUrls.BASE}/product/${Id}`,
-      'GET',null,
+      'GET',
+      null,
       new AdditionalRequestDetails<ProductSM>(false, Authentication.false)
     );
   };
@@ -89,6 +93,15 @@ export class ProductClient extends BaseApiClient {
       'DELETE',
       null,
       details
+    );
+  };
+
+  GetAllNewArrivals = async (): Promise<ApiResponse<ProductSM[]>> => {
+    return await this.GetResponseAsync<null, ProductSM[]>(
+      `${AppConstants.ApiUrls.BASE}/product/new-arrivals`,
+      'GET',
+      null,
+      new AdditionalRequestDetails<ProductSM[]>(false, Authentication.false)
     );
   };
 }
