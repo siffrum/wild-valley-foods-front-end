@@ -7,6 +7,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductCardComponent } from '../../../internal/End-user/product/product';
 import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
+import { CartService } from '../../../../../services/cart.service';
+import { WishlistService } from '../../../../../services/wishlist.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-shop',
@@ -16,10 +19,12 @@ import { ProductSM } from '../../../../../models/service-models/app/v1/product-s
   standalone: true,
 })
 export class Shop extends BaseComponent<ShopViewModel> implements OnInit {
-  pageSize: number = 10;
   constructor(
     commonService: CommonService,
-    logHandlerService: LogHandlerService
+    logHandlerService: LogHandlerService,
+    private cartService: CartService,
+    private wishlistService: WishlistService,
+    private router: Router
   ) {
     super(commonService, logHandlerService);
     this.viewModel = new ShopViewModel();
@@ -57,13 +62,16 @@ export class Shop extends BaseComponent<ShopViewModel> implements OnInit {
   }
 
   openProduct(product: ProductSM) {
-    // this.router.navigate(['/product', product.id]);
+    this.router.navigate(['/product', product.id]);
   }
 
-  toggleWishlist(product: ProductSM) {
-    // handle wishlist toggle
+  async toggleWishlist(product: ProductSM) {
+    await this.wishlistService.toggleWishlist(product);
   }
-  onAddToCart(product: ProductSM) {}
+  async onAddToCart(product: ProductSM) {
+    product.cartQuantity = 1;
+    await this.cartService.toggleCart(product);
+  }
   /** MAIN: apply filters, sort and paginate */
   applyFilters() {
     this.pagedProducts = this.dummuyProducts;

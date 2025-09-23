@@ -73,11 +73,15 @@ export class CartService extends BaseService {
     const idx = current.findIndex((p) => p.id === product.id);
 
     if (idx >= 0) {
-      alert('Product is already in cart.');
+      this.commonService.ShowToastAtTopEnd(
+        'Product Already in the  cart.',
+        'success'
+      );
     } else {
       // add (normalize)
       const toAdd = this.normalizeProduct(product);
       current.push(toAdd);
+      this.commonService.ShowToastAtTopEnd('Product added to cart.', 'success');
     }
 
     await this.persistAndEmit(current);
@@ -111,8 +115,16 @@ export class CartService extends BaseService {
     if (quantity <= 0) {
       // remove item if quantity <= 0
       current.splice(idx, 1);
+      this.commonService.ShowToastAtTopEnd(
+        'Product removed from cart.',
+        'success'
+      );
     } else {
       current[idx].cartQuantity = quantity;
+      this.commonService.ShowToastAtTopEnd(
+        'Product quantity updated.',
+        'success'
+      );
     }
 
     await this.persistAndEmit(current);
@@ -125,6 +137,10 @@ export class CartService extends BaseService {
 
     const filtered = current.filter((p) => p.id !== id);
     await this.persistAndEmit(filtered);
+    this.commonService.ShowToastAtTopEnd(
+      'Product removed from cart.',
+      'success'
+    );
     return true;
   }
 

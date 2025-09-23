@@ -196,7 +196,7 @@ export class CommonService extends BaseService {
    * @argument alertOptions Contains the properties of sweet alert like position, timer, text, title etc  */
   async showSweetAlertToast(alertOptions: SweetAlertOptions) {
     alertOptions.toast = true;
-    if (!alertOptions.position) alertOptions.position = 'bottom';
+    if (!alertOptions.position) alertOptions.position = 'top';
     if (!alertOptions.showConfirmButton) alertOptions.showConfirmButton = false;
     if (!alertOptions.timer) alertOptions.timer = 3000;
     if (!alertOptions.timerProgressBar) alertOptions.timerProgressBar = true;

@@ -29,8 +29,16 @@ export class WishlistService extends BaseService {
       wishListedProducts = wishListedProducts.filter(
         (p: ProductSM) => p.id !== product.id
       );
+      this.commonService.ShowToastAtTopEnd(
+        'Product removed from wishlist.',
+        'success'
+      );
     } else {
       wishListedProducts.push(product);
+      this.commonService.ShowToastAtTopEnd(
+        'Product added to wishlist.',
+        'success'
+      );
     }
     await this.indexDB.saveToStorage(this.STORAGE_KEY, wishListedProducts);
   }
@@ -60,6 +68,10 @@ export class WishlistService extends BaseService {
     await this.indexDB.saveToStorage(
       this.STORAGE_KEY,
       wishListedProducts.filter((p: ProductSM) => p.id !== id)
+    );
+    this.commonService.ShowToastAtTopEnd(
+      'Product removed from wishlist.',
+      'success'
     );
     return true;
   }
