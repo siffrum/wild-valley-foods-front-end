@@ -17,6 +17,7 @@ import {
   provideClientHydration,
   withEventReplay,
 } from '@angular/platform-browser';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   // Background spinner (non-blocking small spinner)
   bgsColor: '#ff4081',
@@ -63,6 +64,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
+    provideCharts(withDefaultRegisterables()),
     importProvidersFrom(NgxUiLoaderModule.forRoot(ngxUiLoaderConfig)),
   ],
 };
