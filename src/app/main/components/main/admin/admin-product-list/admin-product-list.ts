@@ -50,7 +50,7 @@ export class AdminProductList extends BaseComponent<AdminProductsViewModel> impl
       } else {
         this.viewModel.products = resp.successData;
         this.viewModel.filteredProducts = [...resp.successData];
-        console.log(this.viewModel.filteredProducts);
+        // console.log(this.viewModel.filteredProducts);
         
         this.sortData();
         await this.TotalProductCount();
@@ -67,7 +67,33 @@ export class AdminProductList extends BaseComponent<AdminProductsViewModel> impl
       this._commonService.dismissLoader();
     }
   }
-
+ async TotalProductCount() {
+    try {
+      this._commonService.presentLoading();
+      const resp = await this.productService.getTotatProductCount();
+      if (resp.isError) {
+        await this._logHandler.logObject(resp.errorData);
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData.displayMessage,
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+      } else {
+        this.viewModel.pagination.totalCount = resp.successData.intResponse;
+      }
+    } catch (error) {
+      await this._logHandler.logObject(error);
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: 'Failed to load product count.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    } finally {
+      this._commonService.dismissLoader();
+    }
+  }
   async loadPagedataWithPagination(pageNumber: number) {
     if (pageNumber && pageNumber > 0) {
       this.viewModel.pagination.PageNo = pageNumber;
@@ -121,33 +147,7 @@ export class AdminProductList extends BaseComponent<AdminProductsViewModel> impl
     return this.viewModel.sortDirection === 'asc' ? 'bi-sort-up' : 'bi-sort-down';
   }
 
-  async TotalProductCount() {
-    try {
-      this._commonService.presentLoading();
-      const resp = await this.productService.getTotatProductCount();
-      if (resp.isError) {
-        await this._logHandler.logObject(resp.errorData);
-        this._commonService.showSweetAlertToast({
-          title: 'Error',
-          text: resp.errorData.displayMessage,
-          icon: 'error',
-          confirmButtonText: 'OK',
-        });
-      } else {
-        this.viewModel.pagination.totalCount = resp.successData.intResponse;
-      }
-    } catch (error) {
-      await this._logHandler.logObject(error);
-      this._commonService.showSweetAlertToast({
-        title: 'Error',
-        text: 'Failed to load product count.',
-        icon: 'error',
-        confirmButtonText: 'OK',
-      });
-    } finally {
-      this._commonService.dismissLoader();
-    }
-  }
+ 
 
   openFormModal(product?: ProductSM): void {
     const modalRef = this.modalService.open(AdminProductForm, {

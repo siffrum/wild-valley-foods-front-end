@@ -7,6 +7,7 @@ import { IntResponseRoot } from '../models/service-models/foundation/common-resp
 import { DeleteResponseRoot } from '../models/service-models/foundation/common-response/delete-response-root';
 import { AdminProductsViewModel } from '../models/view/Admin/admin-product.viewmodel';
 import { ProductSM } from '../models/service-models/app/v1/product-s-m';
+import { UserProductViewModel } from '../models/view/end-user/product/user-product.viewmodel';
 
 @Injectable({
   providedIn: 'root',
@@ -26,10 +27,24 @@ export class ProductService extends BaseService {
     return await this.productClient.GetAllProduct(queryFilter);
   }
 
+
   async getTotatProductCount(): Promise<ApiResponse<IntResponseRoot>> {
     return await this.productClient.GetTotatProductCount();
   }
 
+    async getAllProductsByCategoryId(
+    viewModel: UserProductViewModel
+  ): Promise<ApiResponse<ProductSM[]>> {
+    const queryFilter = new QueryFilter();
+    queryFilter.skip =
+      (viewModel.pagination.PageNo - 1) * viewModel.pagination.PageSize;
+    queryFilter.top = viewModel.pagination.PageSize;
+    let categoryId=viewModel.categoryId;
+    return await this.productClient.GetAllProductsByCategoryId(queryFilter,categoryId);
+  }
+ async getTotatProductCountByCategoryId(categoryId:number): Promise<ApiResponse<IntResponseRoot>> {
+    return await this.productClient.GetTotatProductCountByCategoryId(categoryId);
+  }
   async deleteProduct(id: number): Promise<ApiResponse<DeleteResponseRoot>> {
     if (id <= 0) {
       throw new Error('Invalid id for delete');

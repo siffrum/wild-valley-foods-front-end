@@ -58,8 +58,6 @@
 
                     <div class="price-row mb-3">
                         <h3 class="price mb-0">₹ {{ viewModel.product.price | number:'1.2-2' }}</h3>
-                        <!-- placeholder if you later add originalPrice/discount -->
-                        <!-- <small class="text-muted ms-2"><s>₹ 1,999</s></small> -->
                     </div>
 
                     <p class="product-desc text-muted mb-3" *ngIf="viewModel.product.description">{{
@@ -101,20 +99,43 @@
                 </div>
             </div>
         </div>
+        @if(viewModel.product.richDescription){
+    <div class="row g-4">
+  <div class="col-md-6">
+    <h3 class="mb-3">Rich Description</h3>
+    <p class="text-justify mb-0" style="white-space: pre-line; line-height: 1.7;">
+      {{ viewModel.product.richDescription }}
+    </p>
+  </div>
+</div>
+}
+
 
         <!-- related products placeholder -->
         <div class="mt-5">
-            <h5>Related products</h5>
-            <div class="row g-3">
-                <div class="col-6 col-md-3" *ngFor="let r of []">
-                    <!-- placeholder -->
+            <h1 class="text-center mb-4 fw-bold">Related Products</h1>
+
+            <div class="row justify-content-center">
+                @for (product of viewModel.products; track product) {
+                @if(viewModel.products.length >0){
+                <div class="col-6 col-md-4 col-lg-3 mb-4 d-flex justify-content-center">
+                    <app-product [product]="product" (addToCart)="onAddToCart(product)" (view)="openProduct($event)"
+                        (wishlist)="toggleWishlist(product)">
+                    </app-product>
                 </div>
-                <div *ngIf="!viewModel.product?.categoryId" class="text-muted">No related products available.</div>
+                }
+                @else {
+                <div class="text-muted">No related products available.</div>
+                }
+                }
             </div>
         </div>
     </div>
     }
-</div>}@else {
+</div>
+}
+
+@else {
 
 
 

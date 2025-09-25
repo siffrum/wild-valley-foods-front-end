@@ -63,6 +63,27 @@ export class ProductClient extends BaseApiClient {
     );
   };
 
+    /** Retrieves all Products (paginated) By category Id */
+  GetAllProductsByCategoryId = async (
+    queryFilter: QueryFilter, categoryId: number
+  ): Promise<ApiResponse<ProductSM[]>> => {
+    return await this.GetResponseAsync<null, ProductSM[]>(
+      `${AppConstants.ApiUrls.BASE}/product/ByCategoryId/${categoryId}/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`,
+      'GET',
+      null,
+      new AdditionalRequestDetails<ProductSM[]>(false, Authentication.false)
+    );
+  };
+  /** Get total product count  By CategoryId*/
+  GetTotatProductCountByCategoryId = async (categoryId:number): Promise<ApiResponse<IntResponseRoot>> => {
+    return await this.GetResponseAsync<null, IntResponseRoot>(
+      `${AppConstants.ApiUrls.BASE}/product/count/ByCategoryId/${categoryId}`,
+      'GET',
+      null,
+      new AdditionalRequestDetails<IntResponseRoot>(false, Authentication.false)
+    );
+  };
+
   /** Get total product count */
   GetTotatProductCount = async (): Promise<ApiResponse<IntResponseRoot>> => {
     return await this.GetResponseAsync<null, IntResponseRoot>(

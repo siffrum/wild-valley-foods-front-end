@@ -1,30 +1,35 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ProductService } from '../../../../../services/product.service';
+import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { BaseComponent } from '../../../../../base.component';
-import { SingleProductViewModel } from '../../../../../models/view/end-user/product/single-product.viewmodel';
+import { UserProductViewModel } from '../../../../../models/view/end-user/product/user-product.viewmodel';
+import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
+
+import { ProductService } from '../../../../../services/product.service';
 import { CommonService } from '../../../../../services/common.service';
 import { LogHandlerService } from '../../../../../services/log-handler.service';
 import { CartService } from '../../../../../services/cart.service';
 import { WishlistService } from '../../../../../services/wishlist.service';
-import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
-import { log } from 'console';
+
+import { ProductCardComponent } from '../../../internal/End-user/product/product';
 
 @Component({
   selector: 'app-product-page',
   templateUrl: './single-product.html',
   styleUrls: ['./single-product.scss'],
-  imports: [RouterModule, CommonModule, FormsModule],
+  imports: [RouterModule, CommonModule, FormsModule, ProductCardComponent],
 })
 export class SingleProduct
-  extends BaseComponent<SingleProductViewModel>
+  extends BaseComponent<UserProductViewModel>
   implements OnInit
 {
+  cartItems: ProductSM[] = [];
+
   constructor(
     commonService: CommonService,
-    logHandlerService: LogHandlerService,
+    private logHandlerService: LogHandlerService,
     private route: ActivatedRoute,
     private productService: ProductService,
     private router: Router,
@@ -32,91 +37,202 @@ export class SingleProduct
     private wishlistService: WishlistService
   ) {
     super(commonService, logHandlerService);
-    this.viewModel = new SingleProductViewModel();
-  }
-  cartItems: ProductSM[] = [];
-  async ngOnInit() {
-    this.route.params.subscribe((params) => {
-      if (params['id']) {
-        this.getProductById(params['id']);
+    this.viewModel = new UserProductViewModel();
+      this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        this._commonService.dismissLoader();
       }
     });
   }
 
-  async getProductById(id: number) {
-    try {
-      await this._commonService.presentLoading();
-      let resp = await this.productService.getProductById(id);
-      await this._commonService.dismissLoader();
-      if (resp.isError == false) {
-        this.viewModel.product = resp.successData;
-        await this.getCartItemById(id);
-      } else {
-        this._commonService.showSweetAlert({
-          title: 'Error',
-          text: resp.errorData?.displayMessage || 'An error occurred',
-          icon: 'error',
-          confirmButtonText: 'OK',
-        });
+  ngOnInit(): void {
+    this.route.params.subscribe((params) => {
+      if (params['id']) {
+        this.loadProductData(+params['id']);
       }
+    });
+  }
+
+  /**
+   * Main entry point for loading product + related data
+   */
+  private async loadProductData(id: number): Promise<void> {
+    await this._commonService.presentLoading();
+    try {
+      await this.getProductById(id);
+      await this.getCartItemById(id);
+      await this.loadSimilarProductsByCategory();
     } catch (error) {
-      this._commonService.dismissLoader();
       await this._exceptionHandler.logObject(error);
       this._commonService.showSweetAlertToast({
         title: 'Error',
-        text: 'Failed to load product.',
+        text: 'Failed to load product details.',
         icon: 'error',
         confirmButtonText: 'OK',
       });
+    } finally {
+      await this._commonService.dismissLoader();
     }
   }
-  async getCartItemById(id: number) {
-    let items = await this.cartService.getAll();
-    let found = items.find((item) => item.id == id);
+
+  /**
+   * Get single product by ID
+   */
+  private async getProductById(id: number): Promise<void> {
+    const resp = await this.productService.getProductById(id);
+    if (resp.isError) {
+      throw resp.errorData;
+    }
+    this.viewModel.product = resp.successData;
+    this.viewModel.categoryId = this.viewModel.product.categoryId;
+  }
+
+  /**
+   * Sync cart info with current product
+   */
+  private async getCartItemById(id: number): Promise<void> {
+    const items = await this.cartService.getAll();
+    const found = items.find((item) => item.id === id);
     if (found) {
       this.viewModel.product = found;
     } else {
       this.viewModel.product.cartQuantity = 1;
     }
   }
-  selectImage(index: number) {}
-  increment(item: ProductSM) {
+
+  /**
+   * Load related products by category
+   */
+  private async loadSimilarProductsByCategory(): Promise<void> {
+    try {
+      this.viewModel.pagination.PageSize = 4;
+      const resp = await this.productService.getAllProductsByCategoryId(
+        this.viewModel
+      );
+
+      if (resp.isError) {
+        await this.logHandlerService.logObject(resp.errorData);
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData.displayMessage,
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+        return;
+      }
+
+      this.viewModel.products = resp.successData;
+      this.viewModel.filteredProducts = [...resp.successData];
+      await this.TotalProductCountByCategoryId();
+    } catch (error) {
+      await this.logHandlerService.logObject(error);
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: 'Failed to load similar products.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    }
+  }
+
+  /**
+   * Get total product count by category
+   */
+  private async TotalProductCountByCategoryId(): Promise<void> {
+    try {
+      const resp =
+        await this.productService.getTotatProductCountByCategoryId(
+          this.viewModel.product.categoryId
+        );
+
+      if (resp.isError) {
+        await this.logHandlerService.logObject(resp.errorData);
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData.displayMessage,
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+        return;
+      }
+
+      this.viewModel.pagination.totalCount = resp.successData.intResponse;
+    } catch (error) {
+      await this.logHandlerService.logObject(error);
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: 'Failed to load product count.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    }
+  }
+
+  /**
+   * Cart Methods
+   */
+  increment(item: ProductSM): void {
     item.cartQuantity++;
     this.saveCart();
   }
-  async onAddToCart(product: ProductSM) {
-    await this.cartService.toggleCart(product);
-  }
-  decrement(item: ProductSM) {
+
+  decrement(item: ProductSM): void {
     if (item.cartQuantity > 1) {
       item.cartQuantity--;
       this.saveCart();
     }
   }
 
-  async saveCart() {
+  async onAddToCart(product: ProductSM): Promise<void> {
+    await this.cartService.toggleCart(product);
+  }
+
+  private async saveCart(): Promise<void> {
     for (const item of this.cartItems) {
       await this.cartService.updateCartItem(item.id, item.cartQuantity);
     }
     await this.getCartItems();
   }
-  async getCartItems() {
+
+  private async getCartItems(): Promise<void> {
     this.cartItems = await this.cartService.getAll();
-    console.log(this.cartItems);
   }
-  removeItem(item: ProductSM) {
+
+  removeItem(item: ProductSM): void {
     this.cartService.removeById(item.id);
     this.getCartItems();
   }
 
-  buyNow() {
+  buyNow(): void {
     if (!this.viewModel.product) return;
     this.cartService.toggleCart(this.viewModel.product);
     this.router.navigate(['/checkout']);
   }
 
-  shareProduct() {
+  /**
+   * Wishlist
+   */
+  async toggleWishlist(product: ProductSM): Promise<void> {
+    await this.wishlistService.toggleWishlist(product);
+  }
+
+  /**
+   * UI Actions
+   */
+  selectImage(index: number): void {
+    // TODO: implement image switching logic
+  }
+
+openProduct(product: ProductSM): void {
+  this._commonService.presentLoading();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  this.router.navigate(['/product', product.id])
+}
+
+  shareProduct(): void {
     if (!this.viewModel.product) return;
+
     const shareData = {
       title: this.viewModel.product.name,
       text: `${this.viewModel.product.name} — ${
@@ -124,17 +240,24 @@ export class SingleProduct
       }`,
       url: window.location.href,
     };
+
     if ((navigator as any).share) {
-      (navigator as any).share(shareData).catch((e: any) => {
+      (navigator as any).share(shareData).catch(() => {
         this._commonService.ShowToastAtTopEnd('Error sharing', 'error');
       });
     } else {
-      // fallback copy url
       navigator.clipboard?.writeText(window.location.href);
       this._commonService.ShowToastAtTopEnd(
         'Link copied to clipboard',
         'success'
       );
     }
+  }
+
+  /**
+   * Placeholder for sorting
+   */
+  sortData(): void {
+    throw new Error('Method not implemented.');
   }
 }
