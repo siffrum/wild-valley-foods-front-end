@@ -60,6 +60,8 @@ export const AppConstants = {
     REMEMBER_PWD: 'REMEMBER_PWD',
     WISHLIST: 'WISHLIST',
     CART: 'CART',
+    CART_QUANTITY: 'CART_QUANTITY',
+    SAVED_ADDRESS: 'SAVED_ADDRESS',
   },
   DbDefaultValues: {},
   ErrorPrompts: {

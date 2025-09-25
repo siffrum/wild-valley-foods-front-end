@@ -1,19 +1,18 @@
-<!-- src/app/pages/product-page/product-page.component.html -->
-<div class="container py-4" *ngIf="!viewModel.loading; else loadingTpl">
+@if (!viewModel.loading) {
+<div class="container py-4">
 
     <div *ngIf="viewModel.errorMsg" class="alert alert-danger">{{ viewModel.errorMsg }}</div>
-    @if (viewModel.product) {
+    @if (viewModel.product.name) {
     <div class="product-page">
         <div class="row g-4">
             <!-- images -->
             <div class="col-md-6">
                 <div class="card image-card p-3">
                     <div class="main-image-wrapper mb-2">
-                      <img *ngIf="viewModel.product.images && viewModel.product.images.length > 0"
-     [src]="viewModel.product.images[0]"
-     class="img-fluid main-image"
-     [attr.alt]="viewModel.product.name || 'product image'"
-     (error)="_commonService.onImageError($event)" />
+                        <img *ngIf="viewModel.product.images && viewModel.product.images.length > 0"
+                            [src]="viewModel.product.images[0]" class="img-fluid main-image"
+                            [attr.alt]="viewModel.product.name || 'product image'"
+                            (error)="_commonService.onImageError($event)" />
 
                     </div>
 
@@ -40,7 +39,8 @@
                         </div>
 
                         <div class="text-end">
-                            <span class="badge me-1" [ngClass]="{'bg-success': viewModel.product.stock > 0,'bg-danger': viewModel.product.stock === 0 }">
+                            <span class="badge me-1"
+                                [ngClass]="{'bg-success': viewModel.product.stock > 0,'bg-danger': viewModel.product.stock === 0 }">
                                 {{ viewModel.product.stock > 0 ? 'In Stock' : 'Out of Stock' }}
                             </span>
 
@@ -67,17 +67,18 @@
 
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="qty-selector d-flex align-items-center">
-                            <button class="btn btn-outline-secondary btn-sm" (click)="decrement()"
+                            <button class="btn btn-outline-secondary btn-sm" (click)="decrement(viewModel.product)"
                                 aria-label="Decrease quantity">−</button>
                             <input type="number" class="form-control form-control-sm mx-2 text-center"
-                                style="width:4.5rem" [(ngModel)]="viewModel.qty" [min]="1" [max]="viewModel.maxQty" />
-                            <button class="btn btn-outline-secondary btn-sm" (click)="increment()"
+                                style="width:4.5rem" [(ngModel)]="viewModel.product.cartQuantity" [min]="1"
+                                [max]="viewModel.maxQty" />
+                            <button class="btn btn-outline-secondary btn-sm" (click)="increment(viewModel.product)"
                                 aria-label="Increase quantity">+</button>
                         </div>
 
                         <div>
                             <button class="btn btn-primary me-2" [disabled]="viewModel.product.stock === 0"
-                                (click)="addToCart()">
+                                (click)="onAddToCart(viewModel.product)">
                                 <i class="bi bi-cart-plus me-1"></i> Add to cart
                             </button>
                             <button class="btn btn-outline-success" [disabled]="viewModel.product.stock === 0"
@@ -113,11 +114,13 @@
         </div>
     </div>
     }
-</div>
+</div>}@else {
+
+
 
 <ng-template #loadingTpl>
     <div class="d-flex justify-content-center align-items-center" style="height: 50vh;">
         <div class="spinner-border" role="status" aria-hidden="true"></div>
         <span class="ms-2">Loading product...</span>
     </div>
-</ng-template>
+</ng-template>}

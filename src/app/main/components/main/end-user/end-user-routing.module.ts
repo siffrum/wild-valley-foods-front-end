@@ -9,6 +9,11 @@ import { CartComponent } from './cart/cart';
 import { Checkout } from './checkout/checkout';
 import { WishlistComponent } from './wishlist/wishlist';
 import { MyOrders } from './my-orders/my-orders';
+import { ContactUs } from './contact-us/contact-us';
+import { AboutUs } from './static-pages/about-us/about-us';
+import { PrivacyPolicy } from './static-pages/privacy-policy/privacy-policy';
+import { TermsAndConditions } from './static-pages/terms-and-conditions/terms-and-conditions';
+import { RefundAndReturnPolicy } from './static-pages/refund-and-return-policy/refund-and-return-policy';
 const routes: Routes = [
   {
     path: '',
@@ -24,10 +29,12 @@ const routes: Routes = [
       { path: 'cart', component: CartComponent },
       { path: 'checkout', component: Checkout },
       { path: 'wishlist', component: WishlistComponent },
-      {
-        path: 'my-orders',
-        component: MyOrders,
-      },
+      { path: 'my-orders',component: MyOrders,},
+      {path:'contact-us',component:ContactUs},
+      {path:'about-us',component:AboutUs},
+      {path:'privacy-policy',component:PrivacyPolicy},
+      {path:'terms-and-conditions',component:TermsAndConditions},
+      {path:'refund-and-return-policy',component:RefundAndReturnPolicy}
     ],
   },
 ];

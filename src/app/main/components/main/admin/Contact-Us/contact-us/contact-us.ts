@@ -139,7 +139,6 @@ this.loadPageData()
         });
       } else {
         this.viewModel.pagination.totalCount = resp.successData.intResponse;
-        console.log(this.viewModel.pagination.totalCount)
       }
     } catch (error) {
       await this._logHandler.logObject(error);

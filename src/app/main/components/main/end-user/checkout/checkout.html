@@ -1,59 +1,196 @@
-<div class="container mt-5">
+<!-- checkout.html -->
+<div class="checkout-page container mt-4">
   <div class="row">
+    <!-- LEFT: Address + Payment Options -->
     <div class="col-lg-8">
-      <h2 class="mb-4">Checkout</h2>
-
-      <!-- Address Form -->
-      <div class="card">
-        <div class="card-header">
-          <h5>Shipping Address</h5>
+      <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Shipping Address</h5>
+          <small class="text-muted">Please fill required fields</small>
         </div>
         <div class="card-body">
-          <form (ngSubmit)="onSubmit()">
-            <div class="form-group">
-              <label for="fullName">Full Name</label>
-              <input id="fullName" class="form-control" [(ngModel)]="viewModel.address.fullName" name="fullName" required />
+          <form #addrForm="ngForm" (ngSubmit)="onSubmit(addrForm)">
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="fullName">Full name <span class="text-danger">*</span></label>
+                <input id="fullName" name="fullName" required class="form-control"
+                  [(ngModel)]="viewModel.address.fullName" #fullName="ngModel" />
+                <div *ngIf="fullName.invalid && fullName.touched" class="invalid-feedback d-block">
+                  Full name is required.
+                </div>
+              </div>
+
+              <div class="form-group col-md-6">
+                <label for="phone">Phone <span class="text-danger">*</span></label>
+                <input id="phone" name="phone" required pattern="^[0-9+ -]+$" class="form-control"
+                  [(ngModel)]="viewModel.address.phone" #phone="ngModel" />
+                <div *ngIf="phone.invalid && phone.touched" class="invalid-feedback d-block">
+                  Valid phone is required.
+                </div>
+              </div>
             </div>
+
             <div class="form-group">
-              <label for="addressLine">Address Line</label>
-              <input id="addressLine" class="form-control" [(ngModel)]="viewModel.address.addressLine" name="addressLine" required />
+              <label for="addressLine">Address line <span class="text-danger">*</span></label>
+              <input id="addressLine" name="addressLine" required class="form-control"
+                [(ngModel)]="viewModel.address.addressLine" #addressLine="ngModel" />
+              <div *ngIf="addressLine.invalid && addressLine.touched" class="invalid-feedback d-block">
+                Address is required.
+              </div>
             </div>
-            <div class="form-group">
-              <label for="city">City</label>
-              <input id="city" class="form-control" [(ngModel)]="viewModel.address.city" name="city" required />
+
+            <div class="form-row">
+              <div class="form-group col-md-4">
+                <label for="city">City <span class="text-danger">*</span></label>
+                <input id="city" name="city" required class="form-control" [(ngModel)]="viewModel.address.city"
+                  #city="ngModel" />
+                <div *ngIf="city.invalid && city.touched" class="invalid-feedback d-block">
+                  City required.
+                </div>
+              </div>
+
+              <div class="form-group col-md-4">
+                <label for="postalCode">Postal code <span class="text-danger">*</span></label>
+                <input id="postalCode" name="postalCode" required class="form-control"
+                  [(ngModel)]="viewModel.address.postalCode" #postalCode="ngModel" />
+                <div *ngIf="postalCode.invalid && postalCode.touched" class="invalid-feedback d-block">
+                  Postal code required.
+                </div>
+              </div>
+
+              <div class="form-group col-md-4">
+                <label for="country">Country <span class="text-danger">*</span></label>
+                <input id="country" name="country" required class="form-control" [(ngModel)]="viewModel.address.country"
+                  #country="ngModel" />
+                <div *ngIf="country.invalid && country.touched" class="invalid-feedback d-block">
+                  Country required.
+                </div>
+              </div>
             </div>
-            <div class="form-group">
-              <label for="postalCode">Postal Code</label>
-              <input id="postalCode" class="form-control" [(ngModel)]="viewModel.address.postalCode" name="postalCode" required />
+
+            <div class="d-flex align-items-center justify-content-between mt-3">
+              <div>
+                <button class="btn btn-outline-secondary mr-2" type="button" (click)="loadSavedAddress()">
+                  Load saved
+                </button>
+                <button class="btn btn-outline-danger mr-2" type="button" (click)="clearAddress()">Clear</button>
+                <small class="text-muted">You can save address locally.</small>
+              </div>
+
+              <button class="btn btn-primary" [disabled]="addrForm.invalid" type="submit">Save & Continue</button>
             </div>
-            <div class="form-group">
-              <label for="country">Country</label>
-              <input id="country" class="form-control" [(ngModel)]="viewModel.address.country" name="country" required />
-            </div>
-            <button type="submit" class="btn btn-primary mt-3">Continue to Payment</button>
           </form>
+        </div>
+      </div>
+
+      <!-- Payment Options / Notes -->
+      <div class="card mb-3">
+        <div class="card-header">
+          <h5 class="mb-0">Payment Options</h5>
+        </div>
+        <div class="card-body">
+          <p class="small text-muted">Choose a payment method at the next step. This demo provides placeholders for
+            Razorpay / Stripe.</p>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="paymentMethod" id="cod"
+              [(ngModel)]="viewModel.paymentMethod" value="cod" />
+            <label class="form-check-label" for="cod">Cash on Delivery</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="paymentMethod" id="online"
+              [(ngModel)]="viewModel.paymentMethod" value="online" />
+            <label class="form-check-label" for="online">Pay Online (Razorpay / Stripe)</label>
+          </div>
+          <div class="mt-2">
+            <small class="text-muted">Online payments will open payment gateway in the payment screen.</small>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Cart Summary -->
+    <!-- RIGHT: Cart Summary -->
     <div class="col-lg-4">
-      <div class="card">
-        <div class="card-header">
-          <h5>Cart Summary</h5>
+      <div class="card sticky-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Cart Summary</h5>
+          <small class="text-muted">{{ viewModel.cartItems.length || 0 }} items</small>
         </div>
+
         <div class="card-body">
-          <ul class="list-group mb-3">
-            <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let item of viewModel.cartItems">
-              {{ item.name }}
-              <span class="badge badge-primary badge-pill">{{ item.quantity }} x ₹{{ item.price | number:'1.2-2' }}</span>
+          <ul class="list-group cart-list mb-2">
+            <li class="list-group-item d-flex align-items-center"
+              *ngFor="let item of viewModel.cartItems; let i = index">
+              <img class="product-thumb mr-2" [src]="imageOf(item)" alt="{{item.name}}" />
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <div class="product-name">{{ item.name }}</div>
+                    <small class="text-muted">{{ item.sku || '' }}</small>
+                  </div>
+                  <div class="text-right">
+                    <div>₹{{ item.price | number:'1.2-2' }}</div>
+                    <small class="text-muted">each</small>
+                  </div>
+                </div>
+
+                <div class="mt-2 d-flex justify-content-between align-items-center">
+                  <div class="qty-controls">
+                    <button class="btn btn-sm btn-outline-secondary" (click)="decreaseQty(item)">-</button>
+                    <input class="qty-input" type="number" min="1" [(ngModel)]="item.cartQuantity"
+                      (ngModelChange)="updateCart(item)" />
+                    <button class="btn btn-sm btn-outline-secondary" (click)="increaseQty(item)">+</button>
+                  </div>
+
+                  <div class="actions">
+                    <button class="btn btn-link btn-sm text-danger p-0 mr-2" (click)="removeItem(item)">Remove</button>
+                  </div>
+                </div>
+              </div>
+            </li>
+
+            <li *ngIf="!viewModel.cartItems || viewModel.cartItems.length === 0"
+              class="list-group-item text-center text-muted">
+              Your cart is empty.
             </li>
           </ul>
-          <div class="d-flex justify-content-between">
-            <h5>Total</h5>
-            <h5>₹{{ viewModel.totalPrice | number:'1.2-2' }}</h5>
+
+          <div class="summary-lines">
+            <div class="d-flex justify-content-between">
+              <span>Subtotal</span>
+              <strong>₹{{ subTotal | number:'1.2-2' }}</strong>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span>Tax</span>
+              <strong>₹{{ taxAmount | number:'1.2-2' }}</strong>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span>Shipping</span>
+              <strong>{{ shippingLabel }}</strong>
+            </div>
+
+            <div class="d-flex justify-content-between mt-2 total-line">
+              <h5>Total</h5>
+              <h5>₹{{ viewModel.totalPrice | number:'1.2-2' }}</h5>
+            </div>
           </div>
-          <button class="btn btn-success btn-block mt-3" (click)="proceedToPayment()">Proceed to Payment</button>
+
+          <div class="coupon mt-3">
+            <div class="input-group">
+              <input class="form-control" placeholder="Coupon code" [(ngModel)]="couponCode" name="couponCode" />
+              <div class="input-group-append">
+                <button class="btn btn-outline-primary" (click)="applyCoupon()">Apply</button>
+              </div>
+            </div>
+            <small class="form-text text-muted">Demo coupons: SAVE50 (flat ₹50), PCT10 (10% off)</small>
+          </div>
+
+          <button class="btn btn-success btn-block mt-3" (click)="proceedToPayment()" [disabled]="!canProceed()">
+            Proceed to Payment
+          </button>
+
+          <button class="btn btn-secondary btn-block mt-2" (click)="clearCart()" *ngIf="viewModel.cartItems.length>0">
+            Clear Cart
+          </button>
         </div>
       </div>
     </div>

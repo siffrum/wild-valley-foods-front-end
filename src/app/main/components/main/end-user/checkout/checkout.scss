@@ -1,46 +1,69 @@
-.container {
-  padding-top: 50px;
+/* checkout.scss */
+
+/* Keep styles scoped and responsive */
+.checkout-page {
+  .card {
+    border-radius: 0.5rem;
+  }
+
+  .product-thumb {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 6px;
+    background: #f6f6f6;
+  }
+
+  .qty-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    .qty-input {
+      width: 56px;
+      text-align: center;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      padding: 4px 6px;
+    }
+
+    button {
+      min-width: 32px;
+    }
+  }
+
+  .summary-lines {
+    font-size: 0.95rem;
+
+    .total-line {
+      border-top: 1px dashed #e8e8e8;
+      padding-top: 0.75rem;
+      margin-top: 0.75rem;
+    }
+  }
+
+  .cart-list {
+    max-height: 320px;
+    overflow-y: auto;
+  }
+
+  .sticky-card {
+    position: sticky;
+    top: 1.5rem;
+  }
 }
 
-.card {
-  margin-bottom: 30px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+/* Responsive */
+@media (max-width: 991.98px) {
+  .checkout-page {
+    .sticky-card {
+      position: static;
+      top: auto;
+    }
+  }
 }
 
-.card-header {
-  background-color: #f8f9fa;
-  font-weight: bold;
-}
-
-.card-body {
-  background-color: #fff;
-}
-
-h2 {
-  font-size: 2rem;
-}
-
-h5 {
-  color: #007bff;
-}
-
-ul.list-group {
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-button {
-  width: 100%;
-}
-
-.btn-success {
-  background-color: #28a745;
-}
-
-.btn-primary {
-  background-color: #007bff;
-}
-
-form input {
-  margin-bottom: 10px;
+/* Small accessibility tweaks */
+.invalid-feedback {
+  font-size: 0.85rem;
 }

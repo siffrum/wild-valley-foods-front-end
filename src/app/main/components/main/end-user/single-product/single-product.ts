@@ -7,6 +7,10 @@ import { BaseComponent } from '../../../../../base.component';
 import { SingleProductViewModel } from '../../../../../models/view/end-user/product/single-product.viewmodel';
 import { CommonService } from '../../../../../services/common.service';
 import { LogHandlerService } from '../../../../../services/log-handler.service';
+import { CartService } from '../../../../../services/cart.service';
+import { WishlistService } from '../../../../../services/wishlist.service';
+import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
+import { log } from 'console';
 
 @Component({
   selector: 'app-product-page',
@@ -23,12 +27,14 @@ export class SingleProduct
     logHandlerService: LogHandlerService,
     private route: ActivatedRoute,
     private productService: ProductService,
-    private router: Router
+    private router: Router,
+    private cartService: CartService,
+    private wishlistService: WishlistService
   ) {
     super(commonService, logHandlerService);
     this.viewModel = new SingleProductViewModel();
   }
-
+  cartItems: ProductSM[] = [];
   async ngOnInit() {
     this.route.params.subscribe((params) => {
       if (params['id']) {
@@ -44,6 +50,7 @@ export class SingleProduct
       await this._commonService.dismissLoader();
       if (resp.isError == false) {
         this.viewModel.product = resp.successData;
+        await this.getCartItemById(id);
       } else {
         this._commonService.showSweetAlert({
           title: 'Error',
@@ -63,48 +70,71 @@ export class SingleProduct
       });
     }
   }
-
+  async getCartItemById(id: number) {
+    let items = await this.cartService.getAll();
+    let found = items.find((item) => item.id == id);
+    if (found) {
+      this.viewModel.product = found;
+    } else {
+      this.viewModel.product.cartQuantity = 1;
+    }
+  }
   selectImage(index: number) {}
-
-  increment() {
-    // if (this.qty < this.maxQty) this.qty++;
+  increment(item: ProductSM) {
+    item.cartQuantity++;
+    this.saveCart();
+  }
+  async onAddToCart(product: ProductSM) {
+    await this.cartService.toggleCart(product);
+  }
+  decrement(item: ProductSM) {
+    if (item.cartQuantity > 1) {
+      item.cartQuantity--;
+      this.saveCart();
+    }
   }
 
-  decrement() {
-    // if (this.qty > 1) this.qty--;
+  async saveCart() {
+    for (const item of this.cartItems) {
+      await this.cartService.updateCartItem(item.id, item.cartQuantity);
+    }
+    await this.getCartItems();
   }
-
-  addToCart() {
-    // example stub — wire this to your CartService
-    // cartService.add({ product: this.product, qty: this.qty })
-    // if (!this.product) return;
-    // alert(`${this.qty} x "${this.product.name}" added to cart (stub).`);
+  async getCartItems() {
+    this.cartItems = await this.cartService.getAll();
+    console.log(this.cartItems);
+  }
+  removeItem(item: ProductSM) {
+    this.cartService.removeById(item.id);
+    this.getCartItems();
   }
 
   buyNow() {
-    // go to checkout with this product
-    // for demo, simply navigate to /checkout with state
-    // if (!this.product) return;
-    // this.router.navigate(['/checkout'], {
-    //   state: { items: [{ product: this.product, qty: this.qty }] },
-    // });
+    if (!this.viewModel.product) return;
+    this.cartService.toggleCart(this.viewModel.product);
+    this.router.navigate(['/checkout']);
   }
 
   shareProduct() {
-    //   if (!this.product) return;
-    //   const shareData = {
-    //     title: this.product.name,
-    //     text: `${this.product.name} — ${this.product.description ?? ''}`,
-    //     url: window.location.href,
-    //   };
-    //   if ((navigator as any).share) {
-    //     (navigator as any)
-    //       .share(shareData)
-    //       .catch((e: any) => console.warn('Share failed', e));
-    //   } else {
-    //     // fallback copy url
-    //     navigator.clipboard?.writeText(window.location.href);
-    //     alert('Link copied to clipboard');
-    //   }
+    if (!this.viewModel.product) return;
+    const shareData = {
+      title: this.viewModel.product.name,
+      text: `${this.viewModel.product.name} — ${
+        this.viewModel.product.description ?? ''
+      }`,
+      url: window.location.href,
+    };
+    if ((navigator as any).share) {
+      (navigator as any).share(shareData).catch((e: any) => {
+        this._commonService.ShowToastAtTopEnd('Error sharing', 'error');
+      });
+    } else {
+      // fallback copy url
+      navigator.clipboard?.writeText(window.location.href);
+      this._commonService.ShowToastAtTopEnd(
+        'Link copied to clipboard',
+        'success'
+      );
+    }
   }
 }
