@@ -2,39 +2,42 @@
   <div class="row ">
     <!-- PRODUCTS -->
     <section class="col-12">
-      <div class="d-flex align-items-center justify-content-between mb-3">
-        <div>
-          <h4 class="mb-0">{{viewModel.PageTitle}}</h4>
-          <div class="small text-muted">{{ viewModel.pagination.totalCount }} items</div>
-        </div>
+   <div class="d-flex align-items-center justify-content-between mb-3 flex-nowrap">
+  <!-- Left: Title & count -->
+  <div class="me-3">
+    <h5 class="mb-0">{{viewModel.PageTitle}}</h5>
+    <div class="small text-muted text-truncate">{{ viewModel.pagination.totalCount }} items</div>
+  </div>
 
-        <div>
-              <input
-            class="form-control mb-2"
-            placeholder="🔍 Search products, Name..."
-            [(ngModel)]="viewModel.searchstring"
-            (ngModelChange)="onSearchChange($event)"
-            aria-label="Search products"
-          />
-        </div>
+  <!-- Center: Search -->
+  <div class="flex-grow-1 mx-3" style="min-width: 150px;">
+    <input
+      class="form-control form-control-sm"
+      placeholder="🔍 Search products, Name..."
+      [(ngModel)]="viewModel.searchstring"
+      (ngModelChange)="onSearchChange($event)"
+      aria-label="Search products"
+    />
+  </div>
 
-        <div class="d-flex gap-2 align-items-center">
-          <label class="me-2 mb-0 small">Sort</label>
-          <select class="form-select form-select-sm" (change)="onSortChange($event)">
-            <option value="">Featured</option>
-            <option value="price_asc">Price: Low to High</option>
-            <option value="price_desc">Price: High to Low</option>
-            <option value="name_asc">Name: A → Z</option>
-            <option value="name_desc">Name: Z → A</option>
-          </select>
-        </div>
-      </div>
+  <!-- Right: Filter -->
+  <div class="d-flex gap-2 align-items-center ms-1" style="min-width: 120px;">
+    <select class="form-select form-select-sm" (change)="onSortChange($event)">
+      <option value="">Filter</option>
+      <option value="price_asc">Price: Low to High</option>
+      <option value="price_desc">Price: High to Low</option>
+      <option value="name_asc">Name: A → Z</option>
+      <option value="name_desc">Name: Z → A</option>
+    </select>
+  </div>
+</div>
+
 
       <!-- GRID -->
       <div class="row justify-content-center">
         <ng-container *ngIf="viewModel.products && viewModel.products.length; else noProducts">
           <div
-            class="col-6 col-md-3 col-lg-3 m-4 d-flex justify-content-center"
+            class="col-4 col-md-3 col-lg-3 m-4 ms-1 md-1 d-flex justify-content-center"
             *ngFor="let p of viewModel.products; trackBy: trackByProduct"
           >
             <app-product
