@@ -10,10 +10,12 @@ import { ReviewList } from './Review/review-list/review-list';
 import path from 'path';
 import { TestimonialList } from './website-resources/Testimonial/testimonial-list/testimonial-list';
 import { VideoList } from './website-resources/video/video-list/video-list';
+import { AuthGuard } from '../../../../guard/auth.guard';
 const routes: Routes = [
   {
     path: '',
     component: AdminComponentLayoutComponent,
+    canActivateChild: [AuthGuard],
     children: [
       // { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },

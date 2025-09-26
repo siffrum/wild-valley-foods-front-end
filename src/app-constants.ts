@@ -1,4 +1,3 @@
-import { Testimonial } from './app/main/components/internal/End-user/testimonial/testimonial';
 import { environment } from './environments/environment.localqa';
 
 // TODO: MOVE ALL CONSTANTS HERE
@@ -145,7 +144,7 @@ export const AppConstants = {
       SQL: 'admin/sql',
       CONTACT_US: 'admin/contact-us',
     },
-    HOME: '/website',
+    HOME: '/auth/login',
     SAMPLE: 'sample',
     TEACHERS: 'teachers',
     LOGIN: 'login',

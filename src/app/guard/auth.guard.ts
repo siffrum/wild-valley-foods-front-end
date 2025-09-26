@@ -49,7 +49,7 @@ export class AuthGuard {
   async canActivateChild(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Promise<boolean> {
-    const token: string = await this.storageService.getFromStorage(AppConstants.DbKeys.ACCESS_TOKEN);
+    const token: string = await this.storageService.getDataFromAnyStorage(AppConstants.DbKeys.ACCESS_TOKEN);
     return !jwtHelper.isTokenExpired(token);
   }
 
