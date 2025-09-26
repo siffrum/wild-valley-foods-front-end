@@ -13,7 +13,7 @@ import { ProductCardComponent } from '../../../internal/End-user/product/product
 import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
 import { CartService } from '../../../../../services/cart.service';
 import { WishlistService } from '../../../../../services/wishlist.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../../../../services/product.service';
 import { CategoryService } from '../../../../../services/category.service';
 import { CategorySM } from '../../../../../models/service-models/app/v1/categories-s-m';
@@ -57,7 +57,8 @@ export class Shop extends BaseComponent<AdminProductsViewModel> implements OnIni
     private wishlistService: WishlistService,
     private router: Router,
     private productService: ProductService,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private activatedRoute: ActivatedRoute
   ) {
     super(commonService, logHandler);
     this.viewModel = new AdminProductsViewModel();
@@ -141,9 +142,18 @@ export class Shop extends BaseComponent<AdminProductsViewModel> implements OnIni
       }
       this.viewModel.sortDirection = dir === 'desc' ? 'desc' : 'asc';
     }
-
+    this.activatedRoute.params.subscribe((params) => {
+       if (params['categoryId'] && params['categoryName']) {
+        this.viewModel.userProductViewModel.categoryId = +params['categoryId'];
+        this.viewModel.PageTitle=params['categoryName'];
+        this.loadProductsPageDataByCategoryId();
+      }
+      else{
+         this.viewModel.PageTitle='All Products';
+        this.loadPageData();
+      }
+    });
     // call server
-    this.loadPageData();
   }
 
   /** sort helper (kept for possible client-side sorting use) */
@@ -165,6 +175,7 @@ export class Shop extends BaseComponent<AdminProductsViewModel> implements OnIni
   onSearchChange(_: any) {
     // push to subject for debounce
     this.searchSubject.next(this.searchText);
+    this.loadProductsPageDataBysearchString();
   }
 
   onSelectCategory(id: number | null) {
@@ -284,6 +295,138 @@ export class Shop extends BaseComponent<AdminProductsViewModel> implements OnIni
       // Keeping separate call here because your previous code used it.
       const resp = await this.productService.getTotatProductCount();
 
+      if (resp.isError) {
+        await this._logHandler.logObject(resp.errorData);
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData.displayMessage,
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+        this.viewModel.pagination.totalCount = 0;
+      } else {
+        this.viewModel.pagination.totalCount = resp.successData.intResponse || 0;
+
+        // update local pagination numbers
+        this.totalPages = Math.max(1, Math.ceil(this.viewModel.pagination.totalCount / this.pageSize));
+
+        // ensure current page bounds
+        if (this.currentPage > this.totalPages) {
+          this.currentPage = this.totalPages;
+          // refetch page if needed
+          this.applyFilters();
+        }
+      }
+    } catch (error) {
+      await this._logHandler.logObject(error);
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: 'Failed to load product count.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+      this.viewModel.pagination.totalCount = 0;
+    }
+  }
+
+    /** Backend calls */
+ async loadProductsPageDataByCategoryId() {
+    try {
+      await this._commonService.presentLoading();
+      // attach any additional filters the backend expects
+      // Example: if backend expects price range, put it on viewModel.productFormData or a specific property
+      // We'll use viewModel.productFormData.priceMin / priceMax for example
+      // (Adjust if your backend uses different field names.)
+      this.viewModel.productFormData = this.viewModel.productFormData || ({} as any);
+      (this.viewModel.productFormData as any).priceMin = this.minPrice;
+      (this.viewModel.productFormData as any).priceMax = this.maxPrice;
+      (this.viewModel.productFormData as any).inStockOnly = this.inStockOnly;
+      (this.viewModel.productFormData as any).searchTerm = this.searchText?.trim();
+
+      // call API
+      const resp = await this.productService.getAllProductsByCategoryId(this.viewModel.userProductViewModel);
+
+      if (resp.isError) {
+        await this._logHandler.logObject(resp.errorData);
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData.displayMessage,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        // ensure products cleared on error
+        this.viewModel.products = [];
+        this.viewModel.pagination.totalCount = 0;
+      } else {
+        // assume resp.successData is an array of products for the current page
+        this.viewModel.products = resp.successData || [];
+
+        // if backend returns totalCount separately, update viewModel.pagination.totalCount
+        // If your backend provides it inside resp (e.g. resp.meta.totalCount), adapt accordingly.
+        // Here we call TotalProductCount to keep compatibility with your previous code
+        await this.TotalProductByCategoryIdCount();
+      }
+    } catch (error) {
+      await this._logHandler.logObject(error);
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: 'Failed to load products.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    } finally {
+      await this._commonService.dismissLoader();
+    }
+  }
+    /** Backend calls */
+ async loadProductsPageDataBysearchString() {
+    try {
+      await this._commonService.presentLoading();
+      // attach any additional filters the backend expects
+      // Example: if backend expects price range, put it on viewModel.productFormData or a specific property
+      // We'll use viewModel.productFormData.priceMin / priceMax for example
+      // (Adjust if your backend uses different field names.)
+      this.viewModel.productFormData = this.viewModel.productFormData || ({} as any);
+      (this.viewModel.productFormData as any).priceMin = this.minPrice;
+      (this.viewModel.productFormData as any).priceMax = this.maxPrice;
+      (this.viewModel.productFormData as any).inStockOnly = this.inStockOnly;
+      (this.viewModel.productFormData as any).searchTerm = this.searchText?.trim();
+
+      // call API
+      const resp = await this.productService.getAllProductsBySearchString(this.viewModel.searchstring);
+
+      if (resp.isError) {
+        await this._logHandler.logObject(resp.errorData);
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData.displayMessage,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        // ensure products cleared on error
+        this.viewModel.products = [];
+        this.viewModel.pagination.totalCount = 0;
+      } else {
+        // assume resp.successData is an array of products for the current page
+        this.viewModel.products = resp.successData || [];
+         this.viewModel.pagination.totalCount = resp.successData.length || 0;
+      }
+    } catch (error) {
+      await this._logHandler.logObject(error);
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: 'Failed to load products.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    } finally {
+      await this._commonService.dismissLoader();
+    }
+  }
+
+  async TotalProductByCategoryIdCount() {
+    try {
+      const resp = await this.productService.getTotatProductCountByCategoryId(this.viewModel.categoryId);
       if (resp.isError) {
         await this._logHandler.logObject(resp.errorData);
         this._commonService.showSweetAlertToast({

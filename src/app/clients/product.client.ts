@@ -62,6 +62,17 @@ export class ProductClient extends BaseApiClient {
       new AdditionalRequestDetails<ProductSM[]>(false, Authentication.false)
     );
   };
+  /** Retrieves all Products by search string */
+  GetAllProductsBySearhString = async (
+    searchString:string,
+  ): Promise<ApiResponse<ProductSM[]>> => {
+    return await this.GetResponseAsync<null, ProductSM[]>(
+      `${AppConstants.ApiUrls.BASE}/product/search/?q=${searchString}`,
+      'GET',
+      null,
+      new AdditionalRequestDetails<ProductSM[]>(false, Authentication.false)
+    );
+  };
 
     /** Retrieves all Products (paginated) By category Id */
   GetAllProductsByCategoryId = async (

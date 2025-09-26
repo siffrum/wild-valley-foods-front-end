@@ -11,7 +11,7 @@
           <input
             class="form-control mb-2"
             placeholder="Search products, SKU..."
-            [(ngModel)]="searchText"
+            [(ngModel)]="viewModel.searchstring"
             (ngModelChange)="onSearchChange($event)"
             aria-label="Search products"
           />
@@ -67,7 +67,7 @@
     <section class="col-lg-9">
       <div class="d-flex align-items-center justify-content-between mb-3">
         <div>
-          <h4 class="mb-0">Shop</h4>
+          <h4 class="mb-0">{{viewModel.PageTitle}}</h4>
           <div class="small text-muted">{{ viewModel.pagination.totalCount }} items</div>
         </div>
 

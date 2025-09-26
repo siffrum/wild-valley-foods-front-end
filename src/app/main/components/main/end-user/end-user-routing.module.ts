@@ -25,6 +25,10 @@ const routes: Routes = [
         path: 'product/:id',
         component: SingleProduct,
       },
+      {
+        path: 'shop/:categoryName/:categoryId',
+        component: Shop,
+      },
       { path: 'shop', component: Shop },
       { path: 'cart', component: CartComponent },
       { path: 'checkout', component: Checkout },

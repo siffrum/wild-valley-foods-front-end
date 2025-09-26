@@ -27,7 +27,11 @@ export class ProductService extends BaseService {
     return await this.productClient.GetAllProduct(queryFilter);
   }
 
-
+  async getAllProductsBySearchString(
+    searchString: string,
+  ): Promise<ApiResponse<ProductSM[]>> {
+    return await this.productClient.GetAllProductsBySearhString(searchString);
+  }
   async getTotatProductCount(): Promise<ApiResponse<IntResponseRoot>> {
     return await this.productClient.GetTotatProductCount();
   }

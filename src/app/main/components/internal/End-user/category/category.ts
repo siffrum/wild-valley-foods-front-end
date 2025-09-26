@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { AdminModule } from "../../../main/admin/admin.module";
 
 @Component({
   selector: 'app-category',
   templateUrl: './category.html',
   styleUrls: ['./category.scss'],
-  imports: [CommonModule],
+  imports: [CommonModule, AdminModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CategoryComponent {

@@ -1,10 +1,12 @@
 <div class="categories" *ngIf="categories?.length; else empty">
-    <div class="category-item" *ngFor="let c of categories; trackBy: trackById">
-        <div class="img-wrap">
-            <img [src]="c.category_icon_base64" [alt]="c.name" loading="lazy" />
-        </div>
-        <div class="name">{{ c.name }}</div>
+  <div class="category-item" *ngFor="let c of categories; trackBy: trackById">
+    <div [routerLink]="['/shop', c.name, c.id]">
+      <div class="img-wrap">
+        <img [src]="c.category_icon_base64" [alt]="c.name" loading="lazy" />
+      </div>
+      <div class="name">{{ c.name }}</div>
     </div>
+  </div>
 </div>
 
 <ng-template #empty>

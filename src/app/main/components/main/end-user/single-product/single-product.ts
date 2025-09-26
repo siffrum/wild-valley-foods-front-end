@@ -30,7 +30,7 @@ export class SingleProduct
   constructor(
     commonService: CommonService,
     private logHandlerService: LogHandlerService,
-    private route: ActivatedRoute,
+    private activatedRoute: ActivatedRoute,
     private productService: ProductService,
     private router: Router,
     private cartService: CartService,
@@ -47,7 +47,7 @@ export class SingleProduct
   }
 
   ngOnInit(): void {
-    this.route.params.subscribe((params) => {
+    this.activatedRoute.params.subscribe((params) => {
       if (params['id']) {
         this.loadProductData(+params['id']);
       }
