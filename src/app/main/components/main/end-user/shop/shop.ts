@@ -30,14 +30,14 @@ import { debounceTime } from 'rxjs/operators';
 })
 export class Shop extends BaseComponent<AdminProductsViewModel> implements OnInit, OnDestroy {
   // UI / filter state
-  searchText = '';
+ 
   minPrice: number | null = null;
   maxPrice: number | null = null;
   selectedCategory: number | null = null;
   inStockOnly = true;
 
   // pagination / sort
-  pageSize = 12;
+  pageSize = 30;
   currentPage = 1;
   totalPages = 1;
   selectedSort: string | null = null;
@@ -48,7 +48,6 @@ export class Shop extends BaseComponent<AdminProductsViewModel> implements OnIni
   // rxjs
   private searchSubject = new Subject<string>();
   private subscriptions = new Subscription();
-  _logHandler: any;
 
   constructor(
     commonService: CommonService,
@@ -63,20 +62,40 @@ export class Shop extends BaseComponent<AdminProductsViewModel> implements OnIni
     super(commonService, logHandler);
     this.viewModel = new AdminProductsViewModel();
 
-    // init pagination in viewModel if missing
     this.viewModel.pagination.PageSize = this.pageSize;
     this.viewModel.pagination.PageNo = this.currentPage;
   }
 
   ngOnInit(): void {
-    // debounce search input
+    // ✅ Debounced search
     this.subscriptions.add(
-      this.searchSubject.pipe(debounceTime(350)).subscribe(() => {
+      this.searchSubject.pipe(debounceTime(400)).subscribe(() => {
         this.currentPage = 1;
-        this.applyFilters();
+        if (this.viewModel.searchstring && this.viewModel.searchstring.trim().length > 0) {
+          this.loadProductsPageDataBysearchString();
+        } else {
+          this.loadProductsByCategoryOrAll();
+        }
       })
-    );  // initial loads
-    this.applyFilters();
+    );
+
+    // ✅ Single subscription to route params
+    this.subscriptions.add(
+      this.activatedRoute.params.subscribe((params) => {
+        if (params['categoryId'] && params['categoryName']) {
+          this.viewModel.userProductViewModel.categoryId = +params['categoryId'];
+          this.viewModel.PageTitle = params['categoryName'];
+        } else {
+          this.viewModel.PageTitle = 'All Products';
+          this.viewModel.userProductViewModel.categoryId = 0;
+        }
+
+        // initial load
+        if (!this.viewModel.searchstring) {
+          this.loadProductsByCategoryOrAll();
+        }
+      })
+    );
   }
 
   ngOnDestroy(): void {
@@ -93,7 +112,6 @@ export class Shop extends BaseComponent<AdminProductsViewModel> implements OnIni
 
   /** Navigation */
   openProduct(product: ProductSM) {
-    // rely on global router scroll restoration if configured
     this.router.navigate(['/product', product.id]);
   }
 
@@ -105,58 +123,33 @@ export class Shop extends BaseComponent<AdminProductsViewModel> implements OnIni
   async onAddToCart(product: ProductSM) {
     product.cartQuantity = product.cartQuantity || 1;
     await this.cartService.toggleCart(product);
-    await this.getCartItems(); // refresh local cartItems if needed
+    await this.getCartItems();
   }
 
   private async getCartItems() {
     this.cartItems = await this.cartService.getAll();
   }
 
-  /** MAIN: build filter request and call backend (or local filter) */
-  applyFilters() {
-    // Prepare viewModel with current filter state
-    this.viewModel.searchTerm = this.searchText?.trim() ?? '';
-    this.viewModel.categoryId = this.selectedCategory ?? 0;
-
-    // price filters (add to viewModel if backend expects them)
-    // we will put them in pagination or filter properties depending on your backend contract
-    // For simplicity we assume backend reads from viewModel.productFormData or similar.
-    // If not, adapt productService.getAllProducts signature accordingly.
-
-    // pagination & sort
-    this.viewModel.pagination.PageNo = this.currentPage;
-    this.viewModel.pagination.PageSize = this.pageSize;
-
-    // map selectedSort to sortField/sortDirection on viewModel
-    if (!this.selectedSort || this.selectedSort === '') {
-      this.viewModel.sortField = '';
-      this.viewModel.sortDirection = 'asc';
+  /** Called when filters/sort/pagination change */
+  private async loadProductsByCategoryOrAll() {
+    if (this.viewModel.userProductViewModel.categoryId) {
+      await this.loadProductsPageDataByCategoryId();
     } else {
-      const [field, dir] = this.selectedSort.split('_');
-      if (field === 'price') {
-        this.viewModel.sortField = 'price';
-      } else if (field === 'name') {
-        this.viewModel.sortField = 'name';
-      } else {
-        this.viewModel.sortField = field;
-      }
-      this.viewModel.sortDirection = dir === 'desc' ? 'desc' : 'asc';
+      await this.loadPageData();
     }
-    this.activatedRoute.params.subscribe((params) => {
-       if (params['categoryId'] && params['categoryName']) {
-        this.viewModel.userProductViewModel.categoryId = +params['categoryId'];
-        this.viewModel.PageTitle=params['categoryName'];
-        this.loadProductsPageDataByCategoryId();
-      }
-      else{
-         this.viewModel.PageTitle='All Products';
-        this.loadPageData();
-      }
-    });
-    // call server
   }
 
-  /** sort helper (kept for possible client-side sorting use) */
+  /** Sorting (works on current data set) */
+  onSortChange(e: Event | null) {
+    const val = (e?.target as HTMLSelectElement)?.value ?? '';
+    this.selectedSort = val || null;
+
+    if (this.viewModel.products?.length) {
+      this.viewModel.products = this.sortProducts(this.viewModel.products, this.selectedSort);
+    }
+  }
+
+  /** Sorting logic */
   sortProducts(list: ProductSM[], sortKey: string | null): ProductSM[] {
     if (!sortKey) return list;
     const copy = [...list];
@@ -171,61 +164,15 @@ export class Shop extends BaseComponent<AdminProductsViewModel> implements OnIni
     return copy;
   }
 
-  /** UI handlers */
+  /** Search handler */
   onSearchChange(_: any) {
-    // push to subject for debounce
-    this.searchSubject.next(this.searchText);
-    this.loadProductsPageDataBysearchString();
+    this.searchSubject.next(this.viewModel.searchstring);
   }
 
-  onSelectCategory(id: number | null) {
-    this.selectedCategory = id;
-    this.currentPage = 1;
-    this.applyFilters();
-  }
-
-  onSortChange(e: Event | null) {
-    const val = (e?.target as HTMLSelectElement)?.value ?? '';
-    this.selectedSort = val || null;
-    this.currentPage = 1;
-    this.applyFilters();
-  }
-
-  onPriceApply() {
-    // sanitize numeric input
-    if (this.minPrice !== null && isNaN(Number(this.minPrice))) this.minPrice = null;
-    if (this.maxPrice !== null && isNaN(Number(this.maxPrice))) this.maxPrice = null;
-    this.currentPage = 1;
-    this.applyFilters();
-  }
-
-  onResetPrice() {
-    this.minPrice = null;
-    this.maxPrice = null;
-    this.onPriceApply();
-  }
-
-  onToggleInStock() {
-    this.currentPage = 1;
-    this.applyFilters();
-  }
-
-  onResetFilters() {
-    this.searchText = '';
-    this.selectedCategory = null;
-    this.selectedSort = null;
-    this.minPrice = null;
-    this.maxPrice = null;
-    this.inStockOnly = true;
-    this.currentPage = 1;
-    this.applyFilters();
-  }
-
-  /** pagination */
+  /** Pagination */
   goToPage(page: number) {
     if (page < 1) page = 1;
 
-    // compute total pages based on backend totalCount or local fallback
     const totalCount = this.viewModel.pagination.totalCount || 0;
     this.totalPages = Math.max(1, Math.ceil(totalCount / this.pageSize));
 
@@ -233,231 +180,91 @@ export class Shop extends BaseComponent<AdminProductsViewModel> implements OnIni
     if (page === this.currentPage) return;
 
     this.currentPage = page;
-    this.applyFilters();
-    // scroll top of products region for UX
+
+    if (this.viewModel.searchstring) {
+      this.loadProductsPageDataBysearchString();
+    } else {
+      this.loadProductsByCategoryOrAll();
+    }
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  /** Backend calls */
+  // =============================
+  // ✅ API CALLS
+  // =============================
+
   override async loadPageData() {
     try {
       await this._commonService.presentLoading();
-
-      // attach any additional filters the backend expects
-      // Example: if backend expects price range, put it on viewModel.productFormData or a specific property
-      // We'll use viewModel.productFormData.priceMin / priceMax for example
-      // (Adjust if your backend uses different field names.)
       this.viewModel.productFormData = this.viewModel.productFormData || ({} as any);
       (this.viewModel.productFormData as any).priceMin = this.minPrice;
       (this.viewModel.productFormData as any).priceMax = this.maxPrice;
       (this.viewModel.productFormData as any).inStockOnly = this.inStockOnly;
-      (this.viewModel.productFormData as any).searchTerm = this.searchText?.trim();
 
-      // call API
       const resp = await this.productService.getAllProducts(this.viewModel);
 
       if (resp.isError) {
-        await this._logHandler.logObject(resp.errorData);
-        this._commonService.showSweetAlertToast({
-          title: 'Error',
-          text: resp.errorData.displayMessage,
-          icon: 'error',
-          confirmButtonText: 'OK'
-        });
-        // ensure products cleared on error
         this.viewModel.products = [];
         this.viewModel.pagination.totalCount = 0;
       } else {
-        // assume resp.successData is an array of products for the current page
-        this.viewModel.products = resp.successData || [];
-
-        // if backend returns totalCount separately, update viewModel.pagination.totalCount
-        // If your backend provides it inside resp (e.g. resp.meta.totalCount), adapt accordingly.
-        // Here we call TotalProductCount to keep compatibility with your previous code
+        this.viewModel.products = this.sortProducts(resp.successData || [], this.selectedSort);
         await this.TotalProductCount();
       }
-    } catch (error) {
-      await this._logHandler.logObject(error);
-      this._commonService.showSweetAlertToast({
-        title: 'Error',
-        text: 'Failed to load products.',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
+    } finally {
+      await this._commonService.dismissLoader();
+    }
+  }
+
+  async loadProductsPageDataByCategoryId() {
+    try {
+      await this._commonService.presentLoading();
+      this.viewModel.productFormData = this.viewModel.productFormData || ({} as any);
+      (this.viewModel.productFormData as any).priceMin = this.minPrice;
+      (this.viewModel.productFormData as any).priceMax = this.maxPrice;
+      (this.viewModel.productFormData as any).inStockOnly = this.inStockOnly;
+
+      const resp = await this.productService.getAllProductsByCategoryId(this.viewModel.userProductViewModel);
+
+      if (resp.isError) {
+        this.viewModel.products = [];
+        this.viewModel.pagination.totalCount = 0;
+      } else {
+        this.viewModel.products = this.sortProducts(resp.successData || [], this.selectedSort);
+        await this.TotalProductByCategoryIdCount();
+      }
+    } finally {
+      await this._commonService.dismissLoader();
+    }
+  }
+
+  async loadProductsPageDataBysearchString() {
+    try {
+      await this._commonService.presentLoading();
+      const resp = await this.productService.getAllProductsBySearchString(this.viewModel.searchstring.trim());
+
+      if (resp.isError) {
+        this.viewModel.products = [];
+        this.viewModel.pagination.totalCount = 0;
+      } else {
+        this.viewModel.products = [];
+        this.viewModel.products = this.sortProducts(resp.successData || [], this.selectedSort);
+        this.viewModel.pagination.totalCount = resp.successData.length || 0;
+      }
     } finally {
       await this._commonService.dismissLoader();
     }
   }
 
   async TotalProductCount() {
-    try {
-      // Note: Prefer returning totalCount inside getAllProducts to avoid another request.
-      // Keeping separate call here because your previous code used it.
-      const resp = await this.productService.getTotatProductCount();
-
-      if (resp.isError) {
-        await this._logHandler.logObject(resp.errorData);
-        this._commonService.showSweetAlertToast({
-          title: 'Error',
-          text: resp.errorData.displayMessage,
-          icon: 'error',
-          confirmButtonText: 'OK',
-        });
-        this.viewModel.pagination.totalCount = 0;
-      } else {
-        this.viewModel.pagination.totalCount = resp.successData.intResponse || 0;
-
-        // update local pagination numbers
-        this.totalPages = Math.max(1, Math.ceil(this.viewModel.pagination.totalCount / this.pageSize));
-
-        // ensure current page bounds
-        if (this.currentPage > this.totalPages) {
-          this.currentPage = this.totalPages;
-          // refetch page if needed
-          this.applyFilters();
-        }
-      }
-    } catch (error) {
-      await this._logHandler.logObject(error);
-      this._commonService.showSweetAlertToast({
-        title: 'Error',
-        text: 'Failed to load product count.',
-        icon: 'error',
-        confirmButtonText: 'OK',
-      });
-      this.viewModel.pagination.totalCount = 0;
-    }
-  }
-
-    /** Backend calls */
- async loadProductsPageDataByCategoryId() {
-    try {
-      await this._commonService.presentLoading();
-      // attach any additional filters the backend expects
-      // Example: if backend expects price range, put it on viewModel.productFormData or a specific property
-      // We'll use viewModel.productFormData.priceMin / priceMax for example
-      // (Adjust if your backend uses different field names.)
-      this.viewModel.productFormData = this.viewModel.productFormData || ({} as any);
-      (this.viewModel.productFormData as any).priceMin = this.minPrice;
-      (this.viewModel.productFormData as any).priceMax = this.maxPrice;
-      (this.viewModel.productFormData as any).inStockOnly = this.inStockOnly;
-      (this.viewModel.productFormData as any).searchTerm = this.searchText?.trim();
-
-      // call API
-      const resp = await this.productService.getAllProductsByCategoryId(this.viewModel.userProductViewModel);
-
-      if (resp.isError) {
-        await this._logHandler.logObject(resp.errorData);
-        this._commonService.showSweetAlertToast({
-          title: 'Error',
-          text: resp.errorData.displayMessage,
-          icon: 'error',
-          confirmButtonText: 'OK'
-        });
-        // ensure products cleared on error
-        this.viewModel.products = [];
-        this.viewModel.pagination.totalCount = 0;
-      } else {
-        // assume resp.successData is an array of products for the current page
-        this.viewModel.products = resp.successData || [];
-
-        // if backend returns totalCount separately, update viewModel.pagination.totalCount
-        // If your backend provides it inside resp (e.g. resp.meta.totalCount), adapt accordingly.
-        // Here we call TotalProductCount to keep compatibility with your previous code
-        await this.TotalProductByCategoryIdCount();
-      }
-    } catch (error) {
-      await this._logHandler.logObject(error);
-      this._commonService.showSweetAlertToast({
-        title: 'Error',
-        text: 'Failed to load products.',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-    } finally {
-      await this._commonService.dismissLoader();
-    }
-  }
-    /** Backend calls */
- async loadProductsPageDataBysearchString() {
-    try {
-      await this._commonService.presentLoading();
-      // attach any additional filters the backend expects
-      // Example: if backend expects price range, put it on viewModel.productFormData or a specific property
-      // We'll use viewModel.productFormData.priceMin / priceMax for example
-      // (Adjust if your backend uses different field names.)
-      this.viewModel.productFormData = this.viewModel.productFormData || ({} as any);
-      (this.viewModel.productFormData as any).priceMin = this.minPrice;
-      (this.viewModel.productFormData as any).priceMax = this.maxPrice;
-      (this.viewModel.productFormData as any).inStockOnly = this.inStockOnly;
-      (this.viewModel.productFormData as any).searchTerm = this.searchText?.trim();
-
-      // call API
-      const resp = await this.productService.getAllProductsBySearchString(this.viewModel.searchstring);
-
-      if (resp.isError) {
-        await this._logHandler.logObject(resp.errorData);
-        this._commonService.showSweetAlertToast({
-          title: 'Error',
-          text: resp.errorData.displayMessage,
-          icon: 'error',
-          confirmButtonText: 'OK'
-        });
-        // ensure products cleared on error
-        this.viewModel.products = [];
-        this.viewModel.pagination.totalCount = 0;
-      } else {
-        // assume resp.successData is an array of products for the current page
-        this.viewModel.products = resp.successData || [];
-         this.viewModel.pagination.totalCount = resp.successData.length || 0;
-      }
-    } catch (error) {
-      await this._logHandler.logObject(error);
-      this._commonService.showSweetAlertToast({
-        title: 'Error',
-        text: 'Failed to load products.',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-    } finally {
-      await this._commonService.dismissLoader();
-    }
+    const resp = await this.productService.getTotatProductCount();
+    this.viewModel.pagination.totalCount = resp.isError ? 0 : resp.successData.intResponse || 0;
+    this.totalPages = Math.max(1, Math.ceil(this.viewModel.pagination.totalCount / this.pageSize));
   }
 
   async TotalProductByCategoryIdCount() {
-    try {
-      const resp = await this.productService.getTotatProductCountByCategoryId(this.viewModel.categoryId);
-      if (resp.isError) {
-        await this._logHandler.logObject(resp.errorData);
-        this._commonService.showSweetAlertToast({
-          title: 'Error',
-          text: resp.errorData.displayMessage,
-          icon: 'error',
-          confirmButtonText: 'OK',
-        });
-        this.viewModel.pagination.totalCount = 0;
-      } else {
-        this.viewModel.pagination.totalCount = resp.successData.intResponse || 0;
-
-        // update local pagination numbers
-        this.totalPages = Math.max(1, Math.ceil(this.viewModel.pagination.totalCount / this.pageSize));
-
-        // ensure current page bounds
-        if (this.currentPage > this.totalPages) {
-          this.currentPage = this.totalPages;
-          // refetch page if needed
-          this.applyFilters();
-        }
-      }
-    } catch (error) {
-      await this._logHandler.logObject(error);
-      this._commonService.showSweetAlertToast({
-        title: 'Error',
-        text: 'Failed to load product count.',
-        icon: 'error',
-        confirmButtonText: 'OK',
-      });
-      this.viewModel.pagination.totalCount = 0;
-    }
+    const resp = await this.productService.getTotatProductCountByCategoryId(this.viewModel.categoryId);
+    this.viewModel.pagination.totalCount = resp.isError ? 0 : resp.successData.intResponse || 0;
+    this.totalPages = Math.max(1, Math.ceil(this.viewModel.pagination.totalCount / this.pageSize));
   }
 }

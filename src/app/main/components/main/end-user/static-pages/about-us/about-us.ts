@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
+import { AdminModule } from "../../../admin/admin.module";
 
 @Component({
   selector: 'app-about-us',
-  imports: [],
+  imports: [AdminModule],
   templateUrl: './about-us.html',
   styleUrl: './about-us.scss'
 })
