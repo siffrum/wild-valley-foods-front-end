@@ -26,7 +26,7 @@ export class DashboardComponent extends BaseComponent<any> {
 
 
   // KPI Data
-  public totalSales = '$120,000';
+  public totalSales = '₹120,000';
   public totalOrders = 756;
   public activeUsers = 3421;
   public returnRate = '2.3%';
@@ -37,7 +37,7 @@ export class DashboardComponent extends BaseComponent<any> {
     scales: { x: {}, y: { beginAtZero: true } },
     plugins: {
       legend: { display: true },
-      title: { display: true, text: 'Monthly Sales ($)', font: { size: 20 } }
+      title: { display: true, text: 'Monthly Sales (₹)', font: { size: 20 } }
     }
   };
   public barChartType: ChartType = 'bar';
@@ -100,10 +100,10 @@ export class DashboardComponent extends BaseComponent<any> {
   
   // Recent Orders & Top Products for widgets
   public recentOrders = [
-    'Order #1234 - $120 - Delivered',
-    'Order #1235 - $250 - Processing',
-    'Order #1236 - $75 - Shipped',
-    'Order #1237 - $180 - Delivered'
+    'Order #1234 - ₹120 - Delivered',
+    'Order #1235 - ₹250 - Processing',
+    'Order #1236 - ₹75 - Shipped',
+    'Order #1237 - ₹180 - Delivered'
   ];
 
   public topProducts = ['Saffron', 'Honey', 'Walnuts', 'Almonds', 'Olive Oil'];  
