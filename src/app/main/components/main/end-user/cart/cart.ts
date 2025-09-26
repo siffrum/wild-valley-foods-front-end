@@ -7,7 +7,7 @@ import { LogHandlerService } from '../../../../../services/log-handler.service';
 import { IndexedDBStorageService } from '../../../../../services/indexdb.service';
 import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
 import { CartService } from '../../../../../services/cart.service';
-import { log } from 'console';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
@@ -23,7 +23,8 @@ export class CartComponent
     commonService: CommonService,
     loghandler: LogHandlerService,
     private IndexDbStorageService: IndexedDBStorageService,
-    private cartService: CartService
+    private cartService: CartService,
+    private router: Router
   ) {
     super(commonService, loghandler);
     this.viewModel = new CartViewModel();
@@ -35,7 +36,7 @@ export class CartComponent
 
   async loadCart() {
     this.viewModel.cartItems = await this.cartService.getAll();
-    console.log(this.viewModel.cartItems);
+    // console.log(this.viewModel.cartItems);
     console.log(await this.cartService.getAll());
 
     this.viewModel.subTotal = this.viewModel.cartItems.reduce(
@@ -79,5 +80,9 @@ export class CartComponent
       await this.cartService.updateCartItem(item.id, item.cartQuantity);
     }
     await this.loadCart();
+  }
+
+  proceedToCheckout() {
+    this.router.navigate(['/checkout']);
   }
 }
