@@ -15,6 +15,7 @@ import { ProductService } from '../../../../../services/product.service';
 import { CategoryService } from '../../../../../services/category.service';
 import { WishlistService } from '../../../../../services/wishlist.service';
 import { CartService } from '../../../../../services/cart.service';
+import { Videos } from '../videos/videos';
 
 @Component({
   selector: 'app-home',
@@ -24,6 +25,7 @@ import { CartService } from '../../../../../services/cart.service';
     CategoryComponent,
     ServiceBanner,
     Testimonial,
+    Videos
   ],
   templateUrl: './home.html',
   styleUrl: './home.scss',

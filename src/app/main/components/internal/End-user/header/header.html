@@ -39,9 +39,15 @@
       <i class="bi bi-list"></i>
     </button>
 
-    <a class="navbar-brand d-flex align-items-center" [routerLink]="['/home']" routerLinkActive="router-link-active">
-      <img src="assets/logo.png" alt="Logo" width="50" class="me-2">
-    </a>
+  <a
+  class="navbar-brand d-flex align-items-center flex-row-reverse flex-lg-row"
+  [routerLink]="['/home']"
+  routerLinkActive="router-link-active"
+>
+  <img src="assets/logo.png" alt="Logo" width="50" class="ms-2 ms-lg-0 me-0 me-lg-2">
+  <span class="fw-bold">Wild Valley Foods</span>
+</a>
+
     <!-- Icons (desktop only) -->
     <ul class="navbar-nav ms-auto d-none d-lg-flex flex-row align-items-center">
       <li class="nav-item me-3">
@@ -50,6 +56,17 @@
       <li class="nav-item me-3">
         <a class="nav-link" routerLink="/shop">Shop</a>
       </li>
+   <li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+     data-bs-toggle="dropdown" aria-expanded="false">
+    Dropdown
+  </a>
+  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+    <li><a class="dropdown-item" href="#">Action</a></li>
+    <li><a class="dropdown-item" href="#">Another action</a></li>
+  </ul>
+</li>
+
       <li class="nav-item me-3">
         <a class="nav-link" routerLink="/contact-us">Contact us</a>
       </li>
@@ -108,6 +125,15 @@
         <a class="nav-link d-flex align-items-center" routerLink="/my-orders" data-bs-dismiss="offcanvas"
           aria-label="Close"><i class="bi bi-bag me-2"></i> My
           Orders</a>
+            <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Dropdown
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+          </ul>
+        </li>
             <a class="nav-link d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close"
           routerLink="/cart"><i class="bi bi-heart me-2"></i> Cart <span
             class="badge bg-outline ms-auto">3</span></a>

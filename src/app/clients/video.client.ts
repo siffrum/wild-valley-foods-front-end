@@ -30,7 +30,7 @@ export class VideoClient extends BaseApiClient {
    ): Promise<ApiResponse<VideoSM[]>> => {
      let resp = await this.GetResponseAsync<null, VideoSM[]>(
        `${AppConstants.ApiUrls.VIDEO}/getall/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`,
-       'GET'
+       'GET',null, new AdditionalRequestDetails<VideoSM[]>(false, Authentication.false  )
      );
      
      return resp;

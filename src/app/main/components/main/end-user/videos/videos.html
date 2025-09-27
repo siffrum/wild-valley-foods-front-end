@@ -1,0 +1,55 @@
+<div
+  id="videoCarousel"
+  class="carousel slide"
+  data-bs-ride="carousel"
+  data-bs-interval="5000"
+>
+  <div class="carousel-inner">
+    <div
+      class="carousel-item"
+      *ngFor="let video of viewModel.VideoSMList; let i = index"
+      [class.active]="i === 0"
+    >
+      <!-- Responsive YouTube embed -->
+      <div class="ratio ratio-16x9">
+        <iframe
+          [id]="'youtube-' + i"
+          class="rounded shadow w-100"
+          [src]="getSafeYoutubeUrl(video.youtubeUrl)"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>
+      </div>
+
+      <!-- Caption -->
+      <div class="carousel-caption d-none d-md-block">
+        <h5>{{ video.title }}</h5>
+        <p>{{ video.description }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <button
+    class="carousel-control-prev"
+    type="button"
+    data-bs-target="#videoCarousel"
+    data-bs-slide="prev"
+    (click)="pauseAllVideos()"
+  >
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+
+  <button
+    class="carousel-control-next"
+    type="button"
+    data-bs-target="#videoCarousel"
+    data-bs-slide="next"
+    (click)="pauseAllVideos()"
+  >
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
