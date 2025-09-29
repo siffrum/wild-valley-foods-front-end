@@ -5,6 +5,11 @@ import { CartService } from '../../../../../services/cart.service';
 import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
 import { Subscription } from 'rxjs';
 import { WishlistService } from '../../../../../services/wishlist.service';
+import { HeaderViewModel } from '../../../../../models/view/end-user/header.viewmodel';
+import { BaseComponent } from '../../../../../base.component';
+import { CategoryService } from '../../../../../services/category.service';
+import { CommonService } from '../../../../../services/common.service';
+import { LogHandlerService } from '../../../../../services/log-handler.service';
 
 @Component({
   selector: 'app-header',
@@ -13,52 +18,66 @@ import { WishlistService } from '../../../../../services/wishlist.service';
   templateUrl: './header.html',
   styleUrls: ['./header.scss'],
 })
-export class Header implements OnInit {
-  constructor(
-    private cartService: CartService,
-    private wishlistService: WishlistService
-  ) {}
-  isLoggedIn: boolean = false;
-  categories = [
-    {
-      name: 'Dry Fruits',
-      icon: 'bi bi-nut',
-      items: ['Almonds', 'Cashews', 'Walnuts', 'Pistachios'],
-    },
-    {
-      name: 'Seeds',
-      icon: 'bi bi-droplet',
-      items: ['Chia Seeds', 'Flax Seeds', 'Pumpkin Seeds'],
-    },
-    {
-      name: 'Beverages',
-      icon: 'bi bi-cup-straw',
-      items: ['Herbal Tea', 'Green Tea', 'Fruit Juices'],
-    },
-    {
-      name: 'Gift Packs',
-      icon: 'bi bi-gift',
-      items: ['Festive Hampers', 'Corporate Packs'],
-    },
-  ];
-  cartItems: ProductSM[] = [];
-  wishListItems: ProductSM[] = [];
-  subTotal = 0;
+export class Header extends BaseComponent<HeaderViewModel> implements OnInit {
   private sub: Subscription | null = null;
   private wishListSub: Subscription | null = null;
+
+  constructor(
+    commonService: CommonService,
+    logHandlerService: LogHandlerService,
+    private categoryService: CategoryService,
+      private cartService: CartService,
+    private wishlistService: WishlistService
+  ) {
+    super(commonService, logHandlerService);
+    this.viewModel = new HeaderViewModel();
+  }
   ngOnInit(): void {
     this.sub = this.cartService.cart$.subscribe((items) => {
-      this.cartItems = items || [];
+      this.viewModel.cartItems = items || [];
       // optionally compute subtotal live here
-      this.subTotal = this.cartItems.reduce(
+      this.viewModel.subTotal = this.viewModel.cartItems.reduce(
         (sum, item) => sum + (item.price ?? 0) * item.cartQuantity,
         0
       );
     });
     this.wishListSub = this.wishlistService.wishlist$.subscribe((items) => {
-      this.wishListItems = items || [];
+      this.viewModel.wishListItems = items || [];
     });
+    this.loadPageData();
   }
+
+
+  trackById(_: number, item: any) {
+    return item.id ?? item.name;
+  }
+
+  override async loadPageData(): Promise<void> {
+    try {
+      let resp = await this.categoryService.getAllCategories(
+        this.viewModel.categoriesViewModel
+      );
+      if (resp.isError) {
+        await this._exceptionHandler.logObject(resp.errorData);
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData.displayMessage,
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+      } else {
+        this.viewModel.categoriesViewModel.categories = resp.successData;
+      }
+    } catch (error) {
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: 'An error occurred',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    }
+  }
+
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
@@ -69,8 +88,8 @@ export class Header implements OnInit {
     return await this.cartService.cartTotal();
   }
   async getCartItems() {
-    this.cartItems = await this.cartService.getAll();
-    console.log(this.cartItems);
+    this.viewModel.cartItems = await this.cartService.getAll();
+    // console.log(this.viewModel.cartItems);
   }
   increment(item: ProductSM) {
     item.cartQuantity++;
@@ -86,7 +105,7 @@ export class Header implements OnInit {
   }
 
   async saveCart() {
-    for (const item of this.cartItems) {
+    for (const item of this.viewModel.cartItems) {
       await this.cartService.updateCartItem(item.id, item.cartQuantity);
     }
     await this.getCartItems();

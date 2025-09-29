@@ -4,28 +4,49 @@
   data-bs-ride="carousel"
   data-bs-interval="5000"
 >
+  <!-- Indicators -->
+  <div class="carousel-indicators">
+    <button
+      *ngFor="let group of groupedVideos; let i = index"
+      type="button"
+      data-bs-target="#videoCarousel"
+      [attr.data-bs-slide-to]="i"
+      [class.active]="i === 0"
+      [attr.aria-current]="i === 0 ? 'true' : null"
+      [attr.aria-label]="'Slide ' + (i + 1)"
+    ></button>
+  </div>
+
+  <!-- Slides -->
   <div class="carousel-inner">
     <div
       class="carousel-item"
-      *ngFor="let video of viewModel.VideoSMList; let i = index"
+      *ngFor="let group of groupedVideos; let i = index"
       [class.active]="i === 0"
     >
-      <!-- Responsive YouTube embed -->
-      <div class="ratio ratio-16x9">
-        <iframe
-          [id]="'youtube-' + i"
-          class="rounded shadow w-100"
-          [src]="getSafeYoutubeUrl(video.youtubeUrl)"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-        ></iframe>
-      </div>
+      <div class="row g-3 justify-content-center">
+        <div
+          class="col-12 col-md-6"
+          *ngFor="let video of group; let j = index"
+        >
+          <!-- Responsive YouTube embed -->
+          <div class="video-wrapper">
+            <iframe
+              [id]="'youtube-' + (i*2 + j)"
+              class="rounded shadow w-100"
+              [src]="getSafeYoutubeUrl(video.youtubeUrl)"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
 
-      <!-- Caption -->
-      <div class="carousel-caption d-none d-md-block">
-        <h5>{{ video.title }}</h5>
-        <p>{{ video.description }}</p>
+          <!-- Caption -->
+          <!-- <div class="carousel-caption d-none d-md-block">
+            <h6>{{ video.title }}</h6>
+            <p class="small">{{ video.description }}</p>
+          </div> -->
+        </div>
       </div>
     </div>
   </div>

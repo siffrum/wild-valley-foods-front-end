@@ -22,7 +22,6 @@ import { Videos } from '../videos/videos';
   imports: [
     Banner,
     ProductCardComponent,
-    CategoryComponent,
     ServiceBanner,
     Testimonial,
     Videos

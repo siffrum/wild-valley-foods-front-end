@@ -39,53 +39,52 @@
       <i class="bi bi-list"></i>
     </button>
 
-  <a
-  class="navbar-brand d-flex align-items-center flex-row-reverse flex-lg-row"
-  [routerLink]="['/home']"
-  routerLinkActive="router-link-active"
->
-  <img src="assets/logo.png" alt="Logo" width="50" class="ms-2 ms-lg-0 me-0 me-lg-2">
-  <span class="fw-bold">Wild Valley Foods</span>
-</a>
+    <a class="navbar-brand d-flex align-items-center flex-row-reverse flex-lg-row" [routerLink]="['/home']"
+      routerLinkActive="router-link-active">
+      <img src="assets/logo.png" alt="Logo" width="50" class="ms-2 ms-lg-4 me-0 me-lg-2">
+      <span class="fw-bold ms-lg-1">Wild Valley Foods</span>
+    </a>
 
     <!-- Icons (desktop only) -->
-    <ul class="navbar-nav ms-auto d-none d-lg-flex flex-row align-items-center">
+    <ul class="navbar-nav ms-auto d-none d-lg-flex flex-row align-items-center me-lg-4">
       <li class="nav-item me-3">
         <a class="nav-link" routerLink="/">Home</a>
       </li>
       <li class="nav-item me-3">
         <a class="nav-link" routerLink="/shop">Shop</a>
       </li>
-   <li class="nav-item dropdown">
-  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-     data-bs-toggle="dropdown" aria-expanded="false">
-    Dropdown
-  </a>
-  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-    <li><a class="dropdown-item" href="#">Action</a></li>
-    <li><a class="dropdown-item" href="#">Another action</a></li>
-  </ul>
-</li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" tabindex="0">Categories</a>
+        <ul class="dropdown-menu">
+          <li *ngFor="let category of viewModel.categoriesViewModel.categories">
+            <a class="dropdown-item" [routerLink]="['/shop',category.name, category.id]">
+              {{ category.name }}
+            </a>
+          </li>
+        </ul>
+      </li>
+
+
 
       <li class="nav-item me-3">
         <a class="nav-link" routerLink="/contact-us">Contact us</a>
       </li>
-          <li class="nav-item me-3">
+      <li class="nav-item me-3">
         <a class="nav-link" routerLink="/about-us">About us</a>
       </li>
       <li class="nav-item me-3">
         <a class="nav-link" routerLink="/wishlist"><i class="bi bi-heart fs-5"></i><span
-            class="position-absolute top-1 start-80 translate-middle badge rounded-pill bg-success">{{wishListItems.length}}</span></a>
+            class="position-absolute top-1 start-80 translate-middle badge rounded-pill bg-success">{{viewModel.wishListItems.length}}</span></a>
 
       </li>
       <li class="nav-item position-relative">
         <a class="nav-link"><i class="bi bi-cart fs-5" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"></i>
           <span
-            class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-success">{{cartItems.length}}</span></a>
-            
+            class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-success">{{viewModel.cartItems.length}}</span></a>
+
 
       </li>
-       <li class="nav-item ms-3">
+      <li class="nav-item ms-3">
         <a class="nav-link" routerLink="/my-orders"><i class="bi bi-basket fs-5"></i><span
             class="position-absolute top-1 start-80 translate-middle badge rounded-pill bg-success">0</span></a>
 
@@ -125,8 +124,9 @@
         <a class="nav-link d-flex align-items-center" routerLink="/my-orders" data-bs-dismiss="offcanvas"
           aria-label="Close"><i class="bi bi-bag me-2"></i> My
           Orders</a>
-            <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
             Dropdown
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -134,15 +134,14 @@
             <li><a class="dropdown-item" href="#">Another action</a></li>
           </ul>
         </li>
-            <a class="nav-link d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close"
-          routerLink="/cart"><i class="bi bi-heart me-2"></i> Cart <span
-            class="badge bg-outline ms-auto">3</span></a>
+        <a class="nav-link d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close"
+          routerLink="/cart"><i class="bi bi-heart me-2"></i> Cart <span class="badge bg-outline ms-auto">3</span></a>
         <a class="nav-link d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close"
           routerLink="/wishlist"><i class="bi bi-heart me-2"></i> Wishlist <span
             class="badge bg-outline ms-auto">3</span></a>
-              <a class="nav-link d-flex align-items-center" routerLink="/contact-us" data-bs-dismiss="offcanvas"
+        <a class="nav-link d-flex align-items-center" routerLink="/contact-us" data-bs-dismiss="offcanvas"
           aria-label="Close"><i class="bi bi-bag me-2"></i> Contact Us</a>
-            <a class="nav-link d-flex align-items-center" routerLink="/about-us" data-bs-dismiss="offcanvas"
+        <a class="nav-link d-flex align-items-center" routerLink="/about-us" data-bs-dismiss="offcanvas"
           aria-label="Close"><i class="bi bi-bag me-2"></i> About Us</a>
         <hr>
 
@@ -150,69 +149,16 @@
         <div class="mb-2">
           <div class="small text-uppercase text-muted mb-1">Shop by category</div>
 
-          <div class="accordion" id="leftCategories">
-            <!-- Fruits & Veg -->
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingOne">
-                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse"
-                  data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                  <i class="bi bi-apple me-2"></i> Dry Fruits
-                </button>
-              </h2>
-              <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
-                data-bs-parent="#leftCategories">
-                <div class="accordion-body p-2">
-                  <ul class="list-unstyled mb-0">
-                    <li><a class="d-block py-1">Cashew</a></li>
-                    <li><a class="d-block py-1">Almonds</a></li>
-                    <li><a class="d-block py-1">Walnuts</a></li>
-                    <li><a class="d-block py-1">Resins</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <!-- Dairy -->
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingTwo">
-                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse"
-                  data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                  <i class="bi bi-cup-straw me-2"></i> Spices
-                </button>
-              </h2>
-              <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-                data-bs-parent="#leftCategories">
-                <div class="accordion-body p-2">
-                  <ul class="list-unstyled mb-0">
-                    <li><a class="d-block py-1">Saffron</a></li>
-                    <li><a class="d-block py-1">Kehwa Masala</a></li>
-                    <li><a class="d-block py-1"></a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <!-- Pantry -->
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingThree">
-                <button class="accordion-button collapsed py-2" type="button" data-bs-toggle="collapse"
-                  data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                  <i class="bi bi-box-seam me-2"></i> Oils
-                </button>
-              </h2>
-              <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
-                data-bs-parent="#leftCategories">
-                <div class="accordion-body p-2">
-                  <ul class="list-unstyled mb-0">
-                    <li><a class="d-block py-1">Almond Oil</a></li>
-                    <li><a class="d-block py-1">Walnut Oil</a></li>
-                    <li><a class="d-block py-1">Edible Oil</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-          </div>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" tabindex="0">Categories</a>
+            <ul class="dropdown-menu">
+              <li *ngFor="let category of viewModel.categoriesViewModel.categories">
+                <a class="dropdown-item" [routerLink]="['/shop',category.name, category.id]">
+                  {{ category.name }}
+                </a>
+              </li>
+            </ul>
+          </li>
         </div>
 
         <hr>
@@ -253,7 +199,7 @@
     <!-- cart list -->
     <div class="p-3 flex-grow-1 overflow-auto">
       <!-- cart item (repeat for each product in cart) -->
-      @for (item of cartItems; track $index) {
+      @for (item of viewModel.cartItems; track $index) {
       <div class="d-flex gap-3 mb-3 align-items-start">
         <img [src]="item.images && item.images.length > 0 ? item.images[0] : 'assets/logo.png'" alt="product" width="80"
           height="80" class="rounded">
@@ -279,7 +225,7 @@
         </div>
       </div>
       }
-      @if (cartItems.length == 0) {
+      @if (viewModel.cartItems.length == 0) {
       <!-- repeat / no-items fallback -->
       <div class="text-center text-muted my-5">
         <i class="bi bi-cart-x fs-1"></i>
@@ -293,7 +239,7 @@
     <div class="p-3 border-top">
       <div class="d-flex justify-content-between align-items-center mb-2">
         <div class="small text-muted">Subtotal</div>
-        <div class="fw-semibold">{{subTotal | currency : 'INR' }}</div>
+        <div class="fw-semibold">{{viewModel.subTotal | currency : 'INR' }}</div>
       </div>
       <div class="d-flex gap-2">
         <a routerLink="/cart" data-bs-dismiss="offcanvas" aria-label="Close" class="btn btn-outline-secondary w-50">View

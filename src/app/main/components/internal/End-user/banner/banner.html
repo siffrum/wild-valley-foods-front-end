@@ -19,8 +19,8 @@
                     <h5>{{ banner.title }}</h5>
                     <p>{{ banner.description }}</p>
                     @if (banner.ctaText && banner.link) {
-                    <a [href]="banner.link" class="btn btn-primary" target="_blank" rel="noopener">
-                        {{ banner.ctaText }}
+                    <a (click)="goToShop()" class="btn btn-primary">
+                        Shop now
                     </a>
                     }
                 </div>

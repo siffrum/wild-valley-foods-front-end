@@ -12,3 +12,42 @@
   font-size: 26px;
   color: black;
 }
+
+
+/* Basic dropdown positioning */
+.nav-item.dropdown {
+  position: relative;
+}
+
+/* Hide menu initially */
+.nav-item .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 160px;
+  background: #fff;
+  border: 1px solid #ddd;
+  display: none;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index: 1000;
+}
+
+/* Show dropdown on hover OR when focused */
+.nav-item.dropdown:hover .dropdown-menu,
+.nav-item.dropdown:focus-within .dropdown-menu {
+  display: block;
+}
+
+/* Dropdown items */
+.dropdown-menu li a {
+  display: block;
+  padding: 10px 15px;
+  color: #333;
+  text-decoration: none;
+}
+
+.dropdown-menu li a:hover {
+  background-color: #f1f1f1;
+}

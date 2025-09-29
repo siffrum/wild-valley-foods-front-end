@@ -7,3 +7,51 @@
   border-radius: 0.5rem;
   padding: 0.5rem 1rem;
 }
+
+
+/* Reduce video height */
+.video-wrapper {
+  position: relative;
+  padding-bottom: 45%; /* smaller than 56.25% (16:9) */
+  height: 0;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Optional: style indicators */
+.carousel-indicators [data-bs-target] {
+  background-color: #333; /* dark dots */
+}
+
+.carousel-indicators .active {
+  background-color: #ffc107; /* highlight active */
+}
+
+
+/* Move indicators below carousel */
+#videoCarousel .carousel-indicators {
+  position: static;      /* remove absolute positioning */
+  margin-top: 1rem;      /* spacing between videos and dots */
+  justify-content: center;
+}
+
+/* Optional: keep them small and nicely spaced */
+#videoCarousel .carousel-indicators [data-bs-target] {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #333;
+  margin: 0 4px;
+}
+
+#videoCarousel .carousel-indicators .active {
+  background-color: #ffc107;
+}
