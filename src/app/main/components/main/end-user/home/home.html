@@ -1,69 +1,65 @@
-<div class="hero row">
-    <!-- <div class="col-lg-3 d-none d-lg-block p-0">
+<div class="home">
+    <div class="hero row">
+        <!-- <div class="col-lg-3 d-none d-lg-block p-0">
         <app-category [categories]="this.viewModel.categoryViewModel.categories"></app-category>
     </div> -->
 
-    <div class="col-12 col-lg-12 p-0">
-        <app-banner [banners]="viewModel.banners"></app-banner>
-    </div>
-</div>
-
-<div>
-    <app-service-banner></app-service-banner>
-</div>
-
-<div class="container-fluid m-0 newarrivals">
-    <div class="row text-center mb-4">
-        <h1 class="fw-bold">Best Selling Products</h1>
-        <h4 class="text-muted">Explore our top selling products</h4>
-    </div>
-
-    <div class="row justify-content-center">
-        @for (product of viewModel.newArrivals; track product) {
-        <div class="col-6 col-md-4 col-lg-3 mb-4 d-flex justify-content-center">
-            <app-product 
-                [product]="product" 
-                (addToCart)="onAddToCart($event)" 
-                (view)="openProduct($event)"
-                (wishlist)="toggleWishlist($event)">
-            </app-product>
+        <div class="col-12 col-lg-12 p-0">
+            <app-banner [banners]="viewModel.banners"></app-banner>
         </div>
-        }
-    </div>
-</div>
-
-<div class="container-fluid m-0 products">
-    <div class="row text-center mb-4">
-        <h1 class="fw-bold">Products</h1>
-        <h4 class="text-muted">Explore our wide range of products</h4>
     </div>
 
-    <div class="row justify-content-center">
-        @for (product of viewModel.productsViewModel.products; track product) {
-        <div class="col-6 col-md-4 col-lg-3 mb-4 d-flex justify-content-center">
-            <app-product 
-                [product]="product" 
-                (addToCart)="onAddToCart(product)" 
-                (view)="openProduct($event)"
-                (wishlist)="toggleWishlist(product)">
-            </app-product>
+    <div>
+        <app-service-banner></app-service-banner>
+    </div>
+
+    <div class="container-fluid m-0 newarrivals">
+        <div class="row text-center mb-4">
+            <h1 class="fw-bold">Best Selling Products</h1>
+            <h4 class="text-muted">Explore our top selling products</h4>
         </div>
-        }
-    </div>
-</div>
 
-<div class="mb-4">
-    <div class="row text-center mb-4">
-        <h1 class="fw-bold">Youtube Videos</h1>
-        <h4 class="text-muted">Check Out Our Youtube Videos</h4>
+        <div class="row justify-content-center">
+            @for (product of viewModel.newArrivals; track product) {
+            <div class="col-6 col-md-4 col-lg-3 mb-4 d-flex justify-content-center">
+                <app-product [product]="product" (addToCart)="onAddToCart($event)" (view)="openProduct($event)"
+                    (wishlist)="toggleWishlist($event)">
+                </app-product>
+            </div>
+            }
+        </div>
     </div>
-    <app-videos></app-videos>
-</div>
 
-<div>
-    <div class="row text-center mb-4">
-        <h1 class="fw-bold">Testimonials</h1>
-        <h4 class="text-muted">Our Customers</h4>
+    <div class="container-fluid m-0 products">
+        <div class="row text-center mb-4">
+            <h1 class="fw-bold">Products</h1>
+            <h4 class="text-muted">Explore our wide range of products</h4>
+        </div>
+
+        <div class="row justify-content-center">
+            @for (product of viewModel.productsViewModel.products; track product) {
+            <div class="col-6 col-md-4 col-lg-3 mb-4 d-flex justify-content-center">
+                <app-product [product]="product" (addToCart)="onAddToCart(product)" (view)="openProduct($event)"
+                    (wishlist)="toggleWishlist(product)">
+                </app-product>
+            </div>
+            }
+        </div>
     </div>
-    <app-testimonial></app-testimonial>
+
+    <div class="mb-4">
+        <div class="row text-center mb-4">
+            <h1 class="fw-bold">Youtube Videos</h1>
+            <h4 class="text-muted">Check Out Our Youtube Videos</h4>
+        </div>
+        <app-videos></app-videos>
+    </div>
+
+    <div class="mb-4">
+        <div class="row text-center mb-4">
+            <h1 class="fw-bold">Testimonials</h1>
+            <h4 class="text-muted">Our Customers</h4>
+        </div>
+        <app-testimonial></app-testimonial>
+    </div>
 </div>
