@@ -13,7 +13,6 @@
   color: black;
 }
 
-
 /* Basic dropdown positioning */
 .nav-item.dropdown {
   position: relative;
@@ -50,4 +49,7 @@
 
 .dropdown-menu li a:hover {
   background-color: #f1f1f1;
+}
+.active-route {
+  color: #f9aa3c !important;
 }

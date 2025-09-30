@@ -23,9 +23,9 @@
 
         <!-- optional small social icons -->
         <div class="d-flex align-items-center">
-          <a class="me-2 text-muted small" href="#" aria-label="Facebook"><i class="bi bi-facebook text-white"></i></a>
-          <a class="me-2 text-muted small" href="#" aria-label="Twitter"><i class="bi bi-twitter-x text-white"></i></a>
-          <a class="text-muted small" href="#" aria-label="Instagram"><i class="bi bi-instagram text-white"></i></a>
+          <a class="me-2 text-muted small" aria-label="Facebook"><i class="bi bi-facebook text-white"></i></a>
+          <a class="me-2 text-muted small" aria-label="Twitter"><i class="bi bi-twitter-x text-white"></i></a>
+          <a class="text-muted small" aria-label="Instagram"><i class="bi bi-instagram text-white"></i></a>
         </div>
       </div>
     </div>
@@ -48,13 +48,13 @@
     <!-- Icons (desktop only) -->
     <ul class="navbar-nav ms-auto d-none d-lg-flex flex-row align-items-center me-lg-4">
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/">Home</a>
+        <a class="nav-link" routerLink="/home" routerLinkActive="active-route">Home</a>
       </li>
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/shop">Shop</a>
+        <a class="nav-link" routerLink="/shop" routerLinkActive="active-route">Shop</a>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" tabindex="0">Categories</a>
+        <a class="nav-link dropdown-toggle" tabindex="0">Categories</a>
         <ul class="dropdown-menu">
           <li *ngFor="let category of viewModel.categoriesViewModel.categories">
             <a class="dropdown-item" [routerLink]="['/shop',category.name, category.id]">
@@ -67,25 +67,27 @@
 
 
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/contact-us">Contact us</a>
+        <a class="nav-link" routerLink="/contact-us" routerLinkActive="active-route">Contact us</a>
       </li>
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/about-us">About us</a>
+        <a class="nav-link" routerLink="/about-us" routerLinkActive="active-route">About us</a>
       </li>
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/wishlist"><i class="bi bi-heart fs-5"></i><span
+        <a class="nav-link" routerLink="/wishlist" routerLinkActive="active-route"><i class="bi bi-heart fs-5"></i><span
             class="position-absolute top-1 start-80 translate-middle badge rounded-pill bg-success">{{viewModel.wishListItems.length}}</span></a>
 
       </li>
       <li class="nav-item position-relative">
-        <a class="nav-link"><i class="bi bi-cart fs-5" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"></i>
+        <a class="nav-link"><i class="bi bi-cart fs-5" data-bs-toggle="offcanvas" routerLinkActive="active-route"
+            data-bs-target="#offcanvasRight"></i>
           <span
             class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-success">{{viewModel.cartItems.length}}</span></a>
 
 
       </li>
       <li class="nav-item ms-3">
-        <a class="nav-link" routerLink="/my-orders"><i class="bi bi-basket fs-5"></i><span
+        <a class="nav-link" routerLink="/my-orders" routerLinkActive="active-route"><i
+            class="bi bi-basket fs-5"></i><span
             class="position-absolute top-1 start-80 translate-middle badge rounded-pill bg-success">0</span></a>
 
       </li>
@@ -101,15 +103,7 @@
   </div>
 
   <div class="offcanvas-body p-0 d-flex flex-column">
-    <!-- Quick search inside menu -->
-    <div class="p-3 border-bottom">
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search products, categories..." aria-label="Search">
-        <button class="btn btn-outline-secondary" type="submit" aria-label="Search">
-          <i class="bi bi-search"></i>
-        </button>
-      </form>
-    </div>
+
 
     <!-- Main nav list -->
     <div class="p-3 flex-grow-1 overflow-auto">
@@ -124,16 +118,7 @@
         <a class="nav-link d-flex align-items-center" routerLink="/my-orders" data-bs-dismiss="offcanvas"
           aria-label="Close"><i class="bi bi-bag me-2"></i> My
           Orders</a>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-            aria-expanded="false">
-            Dropdown
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-          </ul>
-        </li>
+
         <a class="nav-link d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close"
           routerLink="/cart"><i class="bi bi-heart me-2"></i> Cart <span class="badge bg-outline ms-auto">3</span></a>
         <a class="nav-link d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close"
@@ -150,7 +135,7 @@
           <div class="small text-uppercase text-muted mb-1">Shop by category</div>
 
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" tabindex="0">Categories</a>
+            <a class="nav-link dropdown-toggle" tabindex="0">Categories</a>
             <ul class="dropdown-menu">
               <li *ngFor="let category of viewModel.categoriesViewModel.categories">
                 <a class="dropdown-item" [routerLink]="['/shop',category.name, category.id]">
