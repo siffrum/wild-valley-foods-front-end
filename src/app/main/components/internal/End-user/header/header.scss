@@ -53,3 +53,34 @@
 .active-route {
   color: #f9aa3c !important;
 }
+
+#offcanvasLeft {
+  .offcanvas-header {
+    border-bottom: 1px solid #e9ecef;
+    .branding {
+      img {
+        width: 50px;
+        margin-right: 1rem;
+      }
+      h5 {
+        font-size: 1.3rem;
+        font-weight: bold;
+      }
+    }
+    .offcanvas-title {
+      color: black;
+    }
+  }
+  .offcanvas-body {
+    nav {
+      a {
+        font-size: 1.1rem;
+        text-decoration: none;
+        color: black;
+        span {
+          color: black;
+        }
+      }
+    }
+  }
+}
