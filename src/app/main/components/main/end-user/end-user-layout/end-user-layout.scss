@@ -19,3 +19,11 @@
 .whatsapp-float img:hover {
   transform: scale(1.1);
 }
+
+
+app-header {
+  position: sticky;
+  top: 0;
+  z-index: 1050; /* higher than carousel/other elements */
+  background: #fff; /* or your header background color */
+}
