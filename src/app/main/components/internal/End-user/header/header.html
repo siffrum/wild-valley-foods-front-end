@@ -48,10 +48,10 @@
     <!-- Icons (desktop only) -->
     <ul class="navbar-nav ms-auto d-none d-lg-flex flex-row align-items-center me-lg-4">
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/home" routerLinkActive="active-route">Home</a>
+        <a class="nav-link" routerLink="/home" routerLinkActive="active-route" [routerLinkActiveOptions]="{ exact: true }">Home</a>
       </li>
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/shop" routerLinkActive="active-route">Shop</a>
+        <a class="nav-link" routerLink="/shop" routerLinkActive="active-route" [routerLinkActiveOptions]="{ exact: true }">Shop</a>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" tabindex="0">Categories</a>
@@ -67,18 +67,18 @@
 
 
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/contact-us" routerLinkActive="active-route">Contact us</a>
+        <a class="nav-link" routerLink="/contact-us" routerLinkActive="active-route" [routerLinkActiveOptions]="{ exact: true }">Contact us</a>
       </li>
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/about-us" routerLinkActive="active-route">About us</a>
+        <a class="nav-link" routerLink="/about-us" routerLinkActive="active-route" [routerLinkActiveOptions]="{ exact: true }">About us</a>
       </li>
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/wishlist" routerLinkActive="active-route"><i class="bi bi-heart fs-5"></i><span
+        <a class="nav-link" routerLink="/wishlist" routerLinkActive="active-route" [routerLinkActiveOptions]="{ exact: true }"><i class="bi bi-heart fs-5"></i><span
             class="position-absolute top-1 start-80 translate-middle badge rounded-pill bg-success">{{viewModel.wishListItems.length}}</span></a>
 
       </li>
       <li class="nav-item position-relative">
-        <a class="nav-link"><i class="bi bi-cart fs-5" data-bs-toggle="offcanvas" routerLinkActive="active-route"
+        <a class="nav-link"><i class="bi bi-cart fs-5" data-bs-toggle="offcanvas" routerLinkActive="active-route" [routerLinkActiveOptions]="{ exact: true }"
             data-bs-target="#offcanvasRight"></i>
           <span
             class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-success">{{viewModel.cartItems.length}}</span></a>
@@ -86,7 +86,7 @@
 
       </li>
       <li class="nav-item ms-3">
-        <a class="nav-link" routerLink="/my-orders" routerLinkActive="active-route"><i
+        <a class="nav-link" routerLink="/my-orders" routerLinkActive="active-route" [routerLinkActiveOptions]="{ exact: true }"><i
             class="bi bi-basket fs-5"></i><span
             class="position-absolute top-1 start-80 translate-middle badge rounded-pill bg-success">0</span></a>
 

@@ -60,9 +60,6 @@
                         <h3 class="price mb-0">₹ {{ viewModel.product.price | number:'1.2-2' }}</h3>
                     </div>
 
-                    <p class="product-desc text-muted mb-3" *ngIf="viewModel.product.description">{{
-                        viewModel.product.description }}</p>
-
                     <div class="d-flex align-items-center gap-3 mb-3">
                         <div class="qty-selector d-flex align-items-center">
                             <button class="btn btn-outline-secondary btn-sm" (click)="decrement(viewModel.product)"
@@ -92,7 +89,7 @@
                         <button class="btn btn-sm btn-outline-secondary" title="Save for later"><i
                                 class="bi bi-heart"></i></button>
                     </div>
-                    <div class="description">
+                    <div class="description" *ngIf="viewModel.product.description">
                         <h3>Description</h3>
                         <p>{{ viewModel.product.description }}</p>
                     </div>
