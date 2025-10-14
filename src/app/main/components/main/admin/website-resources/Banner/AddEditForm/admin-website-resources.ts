@@ -38,7 +38,7 @@ export class AdminWebsiteResources extends BaseComponent<BannerViewModel> implem
     }
   }
 
-  onFileChange(event: any): void {
+   onFileChange(event: any): void {
     const file = event.target.files[0];
     if (file) {
       this.selectedFile = file;
@@ -64,7 +64,6 @@ export class AdminWebsiteResources extends BaseComponent<BannerViewModel> implem
 private async addBanner() {
   try {
     this._commonService.presentLoading();
-
      const formData = new FormData();
       formData.append("reqData", JSON.stringify(this.viewModel.bannerFormData));
     if (this.selectedFile) {

@@ -17,7 +17,6 @@ const routes: Routes = [
     component: AdminComponentLayoutComponent,
     canActivateChild: [AuthGuard],
     children: [
-      // { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'website-resources', component: WebsiteResourcesComponent },
       {path:'category-list',component:AdminCategoryList},

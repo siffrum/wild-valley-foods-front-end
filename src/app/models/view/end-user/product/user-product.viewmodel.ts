@@ -1,5 +1,6 @@
 import { BaseViewModel } from '../../../internal/base.viewmodel';
 import { ProductSM } from '../../../service-models/app/v1/product-s-m';
+import { ReviewSM } from '../../../service-models/app/v1/review-s-m';
 
 export class UserProductViewModel extends BaseViewModel {
   product = new ProductSM();
@@ -11,4 +12,5 @@ export class UserProductViewModel extends BaseViewModel {
   products!: ProductSM[];
   filteredProducts!: ProductSM[];
   categoryId!:number;
+  reviewsSM :ReviewSM[]=[]
 }

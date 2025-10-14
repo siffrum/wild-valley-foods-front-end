@@ -26,7 +26,8 @@ export class SingleProduct
   implements OnInit
 {
   cartItems: ProductSM[] = [];
-
+showReviews = false;
+averageRating = 0;
   constructor(
     commonService: CommonService,
     private logHandlerService: LogHandlerService,
@@ -52,8 +53,74 @@ export class SingleProduct
         this.loadProductData(+params['id']);
       }
     });
-  }
+  // 
+ this.viewModel.reviewsSM = [
+    {
+      id: 1,
+      name: 'John Doe',
+      email: 'john@example.com',
+      rating: 5,
+      comment: 'Excellent quality and fast delivery! Highly recommend.',
+      productId: 1,
+      isApproved: true,
+      createdOnUTC: new Date('2024-06-15'),
+      createdBy: '',
+      lastModifiedBy: ''
+    },
+    {
+      id: 2,
+      name: 'Aisha Khan',
+      email: 'aisha@example.com',
+      rating: 4,
+      comment: 'Product is good but packaging could be improved.',
+      productId: 1,
+      isApproved: true,
+      createdOnUTC: new Date('2024-07-10'),
+      createdBy: '',
+      lastModifiedBy: ''
+    },
+    {
+      id: 3,
+      name: 'Rahul Sharma',
+      email: 'rahul@example.com',
+      rating: 3,
+      comment: 'Decent product for the price. Could be better.',
+      productId: 1,
+      isApproved: true,
+      createdOnUTC: new Date('2024-09-20'),
+      createdBy: '',
+      lastModifiedBy: ''
+    },
+  ];
 
+  this.calculateAverageRating();
+}
+toggleReviews(): void {
+  this.showReviews = !this.showReviews;
+}
+
+calculateAverageRating(): void {
+  if (this.viewModel.reviewsSM.length > 0) {
+    const total = this.viewModel.reviewsSM.reduce((sum, r) => sum + r.rating, 0);
+    this.averageRating = total / this.viewModel.reviewsSM.length;
+  } else {
+    this.averageRating = 0;
+  }
+}
+
+openAddReviewModal(): void {
+  this._commonService.ShowToastAtTopEnd('Feature coming soon...', 'info');
+}
+
+showFullRichDesc = false;
+
+toggleRichDesc() {
+  this.showFullRichDesc = !this.showFullRichDesc;
+}
+
+selectImage(index: number) {
+  this.viewModel.selectedImageIndex = index;
+}
   /**
    * Main entry point for loading product + related data
    */
@@ -215,13 +282,6 @@ export class SingleProduct
    */
   async toggleWishlist(product: ProductSM): Promise<void> {
     await this.wishlistService.toggleWishlist(product);
-  }
-
-  /**
-   * UI Actions
-   */
-  selectImage(index: number): void {
-    // TODO: implement image switching logic
   }
 
 openProduct(product: ProductSM): void {

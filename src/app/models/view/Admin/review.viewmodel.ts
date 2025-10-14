@@ -5,7 +5,7 @@ import { ReviewSM } from '../../service-models/app/v1/review-s-m';
 
 
 export class ReviewViewModel extends BaseViewModel {
-  TestmonialFormData: ReviewSM = new ReviewSM();
+ ReviewFormData: ReviewSM = new ReviewSM();
   ReviewForm!: FormGroup;
   ReviewId: number = 0;
   ReviewSMList :ReviewSM [] = [];

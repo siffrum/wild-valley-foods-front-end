@@ -48,7 +48,7 @@ export class WebsiteResourcesComponent extends BaseComponent<BannerViewModel> im
         this.viewModel.bannerSMList = resp.successData;
         //     this.categories = data;
         this.viewModel.filteredBanners = [...resp.successData];
-        console.log('Categories loaded:', this.viewModel.filteredBanners);
+        // console.log('Categories loaded:', this.viewModel.filteredBanners);
          this.sortData();
          this.TotalCategoryCount();
       }

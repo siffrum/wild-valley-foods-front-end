@@ -25,44 +25,44 @@ export class ReviewService extends BaseService {
 //    *
 //    * @throws Will throw an error if the server request fails.
 //    */
-//   async getAllPaginatedReview(
-//     viewModel: ReviewViewModel
-//   ): Promise<ApiResponse<ReviewSM[]>> {
-//     let queryFilter = new QueryFilter();
-//     queryFilter.skip =
-//       (viewModel.pagination.PageNo - 1) * viewModel.pagination.PageSize;
-//     queryFilter.top = viewModel.pagination.PageSize;
-//     return await this.reviewClient.GetAllPaginatedReviews(queryFilter);
-//   }
+  async getAllPaginatedReview(
+    viewModel: ReviewViewModel
+  ): Promise<ApiResponse<ReviewSM[]>> {
+    let queryFilter = new QueryFilter();
+    queryFilter.skip =
+      (viewModel.pagination.PageNo - 1) * viewModel.pagination.PageSize;
+    queryFilter.top = viewModel.pagination.PageSize;
+    return await this.reviewClient.GetAllPaginatedReviews(queryFilter);
+  }
 
-//   async getTotalReviewCount(): Promise<ApiResponse<IntResponseRoot>> {
-//     return await this.reviewClient.GetTotatReviewCount();
-//   }
-//   async deleteReview(id: number): Promise<ApiResponse<DeleteResponseRoot>> {
-//     if (id <= 0) {
-//       throw new Error(AppConstants.ErrorPrompts.Delete_Data_Error);
-//     }
-//     return await this.reviewClient.DeleteReviewById(id);
-//   }
+  async getTotalReviewCount(): Promise<ApiResponse<IntResponseRoot>> {
+    return await this.reviewClient.GetTotatReviewCount();
+  }
+  async deleteReview(id: number): Promise<ApiResponse<DeleteResponseRoot>> {
+    if (id <= 0) {
+      throw new Error(AppConstants.ErrorPrompts.Delete_Data_Error);
+    }
+    return await this.reviewClient.DeleteReviewById(id);
+  }
 
-//   async getReviewById(id: number): Promise<ApiResponse<ReviewSM>> {
-//     if (id <= 0) {
-//       throw new Error(AppConstants.ErrorPrompts.Delete_Data_Error);
-//     }
-//     return await this.reviewClient.GetReviewById(id);
-//   }
+  async getReviewById(id: number): Promise<ApiResponse<ReviewSM>> {
+    if (id <= 0) {
+      throw new Error(AppConstants.ErrorPrompts.Delete_Data_Error);
+    }
+    return await this.reviewClient.GetReviewById(id);
+  }
 
 
-// async addReview(formData: ReviewSM): Promise<ApiResponse<ReviewSM>> {
-// let apiRequest = new ApiRequest<ReviewSM>();
-//       apiRequest.reqData = formData;
-//   return await this.ReviewClient.AddReview(apiRequest);
-// }
-// async updateReview(formData: ReviewSM): Promise<ApiResponse<ReviewSM>> {
-//   const apiRequest = new ApiRequest<ReviewSM>();
-//   apiRequest.reqData = formData;   // ✅ properly wrap
+async addReview(formData: ReviewSM): Promise<ApiResponse<ReviewSM>> {
+let apiRequest = new ApiRequest<ReviewSM>();
+      apiRequest.reqData = formData;
+  return await this.reviewClient.AddReview(apiRequest);
+}
+async updateReview(formData: ReviewSM): Promise<ApiResponse<ReviewSM>> {
+  const apiRequest = new ApiRequest<ReviewSM>();
+  apiRequest.reqData = formData;   // ✅ properly wrap
 
-//   return await this.ReviewClient.UpdateReview(apiRequest);
-// }
+  return await this.reviewClient.UpdateReview(apiRequest);
+}
 
 }

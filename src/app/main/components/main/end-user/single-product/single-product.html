@@ -1,144 +1,184 @@
 @if (!viewModel.loading) {
-<div class="container py-4">
+<div class="container py-5 product-page">
+  <div *ngIf="viewModel.errorMsg" class="alert alert-danger mb-4">{{ viewModel.errorMsg }}</div>
 
-    <div *ngIf="viewModel.errorMsg" class="alert alert-danger">{{ viewModel.errorMsg }}</div>
-    @if (viewModel.product.name) {
-    <div class="product-page">
-        <div class="row g-4">
-            <!-- images -->
-            <div class="col-md-6">
-                <div class="card image-card p-3">
-                    <div class="main-image-wrapper mb-2">
-                        <img *ngIf="viewModel.product.images && viewModel.product.images.length > 0"
-                            [src]="viewModel.product.images[0]" class="img-fluid main-image"
-                            [attr.alt]="viewModel.product.name || 'product image'"
-                            (error)="_commonService.onImageError($event)" />
-
-                    </div>
-
-                    <div class="d-flex gap-2 thumbnails">
-                        <button *ngFor="let img of viewModel.product.images; index as i" class="thumb-btn"
-                            [class.selected]="i === viewModel.selectedImageIndex" (click)="selectImage(i)"
-                            [attr.aria-label]="'Show image ' + (i+1)">
-                            <img [src]="img" class="img-thumbnail thumb-img" [attr.alt]="viewModel.product.name" />
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- details -->
-            <div class="col-md-6">
-                <div class="card p-3">
-                    <div class="d-flex align-items-start justify-content-between mb-2">
-                        <div>
-                            <h2 class="mb-1 product-title">{{ viewModel.product.name }}</h2>
-                            <p class="mb-1 text-muted small">Category:
-                                <a [routerLink]="['/category', viewModel.product.categoryId]" class="link-primary">{{
-                                    viewModel.product.category.name }}</a>
-                            </p>
-                        </div>
-
-                        <div class="text-end">
-                            <span class="badge me-1"
-                                [ngClass]="{'bg-success': viewModel.product.stock > 0,'bg-danger': viewModel.product.stock === 0 }">
-                                {{ viewModel.product.stock > 0 ? 'In Stock' : 'Out of Stock' }}
-                            </span>
-
-                            <div class="stock">
-                                <small *ngIf="viewModel.product.stock > 0">
-                                    {{ viewModel.product.stock }} available
-                                </small>
-                                <small *ngIf="viewModel.product.stock === 0">
-                                    Currently unavailable
-                                </small>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="price-row mb-3">
-                        <h3 class="price mb-0">₹ {{ viewModel.product.price | number:'1.2-2' }}</h3>
-                    </div>
-
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="qty-selector d-flex align-items-center">
-                            <button class="btn btn-outline-secondary btn-sm" (click)="decrement(viewModel.product)"
-                                aria-label="Decrease quantity">−</button>
-                            <input type="number" class="form-control form-control-sm mx-2 text-center"
-                                style="width:4.5rem" [(ngModel)]="viewModel.product.cartQuantity" [min]="1"
-                                [max]="viewModel.maxQty" />
-                            <button class="btn btn-outline-secondary btn-sm" (click)="increment(viewModel.product)"
-                                aria-label="Increase quantity">+</button>
-                        </div>
-
-                        <div>
-                            <button class="btn btn-primary me-2" [disabled]="viewModel.product.stock === 0"
-                                (click)="onAddToCart(viewModel.product)">
-                                <i class="bi bi-cart-plus me-1"></i> Add to cart
-                            </button>
-                            <button class="btn btn-outline-success" [disabled]="viewModel.product.stock === 0"
-                                (click)="buyNow()">
-                                Buy now
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="mb-3 d-flex gap-2">
-                        <button class="btn btn-sm btn-outline-secondary" (click)="shareProduct()"><i
-                                class="bi bi-share"></i> Share</button>
-                        <button class="btn btn-sm btn-outline-secondary" title="Save for later"><i
-                                class="bi bi-heart"></i></button>
-                    </div>
-                    <div class="description" *ngIf="viewModel.product.description">
-                        <h3>Description</h3>
-                        <p>{{ viewModel.product.description }}</p>
-                    </div>
-                </div>
-            </div>
+  @if (viewModel.product.name) {
+  <div class="row g-5">
+    <!-- 🖼️ Product Images -->
+    <div class="col-md-6">
+      <div class="card image-card p-4">
+        <div class="main-image-wrapper mb-3">
+          <img
+            *ngIf="viewModel.product.images && viewModel.product.images.length > 0"
+            [src]="viewModel.product.images[viewModel.selectedImageIndex]"
+            class="img-fluid main-image"
+            [attr.alt]="viewModel.product.name || 'product image'"
+            (error)="_commonService.onImageError($event)" />
         </div>
-        @if(viewModel.product.richDescription){
-    <div class="row g-4">
-  <div class="col-md-12">
-    <h3 class="mb-3">Rich Description</h3>
-    <p class="text-justify mb-0" style="white-space: pre-line; line-height: 1.7;">
-      {{ viewModel.product.richDescription }}
-    </p>
+
+        <div class="d-flex flex-wrap gap-2 thumbnails justify-content-center">
+          @for (img of viewModel.product.images; track img; let i = $index) {
+          <button class="thumb-btn" [class.selected]="i === viewModel.selectedImageIndex" (click)="selectImage(i)">
+            <img [src]="img" class="img-thumbnail thumb-img" [attr.alt]="viewModel.product.name" />
+          </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- 🧾 Product Details -->
+    <div class="col-md-6">
+      <div class="card p-4 product-details-card">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <h2 class="product-title mb-1">{{ viewModel.product.name }}</h2>
+            <p class="text-muted small mb-2">
+              Category:
+              <a [routerLink]="['/category', viewModel.product.categoryId]" class="link-primary text-decoration-none">
+                {{ viewModel.product.category.name }}
+              </a>
+            </p>
+          </div>
+          <div class="text-end">
+            <span class="badge stock-badge"
+              [ngClass]="{'bg-success': viewModel.product.stock > 0, 'bg-danger': viewModel.product.stock === 0}">
+              {{ viewModel.product.stock > 0 ? 'In Stock' : 'Out of Stock' }}
+            </span>
+            <div class="stock small text-muted">
+              @if (viewModel.product.stock > 0) {
+              <small>{{ viewModel.product.stock }} available</small>
+              } @else {
+              <small>Currently unavailable</small>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- ⭐ Ratings -->
+        <div class="rating-summary d-flex align-items-center mb-3">
+          <div class="stars me-2">
+            @for (s of [1,2,3,4,5]; track s) {
+            <i class="bi" [ngClass]="s <= averageRating ? 'bi-star-fill text-warning' : 'bi-star text-muted'"></i>
+            }
+          </div>
+          <span class="fw-semibold">{{ averageRating.toFixed(1) }}/5</span>
+          <a href="#reviews-section" class="ms-2 small text-primary text-decoration-none">
+            {{ viewModel.reviewsSM.length }} Ratings & Reviews
+          </a>
+        </div>
+
+        <div class="price-row mb-3">
+          <h3 class="price mb-0">₹ {{ viewModel.product.price | number:'1.2-2' }}</h3>
+        </div>
+
+        <p class="product-desc text-muted mb-4">{{ viewModel.product.description }}</p>
+
+        <!-- 🛒 Cart & Quantity -->
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="qty-selector d-flex align-items-center border rounded-pill px-2">
+            <button class="btn btn-link btn-sm" (click)="decrement(viewModel.product)">
+              <i class="bi bi-dash-lg"></i>
+            </button>
+            <input type="number" class="form-control form-control-sm text-center border-0 mx-1"
+              [(ngModel)]="viewModel.product.cartQuantity" [min]="1" [max]="viewModel.maxQty" />
+            <button class="btn btn-link btn-sm" (click)="increment(viewModel.product)">
+              <i class="bi bi-plus-lg"></i>
+            </button>
+          </div>
+
+          <div>
+            <button class="btn btn-primary me-2 shadow-sm" [disabled]="viewModel.product.stock === 0"
+              (click)="onAddToCart(viewModel.product)">
+              <i class="bi bi-cart-plus me-1"></i> Add to Cart
+            </button>
+            <button class="btn btn-outline-success shadow-sm" [disabled]="viewModel.product.stock === 0"
+              (click)="buyNow()">
+              Buy Now
+            </button>
+          </div>
+        </div>
+
+        <button class="btn btn-sm btn-outline-secondary" (click)="shareProduct()">
+          <i class="bi bi-share me-1"></i> Share Product
+        </button>
+
+        <!-- 🧾 Description -->
+        <div class="description mt-4">
+          <h4 class="fw-bold mb-2">Product Description</h4>
+          <p class="text-muted lh-lg">{{ viewModel.product.description }}</p>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
-}
 
+  <!-- 💬 Reviews Section -->
+  <div id="reviews-section" class="reviews-section mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="fw-bold">Customer Reviews</h3>
+      <button class="btn btn-outline-primary btn-sm rounded-pill px-3" (click)="toggleReviews()">
+        {{ showReviews ? 'Hide Reviews' : 'Show Reviews' }}
+      </button>
+    </div>
 
-        <!-- related products placeholder -->
-        <div class="mt-5">
-            <h1 class="text-center mb-4 fw-bold">Related Products</h1>
-
-            <div class="row justify-content-center">
-                @for (product of viewModel.products; track product) {
-                @if(viewModel.products.length >0){
-                <div class="col-6 col-md-4 col-lg-3 mb-4 d-flex justify-content-center">
-                    <app-product [product]="product" (addToCart)="onAddToCart(product)" (view)="openProduct($event)"
-                        (wishlist)="toggleWishlist(product)">
-                    </app-product>
-                </div>
-                }
-                @else {
-                <div class="text-muted">No related products available.</div>
-                }
-                }
+    @if (showReviews) {
+    <div class="reviews-list mt-3">
+      @for (review of viewModel.reviewsSM; track review) {
+      <div class="card review-card mb-3 p-3">
+        <div class="d-flex justify-content-between align-items-start mb-1">
+          <div>
+            <h6 class="fw-bold mb-0">{{ review.name }}</h6>
+            <div class="stars small">
+              @for (s of [1,2,3,4,5]; track s) {
+              <i class="bi" [ngClass]="s <= review.rating ? 'bi-star-fill text-warning' : 'bi-star text-muted'"></i>
+              }
             </div>
+          </div>
+          <small class="text-muted">{{ review.createdOnUTC | date:'mediumDate' }}</small>
         </div>
+        <p class="text-muted mb-0">{{ review.comment }}</p>
+      </div>
+      }
+    </div>
+
+    <div class="text-center mt-4">
+      <button class="btn btn-gradient px-4 py-2 rounded-pill shadow-sm" (click)="openAddReviewModal()">
+        <i class="bi bi-pencil-square me-1"></i> Write a Review
+      </button>
     </div>
     }
+  </div>
+
+  <!-- 📜 Rich Description with See More -->
+  @if (viewModel.product.richDescription) {
+  <div class="mt-5 rich-desc">
+    <h3 class="fw-bold mb-3">Detailed Information</h3>
+    <p class="text-secondary" style="white-space: pre-line;">
+      {{ showFullRichDesc ? viewModel.product.richDescription : (viewModel.product.richDescription | slice:0:200) }}
+      @if (viewModel.product.richDescription.length > 200) {
+      <a href="javascript:void(0)" (click)="toggleRichDesc()" class="see-more text-primary ms-1">
+        {{ showFullRichDesc ? 'See Less' : '...See More' }}
+      </a>
+      }
+    </p>
+  </div>
+  }
+
+  <!-- 🛍️ Related Products -->
+  <div class="mt-5 related-products">
+    <h2 class="text-center fw-bold mb-4">You May Also Like</h2>
+    <div class="row justify-content-center">
+      @if (viewModel.products.length > 0) {
+      @for (product of viewModel.products; track product) {
+      <div class="col-6 col-md-4 col-lg-3 mb-4 d-flex justify-content-center">
+        <app-product [product]="product" (addToCart)="onAddToCart(product)" (view)="openProduct($event)"
+          (wishlist)="toggleWishlist(product)"></app-product>
+      </div>
+      }
+      } @else {
+      <div class="text-muted text-center">No related products available.</div>
+      }
+    </div>
+  </div>
+  }
 </div>
 }
-
-@else {
-
-
-
-<ng-template #loadingTpl>
-    <div class="d-flex justify-content-center align-items-center" style="height: 50vh;">
-        <div class="spinner-border" role="status" aria-hidden="true"></div>
-        <span class="ms-2">Loading product...</span>
-    </div>
-</ng-template>}

@@ -6,4 +6,5 @@ export class ReviewSM extends WildValleyFoodsServiceModelBase<number> {
   rating!: number;            // 1 to 5 stars
   comment!: string;          
   productId!: number;
+  isApproved!:boolean;
 }
