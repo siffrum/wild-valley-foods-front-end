@@ -9,8 +9,8 @@ export const environment = {
   enableResponseCacheProcessing: true,
   applicationVersion: '0.0.1',
   // apiBaseUrl: 'https://wild-valley-foods-backend-api-production.up.railway.app',
-  apiBaseUrl: 'http://localhost:8081',
-  // apiBaseUrl: 'http://10.106.218.72:8081',
+  // apiBaseUrl: 'http://localhost:8081',
+  apiBaseUrl: 'https://wild-valley-foods-backend-api.onrender.com',
 
   apiDefaultTimeout: 10,
   indexedDBName: 'WildValleyFoodsDB',
