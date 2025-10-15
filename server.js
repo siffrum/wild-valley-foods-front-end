@@ -12,8 +12,17 @@ const angularDistPath = path.join(__dirname, 'dist/wild-valley-food/browser');
 
 // ✅ Fix CORS for Angular app calling API on different domain
 app.use(cors({
-  origin: 'https://wvf.onrender.com', // explicitly allow your frontend
+  origin: 'https://wvf.onrender.com', // your frontend
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "Accept",
+    "Origin",
+    "X-Requested-With",
+    "targetapitype" // your custom header
+  ],
 }));
 
 app.use(express.static(angularDistPath));
