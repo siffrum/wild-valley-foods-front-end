@@ -55,10 +55,11 @@
         <div class="rating-summary d-flex align-items-center mb-3">
           <div class="stars me-2">
             @for (s of [1,2,3,4,5]; track s) {
-            <i class="bi" [ngClass]="s <= averageRating ? 'bi-star-fill text-warning' : 'bi-star text-muted'"></i>
+            <i class="bi"
+              [ngClass]="s <= viewModel.averageRating ? 'bi-star-fill text-warning' : 'bi-star text-muted'"></i>
             }
           </div>
-          <span class="fw-semibold">{{ averageRating.toFixed(1) }}/5</span>
+          <span class="fw-semibold">{{ viewModel.averageRating.toFixed(1) }}/5</span>
           <a href="#reviews-section" class="ms-2 small text-primary text-decoration-none">
             {{ viewModel.reviewsSM.length }} Ratings & Reviews
           </a>
@@ -113,11 +114,11 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h3 class="fw-bold">Customer Reviews</h3>
       <button class="btn btn-outline-primary btn-sm rounded-pill px-3" (click)="toggleReviews()">
-        {{ showReviews ? 'Hide Reviews' : 'Show Reviews' }}
+        {{ viewModel.showReviews ? 'Hide Reviews' : 'Show Reviews' }}
       </button>
     </div>
 
-    @if (showReviews) {
+    @if (viewModel.showReviews) {
     <div class="reviews-list mt-3">
       @for (review of viewModel.reviewsSM; track review) {
       <div class="card review-card mb-3 p-3">

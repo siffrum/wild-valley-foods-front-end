@@ -11,6 +11,9 @@ export class UserProductViewModel extends BaseViewModel {
   errorMsg = '';
   products!: ProductSM[];
   filteredProducts!: ProductSM[];
-  categoryId!:number;
-  reviewsSM :ReviewSM[]=[]
+  categoryId!: number;
+  reviewsSM: ReviewSM[] = [];
+  cartItems: ProductSM[] = [];
+  showReviews = false;
+  averageRating = 0;
 }

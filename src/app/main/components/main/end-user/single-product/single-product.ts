@@ -30,9 +30,6 @@ export class SingleProduct
   extends BaseComponent<UserProductViewModel>
   implements OnInit
 {
-  cartItems: ProductSM[] = [];
-  showReviews = false;
-  averageRating = 0;
   constructor(
     commonService: CommonService,
     private logHandlerService: LogHandlerService,
@@ -63,7 +60,7 @@ export class SingleProduct
     this.calculateAverageRating();
   }
   toggleReviews(): void {
-    this.showReviews = !this.showReviews;
+    this.viewModel.showReviews = !this.viewModel.showReviews;
   }
 
   calculateAverageRating(): void {
@@ -72,9 +69,9 @@ export class SingleProduct
         (sum, r) => sum + r.rating,
         0
       );
-      this.averageRating = total / this.viewModel.reviewsSM.length;
+      this.viewModel.averageRating = total / this.viewModel.reviewsSM.length;
     } else {
-      this.averageRating = 0;
+      this.viewModel.averageRating = 0;
     }
   }
 
@@ -238,14 +235,14 @@ export class SingleProduct
   }
 
   private async saveCart(): Promise<void> {
-    for (const item of this.cartItems) {
+    for (const item of this.viewModel.cartItems) {
       await this.cartService.updateCartItem(item.id, item.cartQuantity);
     }
     await this.getCartItems();
   }
 
   private async getCartItems(): Promise<void> {
-    this.cartItems = await this.cartService.getAll();
+    this.viewModel.cartItems = await this.cartService.getAll();
   }
 
   removeItem(item: ProductSM): void {
