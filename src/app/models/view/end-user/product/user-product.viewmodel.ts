@@ -16,4 +16,6 @@ export class UserProductViewModel extends BaseViewModel {
   cartItems: ProductSM[] = [];
   showReviews = false;
   averageRating = 0;
+  showFullRichDesc = false;
+  reviewFormData: ReviewSM = new ReviewSM();
 }

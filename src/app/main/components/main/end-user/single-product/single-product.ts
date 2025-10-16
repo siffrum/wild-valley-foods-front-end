@@ -75,14 +75,10 @@ export class SingleProduct
     }
   }
 
-  openAddReviewModal(): void {
-    this._commonService.ShowToastAtTopEnd('Feature coming soon...', 'info');
-  }
-
-  showFullRichDesc = false;
+  openAddReviewModal(): void {}
 
   toggleRichDesc() {
-    this.showFullRichDesc = !this.showFullRichDesc;
+    this.viewModel.showFullRichDesc = !this.viewModel.showFullRichDesc;
   }
 
   selectImage(index: number) {

@@ -151,10 +151,11 @@
   <div class="mt-5 rich-desc">
     <h3 class="fw-bold mb-3">Detailed Information</h3>
     <p class="text-secondary" style="white-space: pre-line;">
-      {{ showFullRichDesc ? viewModel.product.richDescription : (viewModel.product.richDescription | slice:0:200) }}
+      {{ viewModel.showFullRichDesc ? viewModel.product.richDescription : (viewModel.product.richDescription |
+      slice:0:200) }}
       @if (viewModel.product.richDescription.length > 200) {
       <a href="javascript:void(0)" (click)="toggleRichDesc()" class="see-more text-primary ms-1">
-        {{ showFullRichDesc ? 'See Less' : '...See More' }}
+        {{ viewModel.showFullRichDesc ? 'See Less' : '...See More' }}
       </a>
       }
     </p>
