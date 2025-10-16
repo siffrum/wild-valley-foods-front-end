@@ -8,12 +8,9 @@
     <div class="col-md-6">
       <div class="card image-card p-4">
         <div class="main-image-wrapper mb-3">
-          <img
-            *ngIf="viewModel.product.images && viewModel.product.images.length > 0"
-            [src]="viewModel.product.images[viewModel.selectedImageIndex]"
-            class="img-fluid main-image"
-            [attr.alt]="viewModel.product.name || 'product image'"
-            (error)="_commonService.onImageError($event)" />
+          <img *ngIf="viewModel.product.images && viewModel.product.images.length > 0"
+            [src]="viewModel.product.images[viewModel.selectedImageIndex]" class="img-fluid main-image"
+            [attr.alt]="viewModel.product.name || 'product image'" (error)="_commonService.onImageError($event)" />
         </div>
 
         <div class="d-flex flex-wrap gap-2 thumbnails justify-content-center">

@@ -8,6 +8,7 @@ import { DeleteResponseRoot } from '../models/service-models/foundation/common-r
 import { AdminProductsViewModel } from '../models/view/Admin/admin-product.viewmodel';
 import { ProductSM } from '../models/service-models/app/v1/product-s-m';
 import { UserProductViewModel } from '../models/view/end-user/product/user-product.viewmodel';
+import { ReviewSM } from '../models/service-models/app/v1/review-s-m';
 
 @Injectable({
   providedIn: 'root',
@@ -28,7 +29,7 @@ export class ProductService extends BaseService {
   }
 
   async getAllProductsBySearchString(
-    searchString: string,
+    searchString: string
   ): Promise<ApiResponse<ProductSM[]>> {
     return await this.productClient.GetAllProductsBySearhString(searchString);
   }
@@ -36,18 +37,25 @@ export class ProductService extends BaseService {
     return await this.productClient.GetTotatProductCount();
   }
 
-    async getAllProductsByCategoryId(
+  async getAllProductsByCategoryId(
     viewModel: UserProductViewModel
   ): Promise<ApiResponse<ProductSM[]>> {
     const queryFilter = new QueryFilter();
     queryFilter.skip =
       (viewModel.pagination.PageNo - 1) * viewModel.pagination.PageSize;
     queryFilter.top = viewModel.pagination.PageSize;
-    let categoryId=viewModel.categoryId;
-    return await this.productClient.GetAllProductsByCategoryId(queryFilter,categoryId);
+    let categoryId = viewModel.categoryId;
+    return await this.productClient.GetAllProductsByCategoryId(
+      queryFilter,
+      categoryId
+    );
   }
- async getTotatProductCountByCategoryId(categoryId:number): Promise<ApiResponse<IntResponseRoot>> {
-    return await this.productClient.GetTotatProductCountByCategoryId(categoryId);
+  async getTotatProductCountByCategoryId(
+    categoryId: number
+  ): Promise<ApiResponse<IntResponseRoot>> {
+    return await this.productClient.GetTotatProductCountByCategoryId(
+      categoryId
+    );
   }
   async deleteProduct(id: number): Promise<ApiResponse<DeleteResponseRoot>> {
     if (id <= 0) {
@@ -75,5 +83,9 @@ export class ProductService extends BaseService {
   }
   async getAllNewArrivals(): Promise<ApiResponse<ProductSM[]>> {
     return await this.productClient.GetAllNewArrivals();
+  }
+
+  async getProductReviews(id: number): Promise<ApiResponse<ReviewSM[]>> {
+    return await this.productClient.GetProductReviews(id);
   }
 }
