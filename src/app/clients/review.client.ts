@@ -26,48 +26,53 @@ export class ReviewClient extends BaseApiClient {
     super(storageService, storageCache, commonResponseCodeHandler);
   }
   GetAllPaginatedReviews = async (
-     queryFilter: QueryFilter
-   ): Promise<ApiResponse<ReviewSM[]>> => {
-     let resp = await this.GetResponseAsync<null, ReviewSM[]>(
-       `${AppConstants.ApiUrls.REVIEW}/getall/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`,
-       'GET',null,
-             new AdditionalRequestDetails<ReviewSM[]>(false, Authentication.false)
-     );
-     
-     return resp;
-   };
- 
-   GetTotatReviewCount = async (): Promise<ApiResponse<IntResponseRoot>> => {
-     let resp = await this.GetResponseAsync<null, IntResponseRoot>(
-       `${AppConstants.ApiUrls.REVIEW}/count`,
-       'GET',null,
-             new AdditionalRequestDetails<IntResponseRoot>(false, Authentication.false)
-     );
-     return resp;
-   };
- 
-    /** Add a new category */
-     AddReview  = async (ReviewFormData: ApiRequest<ReviewSM>): Promise<ApiResponse<ReviewSM>> => {
-         let resp = await this.GetResponseAsync<ReviewSM, ReviewSM>(
-           `${AppConstants.ApiUrls.REVIEW}/create`,
-           'POST',
-           ReviewFormData, new AdditionalRequestDetails<ReviewSM>(false, Authentication.false  ));
-         return resp;
-       };
- 
-     UpdateReview = async (
-   apiRequest: ApiRequest<ReviewSM>
- ): Promise<ApiResponse<ReviewSM>> => {
-   return await this.GetResponseAsync<ReviewSM, ReviewSM>(
-     `${AppConstants.ApiUrls.ADMIN_REVIEW}/update/${apiRequest.reqData.id}`,
-     'PUT',
-     apiRequest,   // ✅ this is now valid JSON
-     new AdditionalRequestDetails<ReviewSM>(true, Authentication.true)
-   );
- };
- 
- 
-         /**
+    queryFilter: QueryFilter
+  ): Promise<ApiResponse<ReviewSM[]>> => {
+    let resp = await this.GetResponseAsync<null, ReviewSM[]>(
+      `${AppConstants.ApiUrls.REVIEW}/getall/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`,
+      'GET',
+      null,
+      new AdditionalRequestDetails<ReviewSM[]>(false, Authentication.false)
+    );
+
+    return resp;
+  };
+
+  GetTotatReviewCount = async (): Promise<ApiResponse<IntResponseRoot>> => {
+    let resp = await this.GetResponseAsync<null, IntResponseRoot>(
+      `${AppConstants.ApiUrls.REVIEW}/count`,
+      'GET',
+      null,
+      new AdditionalRequestDetails<IntResponseRoot>(false, Authentication.false)
+    );
+    return resp;
+  };
+
+  /** Add a new category */
+  AddReview = async (
+    ReviewFormData: ApiRequest<ReviewSM>
+  ): Promise<ApiResponse<ReviewSM>> => {
+    let resp = await this.GetResponseAsync<ReviewSM, ReviewSM>(
+      `${AppConstants.ApiUrls.REVIEW}/CreateProductReviewByProductId/${ReviewFormData.reqData.productId}`,
+      'POST',
+      ReviewFormData,
+      new AdditionalRequestDetails<ReviewSM>(false, Authentication.false)
+    );
+    return resp;
+  };
+
+  UpdateReview = async (
+    apiRequest: ApiRequest<ReviewSM>
+  ): Promise<ApiResponse<ReviewSM>> => {
+    return await this.GetResponseAsync<ReviewSM, ReviewSM>(
+      `${AppConstants.ApiUrls.ADMIN_REVIEW}/update/${apiRequest.reqData.id}`,
+      'PUT',
+      apiRequest, // ✅ this is now valid JSON
+      new AdditionalRequestDetails<ReviewSM>(true, Authentication.true)
+    );
+  };
+
+  /**
     * Update existing Review
     * 
     * @param updateReview Review data to update
@@ -76,23 +81,22 @@ export class ReviewClient extends BaseApiClient {
     * const updatedReview = new ReviewSM();
    
     */
-   /**delete Review by id */
-   DeleteReviewById = async (
-     Id: number
-   ): Promise<ApiResponse<DeleteResponseRoot>> => {
-     let resp = await this.GetResponseAsync<number, DeleteResponseRoot>(
-       `${AppConstants.ApiUrls.ADMIN_REVIEW}/delete/${Id}`,
-       'DELETE'
-     );
-     return resp;
-   };
- 
-   GetReviewById = async (Id: number): Promise<ApiResponse<ReviewSM>> => {
-     let resp = await this.GetResponseAsync<number, ReviewSM>(
-       `${AppConstants.ApiUrls.REVIEW}/getbyid/${Id}`,
-       'GET'
-     );
-     return resp;
-   };
+  /**delete Review by id */
+  DeleteReviewById = async (
+    Id: number
+  ): Promise<ApiResponse<DeleteResponseRoot>> => {
+    let resp = await this.GetResponseAsync<number, DeleteResponseRoot>(
+      `${AppConstants.ApiUrls.ADMIN_REVIEW}/delete/${Id}`,
+      'DELETE'
+    );
+    return resp;
+  };
 
+  GetReviewById = async (Id: number): Promise<ApiResponse<ReviewSM>> => {
+    let resp = await this.GetResponseAsync<number, ReviewSM>(
+      `${AppConstants.ApiUrls.REVIEW}/getbyid/${Id}`,
+      'GET'
+    );
+    return resp;
+  };
 }

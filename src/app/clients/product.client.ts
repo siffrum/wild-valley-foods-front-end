@@ -14,6 +14,7 @@ import {
 import { QueryFilter } from '../models/service-models/foundation/api-contracts/query-filter';
 import { ProductSM } from '../models/service-models/app/v1/product-s-m';
 import { ReviewSM } from '../models/service-models/app/v1/review-s-m';
+import { ApiRequest } from '../models/service-models/app/base/api-request';
 
 @Injectable({
   providedIn: 'root',
@@ -148,4 +149,42 @@ export class ProductClient extends BaseApiClient {
       new AdditionalRequestDetails<ReviewSM[]>(false, Authentication.false)
     );
   };
+
+  // AddReview = async (
+  //   ReviewFormData: ReviewSM
+  // ): Promise<ApiRequest<ReviewSM>> => {
+  //   return await this.GetResponseAsync<ReviewSM, ReviewSM>(
+  //     `${AppConstants.ApiUrls.BASE}/review/AddReview`,
+  //     'POST',
+  //     ReviewFormData,
+  //     new AdditionalRequestDetails<ReviewSM>(false, Authentication.false)
+  //   );
+  // };
+  // AddReview = async (add: ReviewSM): Promise<ApiResponse<ReviewSM>> => {
+  //   console.log(add);
+
+  //   let resp = await this.GetResponseAsync<ReviewSM, ReviewSM>(
+  //     AppConstants.ApiUrls.BASE +
+  //       '/review/CreateProductReviewByProductId/' +
+  //       add.productId,
+  //     'POST',
+  //     add,
+  //     null,
+  //     new AdditionalRequestDetails<ReviewSM>(false, Authentication.false)
+  //   );
+  //   return resp;
+  // };
+
+  // AddReview = async (
+  //   reviewFormData: ApiRequest<ReviewSM>
+  // ): Promise<ApiResponse<ReviewSM>> => {
+  //   let resp = await this.GetResponseAsync<ReviewSM, ReviewSM>(
+  //     `${AppConstants.ApiUrls.CONTACT_US}/create`,
+  //     'POST',
+  //     reviewFormData,
+
+  //     new AdditionalRequestDetails<ReviewSM>(false, Authentication.false)
+  //   );
+  //   return resp;
+  // };
 }

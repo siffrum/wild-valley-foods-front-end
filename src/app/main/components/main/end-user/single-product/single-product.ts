@@ -6,7 +6,7 @@ import {
   RouterModule,
 } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 
 import { BaseComponent } from '../../../../../base.component';
 import { UserProductViewModel } from '../../../../../models/view/end-user/product/user-product.viewmodel';
@@ -19,6 +19,8 @@ import { CartService } from '../../../../../services/cart.service';
 import { WishlistService } from '../../../../../services/wishlist.service';
 
 import { ProductCardComponent } from '../../../internal/End-user/product/product';
+import { ReviewSM } from '../../../../../models/service-models/app/v1/review-s-m';
+import { ReviewService } from '../../../../../services/review.service';
 
 @Component({
   selector: 'app-product-page',
@@ -37,7 +39,8 @@ export class SingleProduct
     private productService: ProductService,
     private router: Router,
     private cartService: CartService,
-    private wishlistService: WishlistService
+    private wishlistService: WishlistService,
+    private reviewService: ReviewService
   ) {
     super(commonService, logHandlerService);
     this.viewModel = new UserProductViewModel();
@@ -74,9 +77,35 @@ export class SingleProduct
       this.viewModel.averageRating = 0;
     }
   }
-
-  openAddReviewModal(): void {}
-
+  showReviewModal = false;
+  openAddReviewModal(): void {
+    this.showReviewModal = true;
+  }
+  submitReview(reviewForm: NgForm) {
+    if (!reviewForm.invalid) {
+      this.showReviewModal = false;
+      this.viewModel.reviewFormData = reviewForm.value;
+      this.viewModel.reviewFormData.productId = this.viewModel.product.id;
+      this.addReview(this.viewModel.reviewFormData);
+    }
+  }
+  async addReview(form: ReviewSM) {
+    let resp = await this.reviewService.addReview(form);
+    if (resp.isError) {
+      await this._exceptionHandler.logObject(resp.errorData);
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: resp.errorData.displayMessage,
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    } else {
+      await this.getProductReviews(this.viewModel.product.id);
+    }
+  }
+  closeModal() {
+    this.showReviewModal = false;
+  }
   toggleRichDesc() {
     this.viewModel.showFullRichDesc = !this.viewModel.showFullRichDesc;
   }

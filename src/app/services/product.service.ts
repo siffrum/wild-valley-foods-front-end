@@ -9,6 +9,8 @@ import { AdminProductsViewModel } from '../models/view/Admin/admin-product.viewm
 import { ProductSM } from '../models/service-models/app/v1/product-s-m';
 import { UserProductViewModel } from '../models/view/end-user/product/user-product.viewmodel';
 import { ReviewSM } from '../models/service-models/app/v1/review-s-m';
+import { AppConstants } from '../../app-constants';
+import { ApiRequest } from '../models/service-models/app/base/api-request';
 
 @Injectable({
   providedIn: 'root',
@@ -88,4 +90,17 @@ export class ProductService extends BaseService {
   async getProductReviews(id: number): Promise<ApiResponse<ReviewSM[]>> {
     return await this.productClient.GetProductReviews(id);
   }
+  // async addReview(data: ReviewSM): Promise<ApiResponse<ReviewSM>> {
+  //   if (data == null) {
+  //     throw new Error(AppConstants.ErrorPrompts.Invalid_Input_Data);
+  //   } else {
+  //     let apiRequest = new ApiRequest<ReviewSM>();
+  //     apiRequest.reqData = data;
+  //     let resp = await this.productClient.AddReview(apiRequest);
+  //     if (resp.isError) {
+  //       throw resp.errorData;
+  //     }
+  //     return resp;
+  //   }
+  // }
 }
