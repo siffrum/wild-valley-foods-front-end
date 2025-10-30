@@ -51,19 +51,37 @@
           </div>
         </div>
 
-        <!-- ⭐ Ratings -->
-        <div class="rating-summary d-flex align-items-center mb-3">
-          <div class="stars me-2">
-            @for (s of [1,2,3,4,5]; track s) {
-            <i class="bi"
-              [ngClass]="s <= viewModel.averageRating ? 'bi-star-fill text-warning' : 'bi-star text-muted'"></i>
-            }
-          </div>
-          <span class="fw-semibold">{{ viewModel.averageRating.toFixed(1) }}/5</span>
-          <a href="#reviews-section" class="ms-2 small text-primary text-decoration-none">
-            {{ viewModel.reviewsSM.length }} Ratings & Reviews
-          </a>
-        </div>
+<div class="rating-summary d-flex align-items-center mb-3">
+
+  <div class="stars me-2">
+    @for (s of [1,2,3,4,5]; track s) {
+
+      <!-- Full Star -->
+      @if (s <= getFullStars()) {
+        <i class="bi bi-star-fill text-warning"></i>
+      }
+
+      <!-- Half Star -->
+      @else if (s === getFullStars() + 1 && hasHalfStar()) {
+        <i class="bi bi-star-half text-warning"></i>
+      }
+
+      <!-- Empty Star -->
+      @else {
+        <i class="bi bi-star text-muted"></i>
+      }
+
+    }
+  </div>
+
+  <span class="fw-semibold">{{ viewModel.averageRating.toFixed(1) }}/5</span>
+  <a href="#reviews-section" class="ms-2 small text-primary text-decoration-none">
+    {{ viewModel.reviewsSM.length }} Ratings & Reviews
+  </a>
+</div>
+
+
+
 
         <div class="price-row mb-3">
           <h3 class="price mb-0">₹ {{ viewModel.product.price | number:'1.2-2' }}</h3>
@@ -187,7 +205,6 @@
 
 <!-- Review Modal -->
 <div class="modal-backdrop fade show" *ngIf="showReviewModal"></div>
-
 <div class="modal fade show d-block" tabindex="-1" role="dialog" *ngIf="showReviewModal">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -199,33 +216,57 @@
 
       <div class="modal-body">
         <form #reviewForm="ngForm" (ngSubmit)="submitReview(reviewForm)">
+
+          <!-- Name -->
           <div class="mb-3">
-            <label class="form-label">Name</label>
-            <input type="text" class="form-control" name="name" ngModel required />
+            <label class="form-label">Your Name</label>
+            <input class="form-control" type="text" name="name" ngModel required placeholder="Enter your full name" />
           </div>
 
+          <!-- Email -->
           <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-control" name="email" ngModel required />
+            <label class="form-label">Your Email</label>
+            <input class="form-control" type="email" name="email" ngModel required placeholder="example@email.com" />
           </div>
 
-          <div class="mb-3">
-            <label class="form-label">Rating (1–5)</label>
-            <select class="form-select" name="rating" ngModel required>
-              <option value="">Choose...</option>
-              <option *ngFor="let r of [1,2,3,4,5]" [value]="r">{{r}}</option>
-            </select>
+          <!-- ⭐ Half Star Rating -->
+          <div class="star-rating mb-2">
+            <ng-container *ngFor="let star of [1,2,3,4,5]; let i = index">
+
+              <i class="bi pointer" [ngClass]="{
+        'bi-star-fill': rating >= star,
+        'bi-star-half': rating >= star - 0.5 && rating < star,
+        'bi-star': rating < star - 0.5
+       }" (click)="setRating(star)" (dblclick)="setRating(star - 0.5)">
+              </i>
+
+            </ng-container>
           </div>
 
+          <div class="rating-text text-warning fw-bold" *ngIf="ratingText">
+            {{ rating }} ★ — {{ ratingText }}
+          </div>
+
+
+          <!-- rating message -->
+          <div class="rating-text mt-2" *ngIf="ratingText">
+            {{ ratingText }}
+          </div>
+
+
+
+          <!-- Comment -->
           <div class="mb-3">
-            <label class="form-label">Comment</label>
-            <textarea class="form-control" name="comment" ngModel rows="3" required></textarea>
+            <label class="form-label">Your Review</label>
+            <textarea class="form-control" name="comment" ngModel rows="4" required
+              placeholder="Share your experience..."></textarea>
           </div>
 
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
             <button type="submit" class="btn btn-primary" [disabled]="reviewForm.invalid">Submit Review</button>
           </div>
+
         </form>
       </div>
 

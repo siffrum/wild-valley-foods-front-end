@@ -81,14 +81,21 @@ export class SingleProduct
   openAddReviewModal(): void {
     this.showReviewModal = true;
   }
-  submitReview(reviewForm: NgForm) {
-    if (!reviewForm.invalid) {
-      this.showReviewModal = false;
-      this.viewModel.reviewFormData = reviewForm.value;
-      this.viewModel.reviewFormData.productId = this.viewModel.product.id;
-      this.addReview(this.viewModel.reviewFormData);
-    }
+submitReview(reviewForm: NgForm) {
+  if (!reviewForm.invalid) {
+    this.showReviewModal = false;
+
+    this.viewModel.reviewFormData = reviewForm.value;
+
+    // ✅ Append rating value manually
+    this.viewModel.reviewFormData.rating = this.rating;
+
+    this.viewModel.reviewFormData.productId = this.viewModel.product.id;
+
+    this.addReview(this.viewModel.reviewFormData);
   }
+}
+
   async addReview(form: ReviewSM) {
     let resp = await this.reviewService.addReview(form);
     if (resp.isError) {
@@ -113,6 +120,31 @@ export class SingleProduct
   selectImage(index: number) {
     this.viewModel.selectedImageIndex = index;
   }
+
+rating = 0;
+ratingText = "";
+
+ratingMessages: any = {
+  0.5: "Very Poor 😠",
+  1: "Poor 😟",
+  1.5: "Below Average 😕",
+  2: "Not Good 😐",
+  2.5: "Average 🙂",
+  3: "Okay 🙂",
+  3.5: "Good 🙂👍",
+  4: "Very Good 😄",
+  4.5: "Excellent 😍",
+  5: "Outstanding 🤩🔥"
+};
+
+setRating(value: number) {
+  // force 0.5 steps
+  this.rating = Math.max(0.5, Math.min(5, value));
+
+  this.ratingText = this.ratingMessages[this.rating] || "";
+}
+
+
   /**
    * Main entry point for loading product + related data
    */
@@ -156,10 +188,18 @@ export class SingleProduct
       );
       return;
     }
-    this.viewModel.reviewsSM = resp.successData;
+    // ✅ Keep only approved reviews
+  const allReviews = resp.successData;
+  this.viewModel.reviewsSM = allReviews;
     this.calculateAverageRating();
   }
+getFullStars(): number {
+  return Math.floor(this.viewModel.averageRating);
+}
 
+hasHalfStar(): boolean {
+  return (this.viewModel.averageRating % 1) >= 0.5;
+}
   /**
    * Sync cart info with current product
    */

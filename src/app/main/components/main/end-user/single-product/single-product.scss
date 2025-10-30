@@ -120,3 +120,24 @@
     }
   }
 }
+.star-rating {
+  display: flex;
+  gap: 4px;
+}
+
+.star-rating i {
+  font-size: 28px;
+  cursor: pointer;
+  color: #ccc;
+  transition: transform .2s, color .2s;
+}
+
+.bi-star-fill,
+.bi-star-half {
+  color: #ffc107 !important;
+}
+
+.star-rating i:hover {
+  transform: scale(1.2);
+}
+
