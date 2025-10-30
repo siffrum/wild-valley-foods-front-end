@@ -13,6 +13,8 @@ import {
 } from '../models/internal/additional-request-details';
 import { QueryFilter } from '../models/service-models/foundation/api-contracts/query-filter';
 import { ProductSM } from '../models/service-models/app/v1/product-s-m';
+import { ReviewSM } from '../models/service-models/app/v1/review-s-m';
+import { ApiRequest } from '../models/service-models/app/base/api-request';
 
 @Injectable({
   providedIn: 'root',
@@ -64,7 +66,7 @@ export class ProductClient extends BaseApiClient {
   };
   /** Retrieves all Products by search string */
   GetAllProductsBySearhString = async (
-    searchString:string,
+    searchString: string
   ): Promise<ApiResponse<ProductSM[]>> => {
     return await this.GetResponseAsync<null, ProductSM[]>(
       `${AppConstants.ApiUrls.BASE}/product/search/?q=${searchString}`,
@@ -74,9 +76,10 @@ export class ProductClient extends BaseApiClient {
     );
   };
 
-    /** Retrieves all Products (paginated) By category Id */
+  /** Retrieves all Products (paginated) By category Id */
   GetAllProductsByCategoryId = async (
-    queryFilter: QueryFilter, categoryId: number
+    queryFilter: QueryFilter,
+    categoryId: number
   ): Promise<ApiResponse<ProductSM[]>> => {
     return await this.GetResponseAsync<null, ProductSM[]>(
       `${AppConstants.ApiUrls.BASE}/product/ByCategoryId/${categoryId}/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`,
@@ -86,7 +89,9 @@ export class ProductClient extends BaseApiClient {
     );
   };
   /** Get total product count  By CategoryId*/
-  GetTotatProductCountByCategoryId = async (categoryId:number): Promise<ApiResponse<IntResponseRoot>> => {
+  GetTotatProductCountByCategoryId = async (
+    categoryId: number
+  ): Promise<ApiResponse<IntResponseRoot>> => {
     return await this.GetResponseAsync<null, IntResponseRoot>(
       `${AppConstants.ApiUrls.BASE}/product/count/ByCategoryId/${categoryId}`,
       'GET',
@@ -136,4 +141,50 @@ export class ProductClient extends BaseApiClient {
       new AdditionalRequestDetails<ProductSM[]>(false, Authentication.false)
     );
   };
+  GetProductReviews = async (id: number): Promise<ApiResponse<ReviewSM[]>> => {
+    return await this.GetResponseAsync<null, ReviewSM[]>(
+      `${AppConstants.ApiUrls.BASE}/review/GetAllPaginatedProductReviewsByProductId/${id}`,
+      'GET',
+      null,
+      new AdditionalRequestDetails<ReviewSM[]>(false, Authentication.false)
+    );
+  };
+
+  // AddReview = async (
+  //   ReviewFormData: ReviewSM
+  // ): Promise<ApiRequest<ReviewSM>> => {
+  //   return await this.GetResponseAsync<ReviewSM, ReviewSM>(
+  //     `${AppConstants.ApiUrls.BASE}/review/AddReview`,
+  //     'POST',
+  //     ReviewFormData,
+  //     new AdditionalRequestDetails<ReviewSM>(false, Authentication.false)
+  //   );
+  // };
+  // AddReview = async (add: ReviewSM): Promise<ApiResponse<ReviewSM>> => {
+  //   console.log(add);
+
+  //   let resp = await this.GetResponseAsync<ReviewSM, ReviewSM>(
+  //     AppConstants.ApiUrls.BASE +
+  //       '/review/CreateProductReviewByProductId/' +
+  //       add.productId,
+  //     'POST',
+  //     add,
+  //     null,
+  //     new AdditionalRequestDetails<ReviewSM>(false, Authentication.false)
+  //   );
+  //   return resp;
+  // };
+
+  // AddReview = async (
+  //   reviewFormData: ApiRequest<ReviewSM>
+  // ): Promise<ApiResponse<ReviewSM>> => {
+  //   let resp = await this.GetResponseAsync<ReviewSM, ReviewSM>(
+  //     `${AppConstants.ApiUrls.CONTACT_US}/create`,
+  //     'POST',
+  //     reviewFormData,
+
+  //     new AdditionalRequestDetails<ReviewSM>(false, Authentication.false)
+  //   );
+  //   return resp;
+  // };
 }

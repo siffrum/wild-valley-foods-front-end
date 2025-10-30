@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterModule,
+} from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 
 import { BaseComponent } from '../../../../../base.component';
 import { UserProductViewModel } from '../../../../../models/view/end-user/product/user-product.viewmodel';
@@ -14,6 +19,8 @@ import { CartService } from '../../../../../services/cart.service';
 import { WishlistService } from '../../../../../services/wishlist.service';
 
 import { ProductCardComponent } from '../../../internal/End-user/product/product';
+import { ReviewSM } from '../../../../../models/service-models/app/v1/review-s-m';
+import { ReviewService } from '../../../../../services/review.service';
 
 @Component({
   selector: 'app-product-page',
@@ -25,9 +32,6 @@ export class SingleProduct
   extends BaseComponent<UserProductViewModel>
   implements OnInit
 {
-  cartItems: ProductSM[] = [];
-showReviews = false;
-averageRating = 0;
   constructor(
     commonService: CommonService,
     private logHandlerService: LogHandlerService,
@@ -35,11 +39,12 @@ averageRating = 0;
     private productService: ProductService,
     private router: Router,
     private cartService: CartService,
-    private wishlistService: WishlistService
+    private wishlistService: WishlistService,
+    private reviewService: ReviewService
   ) {
     super(commonService, logHandlerService);
     this.viewModel = new UserProductViewModel();
-      this.router.events.subscribe(event => {
+    this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         this._commonService.dismissLoader();
@@ -53,74 +58,61 @@ averageRating = 0;
         this.loadProductData(+params['id']);
       }
     });
-  // 
- this.viewModel.reviewsSM = [
-    {
-      id: 1,
-      name: 'John Doe',
-      email: 'john@example.com',
-      rating: 5,
-      comment: 'Excellent quality and fast delivery! Highly recommend.',
-      productId: 1,
-      isApproved: true,
-      createdOnUTC: new Date('2024-06-15'),
-      createdBy: '',
-      lastModifiedBy: ''
-    },
-    {
-      id: 2,
-      name: 'Aisha Khan',
-      email: 'aisha@example.com',
-      rating: 4,
-      comment: 'Product is good but packaging could be improved.',
-      productId: 1,
-      isApproved: true,
-      createdOnUTC: new Date('2024-07-10'),
-      createdBy: '',
-      lastModifiedBy: ''
-    },
-    {
-      id: 3,
-      name: 'Rahul Sharma',
-      email: 'rahul@example.com',
-      rating: 3,
-      comment: 'Decent product for the price. Could be better.',
-      productId: 1,
-      isApproved: true,
-      createdOnUTC: new Date('2024-09-20'),
-      createdBy: '',
-      lastModifiedBy: ''
-    },
-  ];
+    //
 
-  this.calculateAverageRating();
-}
-toggleReviews(): void {
-  this.showReviews = !this.showReviews;
-}
-
-calculateAverageRating(): void {
-  if (this.viewModel.reviewsSM.length > 0) {
-    const total = this.viewModel.reviewsSM.reduce((sum, r) => sum + r.rating, 0);
-    this.averageRating = total / this.viewModel.reviewsSM.length;
-  } else {
-    this.averageRating = 0;
+    this.calculateAverageRating();
   }
-}
+  toggleReviews(): void {
+    this.viewModel.showReviews = !this.viewModel.showReviews;
+  }
 
-openAddReviewModal(): void {
-  this._commonService.ShowToastAtTopEnd('Feature coming soon...', 'info');
-}
+  calculateAverageRating(): void {
+    if (this.viewModel.reviewsSM.length > 0) {
+      const total = this.viewModel.reviewsSM.reduce(
+        (sum, r) => sum + r.rating,
+        0
+      );
+      this.viewModel.averageRating = total / this.viewModel.reviewsSM.length;
+    } else {
+      this.viewModel.averageRating = 0;
+    }
+  }
+  showReviewModal = false;
+  openAddReviewModal(): void {
+    this.showReviewModal = true;
+  }
+  submitReview(reviewForm: NgForm) {
+    if (!reviewForm.invalid) {
+      this.showReviewModal = false;
+      this.viewModel.reviewFormData = reviewForm.value;
+      this.viewModel.reviewFormData.productId = this.viewModel.product.id;
+      this.addReview(this.viewModel.reviewFormData);
+    }
+  }
+  async addReview(form: ReviewSM) {
+    let resp = await this.reviewService.addReview(form);
+    if (resp.isError) {
+      await this._exceptionHandler.logObject(resp.errorData);
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: resp.errorData.displayMessage,
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    } else {
+      await this.getProductReviews(this.viewModel.product.id);
+    }
+  }
+  closeModal() {
+    this.showReviewModal = false;
+  }
+  toggleRichDesc() {
+    this.viewModel.showFullRichDesc = !this.viewModel.showFullRichDesc;
+  }
 
-showFullRichDesc = false;
-
-toggleRichDesc() {
-  this.showFullRichDesc = !this.showFullRichDesc;
-}
-
-selectImage(index: number) {
-  this.viewModel.selectedImageIndex = index;
-}
+  selectImage(index: number) {
+    this.viewModel.selectedImageIndex = index;
+  }
   /**
    * Main entry point for loading product + related data
    */
@@ -130,6 +122,7 @@ selectImage(index: number) {
       await this.getProductById(id);
       await this.getCartItemById(id);
       await this.loadSimilarProductsByCategory();
+      await this.getProductReviews(id);
     } catch (error) {
       await this._exceptionHandler.logObject(error);
       this._commonService.showSweetAlertToast({
@@ -153,6 +146,18 @@ selectImage(index: number) {
     }
     this.viewModel.product = resp.successData;
     this.viewModel.categoryId = this.viewModel.product.categoryId;
+  }
+  private async getProductReviews(id: number): Promise<void> {
+    const resp = await this.productService.getProductReviews(id);
+    if (resp.isError) {
+      this._commonService.ShowToastAtTopEnd(
+        resp.errorData.displayMessage,
+        'error'
+      );
+      return;
+    }
+    this.viewModel.reviewsSM = resp.successData;
+    this.calculateAverageRating();
   }
 
   /**
@@ -208,10 +213,9 @@ selectImage(index: number) {
    */
   private async TotalProductCountByCategoryId(): Promise<void> {
     try {
-      const resp =
-        await this.productService.getTotatProductCountByCategoryId(
-          this.viewModel.product.categoryId
-        );
+      const resp = await this.productService.getTotatProductCountByCategoryId(
+        this.viewModel.product.categoryId
+      );
 
       if (resp.isError) {
         await this.logHandlerService.logObject(resp.errorData);
@@ -256,14 +260,14 @@ selectImage(index: number) {
   }
 
   private async saveCart(): Promise<void> {
-    for (const item of this.cartItems) {
+    for (const item of this.viewModel.cartItems) {
       await this.cartService.updateCartItem(item.id, item.cartQuantity);
     }
     await this.getCartItems();
   }
 
   private async getCartItems(): Promise<void> {
-    this.cartItems = await this.cartService.getAll();
+    this.viewModel.cartItems = await this.cartService.getAll();
   }
 
   removeItem(item: ProductSM): void {
@@ -284,11 +288,11 @@ selectImage(index: number) {
     await this.wishlistService.toggleWishlist(product);
   }
 
-openProduct(product: ProductSM): void {
-  this._commonService.presentLoading();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  this.router.navigate(['/product', product.id])
-}
+  openProduct(product: ProductSM): void {
+    this._commonService.presentLoading();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.router.navigate(['/product', product.id]);
+  }
 
   shareProduct(): void {
     if (!this.viewModel.product) return;

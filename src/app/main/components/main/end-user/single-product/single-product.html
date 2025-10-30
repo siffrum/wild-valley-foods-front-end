@@ -8,12 +8,9 @@
     <div class="col-md-6">
       <div class="card image-card p-4">
         <div class="main-image-wrapper mb-3">
-          <img
-            *ngIf="viewModel.product.images && viewModel.product.images.length > 0"
-            [src]="viewModel.product.images[viewModel.selectedImageIndex]"
-            class="img-fluid main-image"
-            [attr.alt]="viewModel.product.name || 'product image'"
-            (error)="_commonService.onImageError($event)" />
+          <img *ngIf="viewModel.product.images && viewModel.product.images.length > 0"
+            [src]="viewModel.product.images[viewModel.selectedImageIndex]" class="img-fluid main-image"
+            [attr.alt]="viewModel.product.name || 'product image'" (error)="_commonService.onImageError($event)" />
         </div>
 
         <div class="d-flex flex-wrap gap-2 thumbnails justify-content-center">
@@ -58,10 +55,11 @@
         <div class="rating-summary d-flex align-items-center mb-3">
           <div class="stars me-2">
             @for (s of [1,2,3,4,5]; track s) {
-            <i class="bi" [ngClass]="s <= averageRating ? 'bi-star-fill text-warning' : 'bi-star text-muted'"></i>
+            <i class="bi"
+              [ngClass]="s <= viewModel.averageRating ? 'bi-star-fill text-warning' : 'bi-star text-muted'"></i>
             }
           </div>
-          <span class="fw-semibold">{{ averageRating.toFixed(1) }}/5</span>
+          <span class="fw-semibold">{{ viewModel.averageRating.toFixed(1) }}/5</span>
           <a href="#reviews-section" class="ms-2 small text-primary text-decoration-none">
             {{ viewModel.reviewsSM.length }} Ratings & Reviews
           </a>
@@ -116,11 +114,11 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h3 class="fw-bold">Customer Reviews</h3>
       <button class="btn btn-outline-primary btn-sm rounded-pill px-3" (click)="toggleReviews()">
-        {{ showReviews ? 'Hide Reviews' : 'Show Reviews' }}
+        {{ viewModel.showReviews ? 'Hide Reviews' : 'Show Reviews' }}
       </button>
     </div>
 
-    @if (showReviews) {
+    @if (viewModel.showReviews) {
     <div class="reviews-list mt-3">
       @for (review of viewModel.reviewsSM; track review) {
       <div class="card review-card mb-3 p-3">
@@ -153,10 +151,11 @@
   <div class="mt-5 rich-desc">
     <h3 class="fw-bold mb-3">Detailed Information</h3>
     <p class="text-secondary" style="white-space: pre-line;">
-      {{ showFullRichDesc ? viewModel.product.richDescription : (viewModel.product.richDescription | slice:0:200) }}
+      {{ viewModel.showFullRichDesc ? viewModel.product.richDescription : (viewModel.product.richDescription |
+      slice:0:200) }}
       @if (viewModel.product.richDescription.length > 200) {
       <a href="javascript:void(0)" (click)="toggleRichDesc()" class="see-more text-primary ms-1">
-        {{ showFullRichDesc ? 'See Less' : '...See More' }}
+        {{ viewModel.showFullRichDesc ? 'See Less' : '...See More' }}
       </a>
       }
     </p>
@@ -182,3 +181,54 @@
   }
 </div>
 }
+
+
+
+
+<!-- Review Modal -->
+<div class="modal-backdrop fade show" *ngIf="showReviewModal"></div>
+
+<div class="modal fade show d-block" tabindex="-1" role="dialog" *ngIf="showReviewModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Write a Review</h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <div class="modal-body">
+        <form #reviewForm="ngForm" (ngSubmit)="submitReview(reviewForm)">
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" name="name" ngModel required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" ngModel required />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Rating (1–5)</label>
+            <select class="form-select" name="rating" ngModel required>
+              <option value="">Choose...</option>
+              <option *ngFor="let r of [1,2,3,4,5]" [value]="r">{{r}}</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Comment</label>
+            <textarea class="form-control" name="comment" ngModel rows="3" required></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="reviewForm.invalid">Submit Review</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
