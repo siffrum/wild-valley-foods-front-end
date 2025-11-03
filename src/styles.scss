@@ -26,7 +26,9 @@ app-root {
   flex-direction: column;
   min-height: 100vh;
 }
-
+app-product{
+  cursor: pointer !important;
+}
 main {
   flex: 1; // takes remaining space
 }

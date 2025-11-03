@@ -174,4 +174,58 @@ export class ReviewList extends BaseComponent<ReviewViewModel>
            this.loadPageData();
       }
     }
+
+// toggleApproval(item: any,productId:number) {
+//   const updatedValue = !item.isApproved;
+//   this.viewModel.reviewStatus.isApproved=!item.isApproved;
+
+//   this.reviewService.approveOrRejectReview(item.id, reqBody).subscribe({
+//     next: (res: any) => {
+//       item.isApproved = updatedValue; // update UI instantly
+//       this.toastService.success(`Review ${updatedValue ? 'approved' : 'rejected'} successfully`);
+//     },
+//     error: (err: any) => {
+//       this.toastService.error(err.error?.message || 'Action failed');
+//     }
+//   });
+// }
+async toggleApproval(item: ReviewSM) {
+  const originalState = item.isApproved;
+  item.isApproved = !item.isApproved; // Optimistic UI update
+
+  try {
+    this._commonService.presentLoading();
+
+    const body = { isApproved: item.isApproved };
+    const resp = await this.reviewService.updateReviewStatus(body, item.id);
+
+    if (resp.isError) {
+      item.isApproved = originalState; // Rollback UI
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: resp.errorData.displayMessage,
+        icon: 'error'
+      });
+      return;
+    }
+
+    this._commonService.showSweetAlertToast({
+      title: 'Success',
+      text: `Review ${item.isApproved ? 'Approved' : 'Marked Pending'}`,
+      icon: 'success'
+    });
+
+  } catch (err) {
+    item.isApproved = originalState; // Rollback UI
+    this._commonService.showSweetAlertToast({
+      title: 'Error',
+      text: 'Failed to update review status.',
+      icon: 'error'
+    });
+
+  } finally {
+    this._commonService.dismissLoader();
+  }
+}
+
   }

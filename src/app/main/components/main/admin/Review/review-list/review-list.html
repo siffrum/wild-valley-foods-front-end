@@ -7,7 +7,7 @@
     <input 
       type="text" 
       class="form-control border-start-0" 
-      placeholder="Search ContactUs..." 
+      placeholder="Search Review..." 
       [(ngModel)]="viewModel.searchTerm"
       (input)="applyFilter()">
   </div>
@@ -26,6 +26,7 @@
           Email <i class="bi ms-2" [ngClass]="getSortIcon('email')"></i>
         </th>
         <th>Commet</th>
+        <th>Status</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -36,6 +37,28 @@
         <td class="text-wrap text-break" title="{{ item.name }}">{{ item.name }}</td>
         <td class="text-wrap text-break" title="{{ item.email }}">{{ item.email }}</td>
         <td class="text-wrap text-break" title="{{ item.comment }}">{{ item.comment }}</td>
+       <td>
+  <!-- Toggle Approve/Reject Button -->
+ <button 
+  class="btn btn-sm"
+  [ngClass]="{
+    'btn-success': item.isApproved,
+    'btn-warning': !item.isApproved
+  }"
+  (click)="toggleApproval(item)"
+>
+  <i class="bi"
+     [ngClass]="{
+       'bi-check-circle-fill': item.isApproved,
+       'bi-x-circle-fill': !item.isApproved
+     }"
+  ></i>
+  {{ item.isApproved ? 'Approved' : 'Pending' }}
+</button>
+
+</td>
+
+        
         <td>
           <div class="d-flex gap-1 flex-wrap">
             <button class="btn btn-sm btn-primary" (click)="openFormModal(item)">

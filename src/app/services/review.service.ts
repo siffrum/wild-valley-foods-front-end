@@ -64,5 +64,15 @@ async updateReview(formData: ReviewSM): Promise<ApiResponse<ReviewSM>> {
 
   return await this.reviewClient.UpdateReview(apiRequest);
 }
+async updateReviewStatus(
+  formData: { isApproved: boolean }, 
+  productId: number
+): Promise<ApiResponse<ReviewSM>> {
+  const apiRequest = new ApiRequest<typeof formData>();
+  apiRequest.reqData = formData;
+
+  return await this.reviewClient.UpdateReviewStatus(apiRequest, productId);
+}
+
 
 }

@@ -189,8 +189,7 @@ setRating(value: number) {
       return;
     }
     // ✅ Keep only approved reviews
-  const allReviews = resp.successData;
-  this.viewModel.reviewsSM = allReviews;
+    this.viewModel.reviewsSM = resp.successData.filter(x => x.isApproved);
     this.calculateAverageRating();
   }
 getFullStars(): number {

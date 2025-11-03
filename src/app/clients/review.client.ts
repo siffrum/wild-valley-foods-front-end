@@ -61,16 +61,7 @@ export class ReviewClient extends BaseApiClient {
     return resp;
   };
 
-  UpdateReview = async (
-    apiRequest: ApiRequest<ReviewSM>
-  ): Promise<ApiResponse<ReviewSM>> => {
-    return await this.GetResponseAsync<ReviewSM, ReviewSM>(
-      `${AppConstants.ApiUrls.ADMIN_REVIEW}/update/${apiRequest.reqData.id}`,
-      'PUT',
-      apiRequest, // ✅ this is now valid JSON
-      new AdditionalRequestDetails<ReviewSM>(true, Authentication.true)
-    );
-  };
+
 
   /**
     * Update existing Review
@@ -81,6 +72,30 @@ export class ReviewClient extends BaseApiClient {
     * const updatedReview = new ReviewSM();
    
     */
+
+    UpdateReview = async (
+    apiRequest: ApiRequest<ReviewSM>
+  ): Promise<ApiResponse<ReviewSM>> => {
+    return await this.GetResponseAsync<ReviewSM, ReviewSM>(
+      `${AppConstants.ApiUrls.ADMIN_REVIEW}/update/${apiRequest.reqData.id}`,
+      'PUT',
+      apiRequest, // ✅ this is now valid JSON
+      new AdditionalRequestDetails<ReviewSM>(true, Authentication.true)
+    );
+  };
+
+UpdateReviewStatus = async (
+  apiRequest: ApiRequest<{ isApproved: boolean }>,
+  productId: number
+): Promise<ApiResponse<ReviewSM>> => {
+  return await this.GetResponseAsync(
+    `${AppConstants.ApiUrls.ADMIN_REVIEW}/approve/${productId}`,
+    'PUT',
+    apiRequest,
+    new AdditionalRequestDetails(true, Authentication.true)
+  );
+};
+
   /**delete Review by id */
   DeleteReviewById = async (
     Id: number
