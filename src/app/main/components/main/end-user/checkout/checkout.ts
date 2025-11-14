@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BaseComponent } from '../../../../../base.component';
@@ -10,6 +10,9 @@ import { StorageService } from '../../../../../services/storage.service';
 import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
 import { CommonService } from '../../../../../services/common.service';
 import { AppConstants } from '../../../../../../app-constants';
+import { AddressType } from '../../../../../models/service-models/app/enums/address-type-s-m.enum';
+import { CustomerService } from '../../../../../services/customer.service';
+import { CustomerDetailSM } from '../../../../../models/service-models/app/v1/customer-detail-s-m';
 
 @Component({
   selector: 'app-checkout',
@@ -22,7 +25,15 @@ export class Checkout
   extends BaseComponent<CheckoutViewModel>
   implements OnInit
 {
+  @ViewChild('customerForm') customerForm!: NgForm;
+
   couponCode: string = '';
+
+  // Saved customers and selection tracking
+  savedCustomers: CustomerDetailSM[] = [];
+  selectedCustomerId: number | null = null;
+  isFormDisabled: boolean = false;
+  currentCard: 'customer' | 'order' = 'customer';
 
   // derived values
   subTotal: number = 0;
@@ -34,6 +45,7 @@ export class Checkout
     logHandlerService: LogHandlerService,
     private cartService: CartService,
     private storageService: StorageService,
+    private customerService: CustomerService,
     private router: Router
   ) {
     super(commonService, logHandlerService);
@@ -42,7 +54,219 @@ export class Checkout
 
   async ngOnInit(): Promise<void> {
     await this.loadCart();
-    await this.loadSavedAddress();
+    await this.loadSavedCustomers();
+    this.viewModel.homeAddress.addressType = AddressType.Home;
+    this.viewModel.workAddress.addressType = AddressType.Work;
+  }
+
+  /**
+   * Load saved customers from local storage (max 10)
+   */
+  async loadSavedCustomers(): Promise<void> {
+    try {
+      const saved = await this.storageService.getFromStorage(
+        AppConstants.DbKeys.SAVED_CUSTOMER_DETAILS
+      );
+      this.savedCustomers = Array.isArray(saved) ? saved : [];
+    } catch (error) {
+      console.error('Error loading saved customers', error);
+      this.savedCustomers = [];
+    }
+  }
+
+  /**
+   * Select a saved customer and populate the form
+   */
+  selectCustomer(customerId: number): void {
+    const customer = this.savedCustomers.find(
+      (c) => c.id === customerId
+    );
+    if (!customer) return;
+
+    this.selectedCustomerId = customerId;
+    this.isFormDisabled = true;
+
+    // Populate form with saved customer details
+    this.viewModel.customer = { ...customer };
+    if (customer.addresses && customer.addresses.length > 0) {
+      this.viewModel.homeAddress = { ...customer.addresses[0] };
+    }
+    if (customer.addresses && customer.addresses.length > 1) {
+      this.viewModel.workAddress = { ...customer.addresses[1] };
+    }
+  }
+
+  /**
+   * Delete a saved customer from storage
+   */
+  async deleteCustomer(customerId: number, event: Event): Promise<void> {
+    event.stopPropagation(); // Prevent triggering select
+
+    this.savedCustomers = this.savedCustomers.filter((c) => c.id !== customerId);
+    await this.storageService.saveToStorage(
+      AppConstants.DbKeys.SAVED_CUSTOMER_DETAILS,
+      this.savedCustomers
+    );
+
+    // If deleted customer was selected, clear form
+    if (this.selectedCustomerId === customerId) {
+      this.clearForm();
+    }
+  }
+
+  /**
+   * Clear form and enable for new entry
+   */
+  addNewDetails(): void {
+    this.clearForm();
+  }
+
+  /**
+   * Clear all form fields and reset state
+   */
+  private clearForm(): void {
+    this.selectedCustomerId = null;
+    this.isFormDisabled = false;
+    this.viewModel.customer = new CustomerDetailSM();
+    this.viewModel.homeAddress = new (require('../../../../../models/service-models/app/v1/customer-address-detail-s-m').CustomerAddressDetailSM)();
+    this.viewModel.workAddress = new (require('../../../../../models/service-models/app/v1/customer-address-detail-s-m').CustomerAddressDetailSM)();
+    this.viewModel.homeAddress.addressType = AddressType.Home;
+    this.viewModel.workAddress.addressType = AddressType.Work;
+    this.viewModel.submitted = false;
+  }
+
+  /**
+   * Validate required fields before submission
+   */
+  validateForm(): boolean {
+    const customer = this.viewModel.customer;
+    const homeAddr = this.viewModel.homeAddress;
+
+    if (
+      !customer.firstName ||
+      !customer.lastName ||
+      !customer.email ||
+      !customer.contact
+    ) {
+      this._commonService.showSweetAlertToast({
+        title: 'Validation Error',
+        text: 'Please fill all required customer fields.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+      return false;
+    }
+
+    if (!homeAddr.addressLine1 || !homeAddr.city || !homeAddr.state || !homeAddr.country || !homeAddr.postalCode) {
+      this._commonService.showSweetAlertToast({
+        title: 'Validation Error',
+        text: 'Please fill all required address fields (Deliver To section).',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+      return false;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(customer.email)) {
+      this._commonService.showSweetAlertToast({
+        title: 'Validation Error',
+        text: 'Please enter a valid email address.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+      return false;
+    }
+
+    // Validate contact (10 digits)
+    if (!/^\d{10}$/.test(customer.contact)) {
+      this._commonService.showSweetAlertToast({
+        title: 'Validation Error',
+        text: 'Contact number must be 10 digits.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Handle form submission (Create new customer or proceed to order)
+   */
+  async onSubmit(form: any): Promise<void> {
+    // If a saved customer is selected, just proceed to order card
+    if (this.selectedCustomerId !== null) {
+      this.currentCard = 'order';
+      return;
+    }
+
+    // Otherwise, create new customer
+    if (!this.validateForm()) {
+      this.viewModel.submitted = true;
+      return;
+    }
+
+    try {
+      this.viewModel.submitted = true;
+      this.viewModel.customer.addresses = [
+        this.viewModel.homeAddress,
+        this.viewModel.workAddress,
+      ];
+
+      this._commonService.presentLoading();
+
+      // Call existing create customer API
+      const resp = await this.customerService.createCustomer(this.viewModel.customer);
+
+      if (resp.isError) {
+        await this._exceptionHandler.logObject(resp.errorData);
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData.displayMessage,
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+      } else {
+        const createdCustomer = resp.successData;
+
+        // Check 10-customer limit and manage storage
+        if (this.savedCustomers.length >= 10) {
+          // Remove oldest (first) entry
+          this.savedCustomers.shift();
+          this._commonService.showSweetAlertToast({
+            title: 'Address Limit',
+            text: 'Address limit reached — you already have 10 saved addresses. The oldest address was replaced.',
+            icon: 'info',
+            confirmButtonText: 'OK',
+          });
+        }
+
+        // Add new customer to storage
+        this.savedCustomers.push(createdCustomer);
+        await this.storageService.saveToStorage(
+          AppConstants.DbKeys.SAVED_CUSTOMER_DETAILS,
+          this.savedCustomers
+        );
+
+        this._commonService.showSweetAlertToast({
+          title: 'Success',
+          text: 'Details added successfully.',
+          icon: 'success',
+          confirmButtonText: 'OK',
+        });
+
+        // Proceed to order card
+        this.currentCard = 'order';
+        this.selectedCustomerId = createdCustomer.id;
+      }
+    } catch (error) {
+      this._exceptionHandler.handleError(error);
+    } finally {
+      this._commonService.dismissLoader();
+    }
   }
 
   async loadCart(): Promise<void> {
@@ -89,7 +313,7 @@ export class Checkout
   async updateCart(item: ProductSM) {
     // ensure number
     item.cartQuantity = Number(item.cartQuantity) || 1;
-    await this.cartService.updateCartItem(item.id, item.cartQuantity); // assumes your CartService implements updateItem
+    await this.cartService.updateCartItem(item.id, item.cartQuantity);
     this.recalculate();
   }
 
@@ -126,7 +350,8 @@ export class Checkout
     }, 0);
 
     // Shipping: simple flat rule (can be replaced with real calc)
-    this.shippingAmount = this.subTotal >= 1000 || this.subTotal === 0 ? 0 : 50;
+    this.shippingAmount =
+      this.subTotal >= 1000 || this.subTotal === 0 ? 0 : 50;
 
     // Apply coupon (simple)
     const couponDiscount = this.calculateCouponDiscount(this.subTotal);
@@ -155,55 +380,6 @@ export class Checkout
       : `₹${this.shippingAmount.toFixed(2)}`;
   }
 
-  async onSubmit(form?: NgForm) {
-    // store address in storage (persist for quick load later)
-    const addr = this.viewModel.address || {};
-    if (
-      !addr.fullName ||
-      !addr.addressLine ||
-      !addr.city ||
-      !addr.postalCode ||
-      !addr.country
-    ) {
-      // basic guard, don't save incomplete
-      this._commonService.ShowToastAtTopEnd(
-        'Please complete the address before saving.',
-        'error'
-      );
-      return;
-    }
-    try {
-      await this.storageService.saveToStorage(
-        AppConstants.DbKeys.SAVED_ADDRESS,
-        addr
-      );
-      this._commonService.ShowToastAtTopEnd(
-        'Address saved locally.',
-        'success'
-      );
-    } catch (err) {
-      this._commonService.ShowToastAtTopEnd('Error saving address.', 'error');
-    }
-  }
-
-  async loadSavedAddress() {
-    const saved = await this.storageService.getFromStorage(
-      AppConstants.DbKeys.SAVED_ADDRESS
-    );
-    if (saved) {
-      this.viewModel.address = { ...this.viewModel.address, ...saved };
-      return;
-    }
-  }
-
-  async clearAddress() {
-    this.viewModel.address = {};
-
-    await this.storageService.removeFromStorage(
-      AppConstants.DbKeys.SAVED_ADDRESS
-    );
-  }
-
   canProceed(): boolean {
     return (
       this.viewModel.cartItems &&
@@ -212,7 +388,15 @@ export class Checkout
     );
   }
 
-  async proceedToPayment() {
+  get submitButtonLabel(): string {
+    return this.selectedCustomerId !== null ? 'Next' : 'Create';
+  }
+
+  backToCustomer(): void {
+    this.currentCard = 'customer';
+  }
+
+  async proceedToPayment(): Promise<void> {
     if (!this.canProceed()) {
       this._commonService.ShowToastAtTopEnd(
         'Cart empty. Add items before proceeding.',
@@ -237,7 +421,8 @@ export class Checkout
         grandTotal: this.viewModel.totalPrice,
         coupon: this.couponCode,
       },
-      address: this.viewModel.address,
+      customer: this.viewModel.customer,
+      addresses: [this.viewModel.homeAddress, this.viewModel.workAddress],
       paymentMethod: this.viewModel.paymentMethod || 'online',
     };
 
