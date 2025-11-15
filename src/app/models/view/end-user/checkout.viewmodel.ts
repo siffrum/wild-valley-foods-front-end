@@ -12,4 +12,5 @@ export class CheckoutViewModel extends BaseViewModel {
   workAddress: CustomerAddressDetailSM = new CustomerAddressDetailSM();
   homeAddress: CustomerAddressDetailSM = new CustomerAddressDetailSM();
   otherAddress: CustomerAddressDetailSM = new CustomerAddressDetailSM();
+  createdCustomer: any;
 }

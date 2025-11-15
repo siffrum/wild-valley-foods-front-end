@@ -14,11 +14,12 @@ import { AddressType } from '../../../../../models/service-models/app/enums/addr
 import { CustomerService } from '../../../../../services/customer.service';
 import { CustomerDetailSM } from '../../../../../models/service-models/app/v1/customer-detail-s-m';
 import { CustomerAddressDetailSM } from '../../../../../models/service-models/app/v1/customer-address-detail-s-m';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './checkout.html',
   styleUrls: ['./checkout.scss'],
 })
@@ -45,26 +46,34 @@ export class Checkout
     private cartService: CartService,
     private storageService: StorageService,
     private customerService: CustomerService,
-    private router: Router
+    private router: Router,
+    private http: HttpClient
   ) {
     super(commonService, logHandlerService);
     this.viewModel = new CheckoutViewModel();
   }
 
-  async ngOnInit(): Promise<void> {
-    await this.loadCart();
+  async ngOnInit() {
+    debugger;
     await this.loadSavedCustomers();
+    await this.loadCart();
     this.selectedAddressType = AddressType.Home;
     this.viewModel.homeAddress.addressType = AddressType.Home;
   }
 
   async loadSavedCustomers() {
+    debugger;
     try {
       const saved: CustomerDetailSM[] =
         (await this.storageService.getFromStorage(
           AppConstants.DbKeys.SAVED_CUSTOMER_DETAILS
         )) || [];
+      console.log('saved');
+
+      console.log(saved);
+
       this.savedCustomers = saved.slice(0, 10); // limit to 10
+      debugger;
     } catch (error) {
       this.savedCustomers = [];
     }
@@ -81,6 +90,9 @@ export class Checkout
     this.selectedCustomerId = id;
     this.isFormDisabled = true;
     this.viewModel.customer = { ...customer };
+    this.viewModel.createdCustomer = { ...customer };
+    console.log('selected customer', this.viewModel.createdCustomer);
+
     const homeAddr = customer.addresses?.find(
       (a) => a.addressType === AddressType.Home
     );
@@ -181,7 +193,7 @@ export class Checkout
           confirmButtonText: 'OK',
         });
       } else {
-        const createdCustomer = resp.successData;
+        this.viewModel.createdCustomer = resp.successData;
         if (this.savedCustomers.length >= 10) {
           this.savedCustomers.shift();
           this._commonService.showSweetAlertToast({
@@ -192,7 +204,7 @@ export class Checkout
           });
         } else {
           debugger;
-          await this.savedCustomers.push(createdCustomer);
+          await this.savedCustomers.push(this.viewModel.createdCustomer);
           await this.storageService.saveToStorage(
             AppConstants.DbKeys.SAVED_CUSTOMER_DETAILS,
             this.savedCustomers
@@ -204,7 +216,7 @@ export class Checkout
             confirmButtonText: 'OK',
           });
           this.currentCard = 'order';
-          this.selectedCustomerId = createdCustomer.id;
+          this.selectedCustomerId = this.viewModel.createdCustomer.id;
         }
       }
     } catch (error) {
@@ -320,25 +332,52 @@ export class Checkout
     }
     this.recalculate();
 
-    // Prepare state for navigation, can be used in router.navigate
-    const state = {
-      items: this.viewModel.cartItems.map((i) => ({
-        product: i,
-        qty: i.cartQuantity,
-      })),
-      totals: {
-        subTotal: this.subTotal,
-        tax: this.taxAmount,
-        shipping: this.shippingAmount,
-        grandTotal: this.viewModel.totalPrice,
-        coupon: this.couponCode,
-      },
-      customer: this.viewModel.customer,
-      addresses: [this.viewModel.homeAddress],
-      paymentMethod: this.viewModel.paymentMethod || 'online',
-    };
+    // Prepare items for the backend
+    const orderItems = this.viewModel.cartItems.map((i) => ({
+      productId: i.id,
+      quantity: i.cartQuantity,
+    }));
 
-    // Example for navigation: this.router.navigate(['/checkout/payment'], { state });
-    alert('Not implemented!');
+    const payload = {
+      customerId: this.viewModel.createdCustomer.id,
+      items: orderItems,
+    };
+    console.log(payload);
+
+    try {
+      // Step 1: Create Backend Order
+      let resp = await this.customerService.proccedToOrder(payload);
+      const createRes = resp.successData;
+
+      if (!createRes) {
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData.displayMessage,
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+        return;
+      } else {
+        await this.verifyPayment(resp.successData);
+      }
+    } catch (err: any) {
+      this._commonService.showSweetAlertToast({
+        title: 'Order Error',
+        text: err.message || 'Order failed!',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    }
+  }
+
+  verifyPayment(order: any) {
+    // placeholder
+    const { razorpayOrderId, paymentId, signature } = order;
+    let payload = { razorpayOrderId, paymentId, signature };
+    console.log(payload);
+
+    let resp = this.customerService.verifyPayment(payload);
+    // if (resp.) {
+    // }
   }
 }

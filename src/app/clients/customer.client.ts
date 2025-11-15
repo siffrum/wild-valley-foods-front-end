@@ -33,7 +33,7 @@ export class CustomerClient extends BaseApiClient {
       `${AppConstants.ApiUrls.CUSTOMER}/getall/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`,
       'GET'
     );
-    
+
     return resp;
   };
 
@@ -45,15 +45,22 @@ export class CustomerClient extends BaseApiClient {
     return resp;
   };
 
-   /** Add a new customer */
-    CreateCustomers  = async (contactUsFormData: ApiRequest<CustomerDetailSM>): Promise<ApiResponse<CustomerDetailSM>> => {
-        let resp = await this.GetResponseAsync<CustomerDetailSM, CustomerDetailSM>(
-          `${AppConstants.ApiUrls.CUSTOMER}/create`,
-          'POST',
-          contactUsFormData, new AdditionalRequestDetails<CustomerDetailSM>(false, Authentication.false  ));
-        return resp;
-      };
-        /**
+  /** Add a new customer */
+  CreateCustomers = async (
+    contactUsFormData: ApiRequest<CustomerDetailSM>
+  ): Promise<ApiResponse<CustomerDetailSM>> => {
+    let resp = await this.GetResponseAsync<CustomerDetailSM, CustomerDetailSM>(
+      `${AppConstants.ApiUrls.CUSTOMER}/create`,
+      'POST',
+      contactUsFormData,
+      new AdditionalRequestDetails<CustomerDetailSM>(
+        false,
+        Authentication.false
+      )
+    );
+    return resp;
+  };
+  /**
    * Update existing Customer
    * 
    * @param updateCustomer Customer data to update
@@ -62,18 +69,43 @@ export class CustomerClient extends BaseApiClient {
    * const updatedContactUs = new CustomerDetailSM();
   
    */
-    UpdateCustomer = async (
-  apiRequest: ApiRequest<CustomerDetailSM>
-): Promise<ApiResponse<CustomerDetailSM>> => {
-  return await this.GetResponseAsync<CustomerDetailSM, CustomerDetailSM>(
-    `${AppConstants.ApiUrls.CUSTOMER}/update/${apiRequest.reqData.id}`,
-    'PUT',
-    apiRequest,   // ✅ this is now valid JSON
-    new AdditionalRequestDetails<CustomerDetailSM>(true, Authentication.true)
-  );
-};
+  UpdateCustomer = async (
+    apiRequest: ApiRequest<CustomerDetailSM>
+  ): Promise<ApiResponse<CustomerDetailSM>> => {
+    return await this.GetResponseAsync<CustomerDetailSM, CustomerDetailSM>(
+      `${AppConstants.ApiUrls.CUSTOMER}/update/${apiRequest.reqData.id}`,
+      'PUT',
+      apiRequest, // ✅ this is now valid JSON
+      new AdditionalRequestDetails<CustomerDetailSM>(true, Authentication.true)
+    );
+  };
+  ProceedToOrder = async (
+    apiRequest: ApiRequest<any>
+  ): Promise<ApiResponse<any>> => {
+    console.log(apiRequest);
 
+    let resp = await this.GetResponseAsync<number, any>(
+      `${AppConstants.ApiUrls.ORDER}`,
+      'POST',
+      apiRequest,
+      new AdditionalRequestDetails<any>(true, Authentication.false)
+    );
+    return resp;
+  };
 
+  VerifyPayment = async (
+    apiRequest: ApiRequest<any>
+  ): Promise<ApiResponse<any>> => {
+    console.log(apiRequest);
+
+    let resp = await this.GetResponseAsync<number, any>(
+      `${AppConstants.ApiUrls.ORDER}/verify`,
+      'POST',
+      apiRequest,
+      new AdditionalRequestDetails<any>(true, Authentication.false)
+    );
+    return resp;
+  };
 
   /**delete ContactUs by id */
   DeleteCustomerById = async (
@@ -86,13 +118,13 @@ export class CustomerClient extends BaseApiClient {
     return resp;
   };
 
-  GetCustomerById = async (Id: number): Promise<ApiResponse<CustomerDetailSM>> => {
+  GetCustomerById = async (
+    Id: number
+  ): Promise<ApiResponse<CustomerDetailSM>> => {
     let resp = await this.GetResponseAsync<number, CustomerDetailSM>(
       `${AppConstants.ApiUrls.CUSTOMER}/getbyid/${Id}`,
       'GET'
     );
     return resp;
   };
-
-
 }

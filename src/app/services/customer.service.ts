@@ -10,7 +10,6 @@ import { CustomerClient } from '../clients/customer.client';
 import { CustomerViewModel } from '../models/view/end-user/people/customer.viewmodel';
 import { CustomerDetailSM } from '../models/service-models/app/v1/customer-detail-s-m';
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -53,17 +52,31 @@ export class CustomerService extends BaseService {
     return await this.customerClient.GetCustomerById(id);
   }
 
+  async createCustomer(
+    formData: CustomerDetailSM
+  ): Promise<ApiResponse<CustomerDetailSM>> {
+    let apiRequest = new ApiRequest<CustomerDetailSM>();
+    apiRequest.reqData = formData;
+    return await this.customerClient.CreateCustomers(apiRequest);
+  }
+  async updateCustomer(
+    formData: CustomerDetailSM
+  ): Promise<ApiResponse<CustomerDetailSM>> {
+    const apiRequest = new ApiRequest<CustomerDetailSM>();
+    apiRequest.reqData = formData; // ✅ properly wrap
 
-async createCustomer(formData: CustomerDetailSM): Promise<ApiResponse<CustomerDetailSM>> {
-let apiRequest = new ApiRequest<CustomerDetailSM>();
-      apiRequest.reqData = formData;
-  return await this.customerClient.CreateCustomers(apiRequest);
-}
-async updateCustomer(formData: CustomerDetailSM): Promise<ApiResponse<CustomerDetailSM>> {
-  const apiRequest = new ApiRequest<CustomerDetailSM>();
-  apiRequest.reqData = formData;   // ✅ properly wrap
+    return await this.customerClient.UpdateCustomer(apiRequest);
+  }
 
-  return await this.customerClient.UpdateCustomer(apiRequest);
-}
+  proccedToOrder(payload: any): Promise<ApiResponse<any>> {
+    const apiRequest = new ApiRequest<any>();
+    apiRequest.reqData = payload; //
+    return this.customerClient.ProceedToOrder(apiRequest);
+  }
 
+  verifyPayment(payload: any): Promise<ApiResponse<any>> {
+    const apiRequest = new ApiRequest<any>();
+    apiRequest.reqData = payload; //
+    return this.customerClient.VerifyPayment(apiRequest);
+  }
 }

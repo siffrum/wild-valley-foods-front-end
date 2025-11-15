@@ -38,12 +38,13 @@ export const AppConstants = {
     PAYMENT_URL: 'api/v1/Payment',
     LICENSE_TYPE_URL: '/api/v1/LicenseType',
     CONTACT_US: 'api/v1/contactus',
-    CUSTOMER:'api/v1/customer',
+    CUSTOMER: 'api/v1/customer',
     PRODUCT: 'api/v1/Product',
     ADMIN_REVIEW: 'api/v1/AdminReview',
     REVIEW: 'api/v1/Review',
     TESTIMONIAL: 'api/v1/testimonial',
     VIDEO: 'api/v1/video',
+    ORDER: 'api/v1/order',
   },
   DbKeys: {
     ACCESS_TOKEN: 'ACCESS_TOKEN',
@@ -60,7 +61,7 @@ export const AppConstants = {
     CART: 'CART',
     CART_QUANTITY: 'CART_QUANTITY',
     SAVED_ADDRESS: 'SAVED_ADDRESS',
-    SAVED_CUSTOMER_DETAILS:'SAVED_CUSTOMER_DETAILS'
+    SAVED_CUSTOMER_DETAILS: 'SAVED_CUSTOMER_DETAILS',
   },
   DbDefaultValues: {},
   ErrorPrompts: {
@@ -96,17 +97,13 @@ export const AppConstants = {
     Details_Updated: 'Details Updated Successfully',
   },
 
-  DefaultMessages: {
- 
-  },
+  DefaultMessages: {},
   WebRoutes: {
     DASHBOARD: '/dashboard',
     PROFILE: '/profile',
     PAYMENT_FAIL_URL: `/failure`,
     PAYMENT_SUCCESS_URL: `/success`,
-    REPORTS: {
-
-    },
+    REPORTS: {},
     ADMIN: {
       DASHBOARD: 'admin/dashboard',
     },
