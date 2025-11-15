@@ -1,17 +1,11 @@
-<!-- Main Content Grid -->
 <div class="checkout-grid">
-
-  <!-- LEFT PANEL: Customer Details Form -->
+  <!-- Customer Details Form -->
   <div class="form-panel" [class.hidden]="currentCard === 'order'">
     <div class="panel-card">
-
       <div class="panel-header">
         <div class="header-content">
           <div class="header-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
+            <!-- Customer Icon SVG -->
           </div>
           <div>
             <h2 class="panel-title">Customer & Delivery Information</h2>
@@ -21,312 +15,151 @@
       </div>
 
       <div class="panel-body">
-
         <!-- Saved Addresses Section -->
-        <div class="saved-addresses-section" *ngIf="savedCustomers && savedCustomers.length > 0">
+        <ng-container *ngIf="savedCustomers.length > 0">
           <div class="section-header">
             <label class="section-label">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
+              <!-- Location Icon SVG -->
               Saved Addresses
             </label>
           </div>
 
-          <select #custSelect class="form-select-modern" [value]="selectedCustomerId || ''"
-            (change)="selectCustomer(+custSelect.value)" aria-label="Select saved address">
+          <select class="form-select-modern" [value]="selectedCustomerId || ''" (change)="selectCustomer($event)">
             <option value="">Select a saved delivery address</option>
             <option *ngFor="let cust of savedCustomers" [value]="cust.id" [selected]="selectedCustomerId === cust.id">
-              {{ cust.firstName }} {{ cust.lastName }}
+              {{cust.firstName}} {{cust.lastName}}
             </option>
           </select>
 
           <!-- Saved Address Tags -->
-          <div class="address-tags" *ngIf="savedCustomers.length > 0">
+          <div class="address-tags">
             <div class="address-tag" *ngFor="let cust of savedCustomers">
               <span class="tag-icon">📍</span>
               <span class="tag-name">{{ cust.firstName }} {{ cust.lastName }}</span>
-              <button type="button" class="tag-delete" [attr.aria-label]="'Delete ' + cust.firstName + ' address'"
-                (click)="deleteCustomer(cust.id, $event)">
+              <button type="button" class="tag-delete" (click)="deleteCustomer(cust.id, $event)">
                 ×
               </button>
             </div>
           </div>
-
-          <button type="button" class="btn-link-modern" *ngIf="selectedCustomerId !== null" (click)="addNewDetails()"
-            aria-label="Add new delivery details">
-            <span class="btn-icon">+</span>
-            Add New Delivery Address
+          <button type="button" class="btn-link-modern" *ngIf="selectedCustomerId != null" (click)="addNewDetails()">
+            <span class="btn-icon">+</span> Add New Delivery Address
           </button>
-        </div>
+        </ng-container>
 
         <!-- Customer Form -->
-        <form (ngSubmit)="onSubmit(customerForm)" #customerForm="ngForm" novalidate>
-          <!-- Address Type selector (new) -->
+        <form #customerForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+          <!-- Address Type selector -->
           <div class="form-section">
             <div class="section-header">
               <h3 class="section-title">Delivery Address Type</h3>
               <span class="section-badge">Choose</span>
             </div>
-
-
-            <div class="form-grid">
-              <div class="form-group">
-                <label class="form-label-modern">Address Type</label>
-                <select class="form-input-modern" [(ngModel)]="selectedAddressType" name="addressTypeSelect"
-                  aria-label="Select address type">
-                  <option [ngValue]="   viewModel.homeAddress.addressType">Home</option>
-                  <option [ngValue]="   viewModel.workAddress.addressType">Work</option>
-                  <option [ngValue]="   viewModel.otherAddress.addressType">Other</option>
-                </select>
-              </div>
+            <div class="form-group">
+              <label class="form-label-modern">Address Type</label>
+              <select class="form-input-modern" [(ngModel)]="selectedAddressType" name="addressType">
+                <option value="Home">Home</option>
+                <option value="Work">Work</option>
+                <option value="Other">Other</option>
+              </select>
             </div>
           </div>
+
           <!-- Customer Information Section -->
           <div class="form-section">
             <div class="section-header">
               <h3 class="section-title">Personal Information</h3>
               <span class="section-badge">Required</span>
             </div>
-
             <div class="form-grid">
+              <!-- First Name -->
               <div class="form-group">
-                <label class="form-label-modern">
-                  First Name <span class="required-dot">*</span>
-                </label>
+                <label class="form-label-modern">First Name <span class="required-dot">*</span></label>
                 <input type="text" class="form-input-modern" name="firstName" [(ngModel)]="viewModel.customer.firstName"
-                  [disabled]="isFormDisabled" required placeholder="Enter first name" aria-label="First name" />
-                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.customer.firstName">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12" stroke="white" stroke-width="2"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16" stroke="white" stroke-width="2"></line>
-                  </svg>
-                  First name is required
-                </div>
+                  [disabled]="isFormDisabled" required placeholder="Enter first name" />
+                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.customer.firstName">First name is
+                  required</div>
               </div>
-
+              <!-- Last Name -->
               <div class="form-group">
-                <label class="form-label-modern">
-                  Last Name <span class="required-dot">*</span>
-                </label>
+                <label class="form-label-modern">Last Name <span class="required-dot">*</span></label>
                 <input type="text" class="form-input-modern" name="lastName" [(ngModel)]="viewModel.customer.lastName"
-                  [disabled]="isFormDisabled" required placeholder="Enter last name" aria-label="Last name" />
-                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.customer.lastName">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12" stroke="white" stroke-width="2"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16" stroke="white" stroke-width="2"></line>
-                  </svg>
-                  Last name is required
-                </div>
+                  [disabled]="isFormDisabled" required placeholder="Enter last name" />
+                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.customer.lastName">Last name is
+                  required</div>
               </div>
-
+              <!-- Email -->
               <div class="form-group">
-                <label class="form-label-modern">
-                  Email Address <span class="required-dot">*</span>
-                </label>
-                <div class="input-with-icon">
-                  <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                    <polyline points="22,6 12,13 2,6"></polyline>
-                  </svg>
-                  <input type="email" class="form-input-modern with-icon" name="email"
-                    [(ngModel)]="viewModel.customer.email" [disabled]="isFormDisabled" required
-                    placeholder="you@example.com" aria-label="Email address" />
-                </div>
-                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.customer.email">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12" stroke="white" stroke-width="2"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16" stroke="white" stroke-width="2"></line>
-                  </svg>
-                  Valid email is required
-                </div>
+                <label class="form-label-modern">Email Address <span class="required-dot">*</span></label>
+                <input type="email" class="form-input-modern" name="email" [(ngModel)]="viewModel.customer.email"
+                  [disabled]="isFormDisabled" required placeholder="you@example.com" />
+                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.customer.email">Valid email is
+                  required</div>
               </div>
-
+              <!-- Contact -->
               <div class="form-group">
-                <label class="form-label-modern">
-                  Contact Number <span class="required-dot">*</span>
-                </label>
-                <div class="input-with-icon">
-                  <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2">
-                    <path
-                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
-                    </path>
-                  </svg>
-                  <input type="tel" class="form-input-modern with-icon" name="contact"
-                    [(ngModel)]="viewModel.customer.contact" [disabled]="isFormDisabled" required pattern="^[0-9]{10}$"
-                    placeholder="10-digit mobile number" aria-label="Contact number" />
-                </div>
+                <label class="form-label-modern">Contact Number <span class="required-dot">*</span></label>
+                <input type="tel" class="form-input-modern" name="contact" [(ngModel)]="viewModel.customer.contact"
+                  [disabled]="isFormDisabled" required pattern="^\d{10}$" placeholder="10-digit mobile number" />
                 <div class="error-message"
                   *ngIf="viewModel.submitted && (!viewModel.customer.contact || viewModel.customer.contact.length !== 10)">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12" stroke="white" stroke-width="2"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16" stroke="white" stroke-width="2"></line>
-                  </svg>
                   Contact number is required (10 digits)
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Home Address Section -->
+          <!-- Address Section -->
           <div class="form-section">
             <div class="section-header">
-              <h3 class="section-title">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                {{selectedAddressType}}
-              </h3>
+              <h3 class="section-title">{{ selectedAddressType }}</h3>
               <span class="section-badge">Required</span>
             </div>
-
             <div class="form-grid">
               <div class="form-group full-width">
-                <label class="form-label-modern">
-                  Street Address <span class="required-dot">*</span>
-                </label>
-                <input type="text" class="form-input-modern" name="homeAddressLine1"
+                <label class="form-label-modern">Street Address <span class="required-dot">*</span></label>
+                <input type="text" class="form-input-modern" name="addressLine1"
                   [(ngModel)]="viewModel.homeAddress.addressLine1" [disabled]="isFormDisabled" required
-                  placeholder="House number, building name, street" aria-label="Address line 1" />
-                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.homeAddress.addressLine1">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12" stroke="white" stroke-width="2"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16" stroke="white" stroke-width="2"></line>
-                  </svg>
-                  Address is required
+                  placeholder="House number, building name, street" />
+                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.homeAddress.addressLine1">Address is
+                  required</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label-modern">City <span class="required-dot">*</span></label>
+                <input type="text" class="form-input-modern" name="city" [(ngModel)]="viewModel.homeAddress.city"
+                  [disabled]="isFormDisabled" required placeholder="City" />
+                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.homeAddress.city">City is required
                 </div>
               </div>
-
               <div class="form-group">
-                <label class="form-label-modern">
-                  City <span class="required-dot">*</span>
-                </label>
-                <input type="text" class="form-input-modern" name="homeCity" [(ngModel)]="viewModel.homeAddress.city"
-                  [disabled]="isFormDisabled" required placeholder="City" aria-label="City" />
-                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.homeAddress.city">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12" stroke="white" stroke-width="2"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16" stroke="white" stroke-width="2"></line>
-                  </svg>
-                  City is required
+                <label class="form-label-modern">State / Province <span class="required-dot">*</span></label>
+                <input type="text" class="form-input-modern" name="state" [(ngModel)]="viewModel.homeAddress.state"
+                  [disabled]="isFormDisabled" required placeholder="State" />
+                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.homeAddress.state">State is required
                 </div>
               </div>
-
               <div class="form-group">
-                <label class="form-label-modern">
-                  State / Province <span class="required-dot">*</span>
-                </label>
-                <input type="text" class="form-input-modern" name="homeState" [(ngModel)]="viewModel.homeAddress.state"
-                  [disabled]="isFormDisabled" required placeholder="State" aria-label="State" />
-                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.homeAddress.state">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12" stroke="white" stroke-width="2"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16" stroke="white" stroke-width="2"></line>
-                  </svg>
-                  State is required
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label-modern">
-                  Postal Code <span class="required-dot">*</span>
-                </label>
-                <input type="text" class="form-input-modern" name="homeZip"
+                <label class="form-label-modern">Postal Code <span class="required-dot">*</span></label>
+                <input type="text" class="form-input-modern" name="postalCode"
                   [(ngModel)]="viewModel.homeAddress.postalCode" [disabled]="isFormDisabled" required
-                  placeholder="ZIP / Postal code" aria-label="Postal code" />
-                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.homeAddress.postalCode">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12" stroke="white" stroke-width="2"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16" stroke="white" stroke-width="2"></line>
-                  </svg>
-                  Postal code is required
-                </div>
+                  placeholder="ZIP / Postal code" />
+                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.homeAddress.postalCode">Postal code
+                  is required</div>
               </div>
-
               <div class="form-group">
-                <label class="form-label-modern">
-                  Country <span class="required-dot">*</span>
-                </label>
-                <input type="text" class="form-input-modern" name="homeCountry"
-                  [(ngModel)]="viewModel.homeAddress.country" [disabled]="isFormDisabled" required placeholder="Country"
-                  aria-label="Country" />
-                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.homeAddress.country">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12" stroke="white" stroke-width="2"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16" stroke="white" stroke-width="2"></line>
-                  </svg>
-                  Country is required
-                </div>
+                <label class="form-label-modern">Country <span class="required-dot">*</span></label>
+                <input type="text" class="form-input-modern" name="country" [(ngModel)]="viewModel.homeAddress.country"
+                  [disabled]="isFormDisabled" required placeholder="Country" />
+                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.homeAddress.country">Country is
+                  required</div>
               </div>
             </div>
           </div>
 
-
-
-          <!-- Payment Method Section -->
-          <div class="form-section">
-            <div class="section-header">
-              <h3 class="section-title">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                  <line x1="1" y1="10" x2="23" y2="10"></line>
-                </svg>
-                Payment Method
-              </h3>
-            </div>
-
-            <div class="payment-options">
-              <label class="payment-option">
-                <input class="payment-radio" type="radio" name="paymentMethod" id="cod" value="cod"
-                  [(ngModel)]="viewModel.paymentMethod" aria-label="Cash on delivery" />
-                <div class="payment-card">
-                  <div class="payment-icon cod">💵</div>
-                  <div class="payment-details">
-                    <h4 class="payment-title">Cash on Delivery</h4>
-                    <p class="payment-desc">Pay when you receive your order</p>
-                  </div>
-                  <div class="payment-check">✓</div>
-                </div>
-              </label>
-
-              <label class="payment-option">
-                <input class="payment-radio" type="radio" name="paymentMethod" id="online" value="online"
-                  [(ngModel)]="viewModel.paymentMethod" aria-label="Pay online" />
-                <div class="payment-card">
-                  <div class="payment-icon online">💳</div>
-                  <div class="payment-details">
-                    <h4 class="payment-title">Pay Online</h4>
-                    <p class="payment-desc">Credit/Debit Card, UPI, Net Banking</p>
-                  </div>
-                  <div class="payment-check">✓</div>
-                </div>
-              </label>
-            </div>
-          </div>
 
           <!-- Form Submit Button -->
           <div class="form-actions">
-            <button type="submit" class="btn-primary-modern" [disabled]="currentCard === 'order'"
-              aria-label="Submit customer details or proceed to order">
-              <span class="btn-text">{{ submitButtonLabel }}</span>
-              <svg class="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
+            <button type="submit" class="btn-primary-modern" [disabled]="currentCard === 'order'">
+              <span>{{ submitButtonLabel }}</span>
             </button>
           </div>
         </form>
@@ -334,47 +167,25 @@
     </div>
   </div>
 
-  <!-- RIGHT PANEL: Order Summary -->
+  <!-- Order Summary -->
   <div class="summary-panel" [class.hidden]="currentCard === 'customer'">
     <div class="panel-card sticky">
-
       <div class="panel-header">
         <div class="header-content">
           <div class="header-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="9" cy="21" r="1"></circle>
-              <circle cx="20" cy="21" r="1"></circle>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
+            <!-- Cart Icon SVG -->
           </div>
           <div>
             <h2 class="panel-title">Order Summary</h2>
             <p class="panel-subtitle">Review your cart items</p>
           </div>
         </div>
-        <button type="button" class="btn-back" *ngIf="currentCard === 'order'" (click)="backToCustomer()"
-          aria-label="Back to customer details">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-          Back
-        </button>
+        <button *ngIf="currentCard === 'order'" type="button" class="btn-back" (click)="backToCustomer()">Back</button>
       </div>
-
       <div class="panel-body">
-
-        <!-- Delivery Information Preview -->
-        <div class="delivery-preview" *ngIf="currentCard === 'order'">
-          <div class="preview-header">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="1" y="3" width="15" height="13"></rect>
-              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-              <circle cx="5.5" cy="18.5" r="2.5"></circle>
-              <circle cx="18.5" cy="18.5" r="2.5"></circle>
-            </svg>
-            <span>Delivering To</span>
-          </div>
+        <!-- Delivery Info Preview -->
+        <div class="delivery-preview">
+          <div class="preview-header"><span>Delivering To</span></div>
           <div class="preview-content">
             <p class="preview-name">{{ viewModel.customer.firstName }} {{ viewModel.customer.lastName }}</p>
             <p class="preview-address">{{ viewModel.homeAddress.addressLine1 }}</p>
@@ -384,16 +195,11 @@
             <p class="preview-country">{{ viewModel.homeAddress.country }}</p>
           </div>
         </div>
-
         <!-- Cart Items List -->
         <div class="cart-section">
-          <h3 class="cart-title">
-            <span>Cart Items</span>
-            <span class="cart-count">{{ viewModel.cartItems?.length || 0 }}</span>
-          </h3>
-
-          <div class="cart-list" *ngIf="viewModel.cartItems && viewModel.cartItems.length > 0">
-            <div class="cart-item" *ngFor="let item of viewModel.cartItems; let i = index">
+          <h3 class="cart-title">Cart Items <span class="cart-count">{{ viewModel.cartItems.length || 0 }}</span></h3>
+          <div class="cart-list" *ngIf="viewModel.cartItems.length">
+            <div class="cart-item" *ngFor="let item of viewModel.cartItems">
               <div class="item-image">
                 <img [src]="imageOf(item)" [alt]="item.name" />
               </div>
@@ -402,85 +208,42 @@
                 <p class="item-sku">SKU: {{ item.sku || 'N/A' }}</p>
                 <div class="item-footer">
                   <span class="item-quantity">Qty: {{ item.cartQuantity }}</span>
-                  <span class="item-price">₹{{ (item.price || 0) | number:'1.2-2' }}</span>
+                  <span class="item-price">₹{{ item.price | number:'1.2-2' }}</span>
                 </div>
               </div>
               <div class="item-total">
-                ₹{{ ((item.price || 0) * (item.cartQuantity || 1)) | number:'1.2-2' }}
+                ₹{{ item.price * item.cartQuantity | number:'1.2-2' }}
               </div>
             </div>
           </div>
-
-          <div class="cart-empty" *ngIf="!viewModel.cartItems || viewModel.cartItems.length === 0">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="9" cy="21" r="1"></circle>
-              <circle cx="20" cy="21" r="1"></circle>
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
+          <div class="cart-empty" *ngIf="!viewModel.cartItems.length">
             <p>Your cart is empty</p>
           </div>
         </div>
-
         <!-- Order Calculations -->
         <div class="order-calculations">
-          <div class="calc-row">
-            <span class="calc-label">Subtotal</span>
-            <span class="calc-value">₹{{ subTotal | number:'1.2-2' }}</span>
-          </div>
-          <div class="calc-row">
-            <span class="calc-label">Tax (GST)</span>
-            <span class="calc-value">₹{{ taxAmount | number:'1.2-2' }}</span>
-          </div>
-          <div class="calc-row">
-            <span class="calc-label">Shipping</span>
-            <span class="calc-value">{{ shippingLabel }}</span>
-          </div>
+          <div class="calc-row"><span>Subtotal</span><span>₹{{ subTotal | number:'1.2-2' }}</span></div>
+          <div class="calc-row"><span>Tax (GST)</span><span>₹{{ taxAmount | number:'1.2-2' }}</span></div>
+          <div class="calc-row"><span>Shipping</span><span>{{ shippingLabel }}</span></div>
           <div class="calc-divider"></div>
-          <div class="calc-row total">
-            <span class="calc-label">Total Amount</span>
-            <span class="calc-value">₹{{ viewModel.totalPrice | number:'1.2-2' }}</span>
+          <div class="calc-row total"><span>Total Amount</span><span>₹{{ viewModel.totalPrice | number:'1.2-2' }}</span>
           </div>
         </div>
-
         <!-- Coupon Section -->
         <div class="coupon-section">
-          <label class="coupon-label">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon
-                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-              </polygon>
-            </svg>
-            Have a Coupon Code?
-          </label>
+          <label class="coupon-label">Have a Coupon Code?</label>
           <div class="coupon-input-group">
-            <input class="coupon-input" placeholder="Enter coupon code" [(ngModel)]="couponCode" name="couponCode"
-              aria-label="Coupon code" />
-            <button class="coupon-btn" (click)="applyCoupon()" type="button" aria-label="Apply coupon">
-              Apply
-            </button>
+            <input class="coupon-input" placeholder="Enter coupon code" [(ngModel)]="couponCode" name="couponCode" />
+            <button class="coupon-btn" (click)="applyCoupon()" type="button">Apply</button>
           </div>
           <p class="coupon-hint">Try: SAVE50 (₹50 off) or PCT10 (10% off)</p>
         </div>
-
         <!-- Place Order Button -->
         <div class="order-actions">
-          <button class="btn-order-now" (click)="proceedToPayment()" [disabled]="!canProceed()"
-            aria-label="Place order now">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-            <span>Place Order Now</span>
-          </button>
-          <p class="order-security">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-            Secure checkout powered by SSL encryption
-          </p>
+          <button class="btn-order-now" (click)="proceedToPayment()" [disabled]="!canProceed()">Place Order Now</button>
+          <p class="order-security">Secure checkout powered by SSL encryption</p>
         </div>
       </div>
     </div>
   </div>
-
 </div>
