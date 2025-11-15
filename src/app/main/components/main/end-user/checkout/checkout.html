@@ -25,7 +25,7 @@
           </div>
 
           <select class="form-select-modern" [value]="selectedCustomerId || ''" (change)="selectCustomer($event)">
-            <option value="">Select a saved delivery address</option>
+            <option value="" disabled>Select a saved delivery address</option>
             <option *ngFor="let cust of savedCustomers" [value]="cust.id" [selected]="selectedCustomerId === cust.id">
               {{cust.firstName}} {{cust.lastName}}
             </option>
