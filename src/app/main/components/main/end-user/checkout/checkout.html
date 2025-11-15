@@ -4,7 +4,7 @@
   <!-- LEFT PANEL: Customer Details Form -->
   <div class="form-panel" [class.hidden]="currentCard === 'order'">
     <div class="panel-card">
-      
+
       <div class="panel-header">
         <div class="header-content">
           <div class="header-icon">
@@ -21,7 +21,7 @@
       </div>
 
       <div class="panel-body">
-        
+
         <!-- Saved Addresses Section -->
         <div class="saved-addresses-section" *ngIf="savedCustomers && savedCustomers.length > 0">
           <div class="section-header">
@@ -33,16 +33,11 @@
               Saved Addresses
             </label>
           </div>
-          
-          <select #custSelect 
-                  class="form-select-modern" 
-                  [value]="selectedCustomerId || ''"
-                  (change)="selectCustomer(+custSelect.value)" 
-                  aria-label="Select saved address">
+
+          <select #custSelect class="form-select-modern" [value]="selectedCustomerId || ''"
+            (change)="selectCustomer(+custSelect.value)" aria-label="Select saved address">
             <option value="">Select a saved delivery address</option>
-            <option *ngFor="let cust of savedCustomers" 
-                    [value]="cust.id"
-                    [selected]="selectedCustomerId === cust.id">
+            <option *ngFor="let cust of savedCustomers" [value]="cust.id" [selected]="selectedCustomerId === cust.id">
               {{ cust.firstName }} {{ cust.lastName }}
             </option>
           </select>
@@ -52,20 +47,15 @@
             <div class="address-tag" *ngFor="let cust of savedCustomers">
               <span class="tag-icon">📍</span>
               <span class="tag-name">{{ cust.firstName }} {{ cust.lastName }}</span>
-              <button type="button" 
-                      class="tag-delete"
-                      [attr.aria-label]="'Delete ' + cust.firstName + ' address'"
-                      (click)="deleteCustomer(cust.id, $event)">
+              <button type="button" class="tag-delete" [attr.aria-label]="'Delete ' + cust.firstName + ' address'"
+                (click)="deleteCustomer(cust.id, $event)">
                 ×
               </button>
             </div>
           </div>
 
-          <button type="button" 
-                  class="btn-link-modern" 
-                  *ngIf="selectedCustomerId !== null" 
-                  (click)="addNewDetails()"
-                  aria-label="Add new delivery details">
+          <button type="button" class="btn-link-modern" *ngIf="selectedCustomerId !== null" (click)="addNewDetails()"
+            aria-label="Add new delivery details">
             <span class="btn-icon">+</span>
             Add New Delivery Address
           </button>
@@ -73,7 +63,26 @@
 
         <!-- Customer Form -->
         <form (ngSubmit)="onSubmit(customerForm)" #customerForm="ngForm" novalidate>
+          <!-- Address Type selector (new) -->
+          <div class="form-section">
+            <div class="section-header">
+              <h3 class="section-title">Delivery Address Type</h3>
+              <span class="section-badge">Choose</span>
+            </div>
 
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label-modern">Address Type</label>
+                <select class="form-input-modern" [(ngModel)]="selectedAddressType" name="addressTypeSelect"
+                  aria-label="Select address type">
+                  <option [ngValue]="   viewModel.homeAddress.addressType">Home</option>
+                  <option [ngValue]="   viewModel.workAddress.addressType">Work</option>
+                  <option [ngValue]="   viewModel.otherAddress.addressType">Other</option>
+                </select>
+              </div>
+            </div>
+          </div>
           <!-- Customer Information Section -->
           <div class="form-section">
             <div class="section-header">
@@ -86,14 +95,8 @@
                 <label class="form-label-modern">
                   First Name <span class="required-dot">*</span>
                 </label>
-                <input type="text" 
-                       class="form-input-modern" 
-                       name="firstName" 
-                       [(ngModel)]="viewModel.customer.firstName"
-                       [disabled]="isFormDisabled" 
-                       required 
-                       placeholder="Enter first name" 
-                       aria-label="First name" />
+                <input type="text" class="form-input-modern" name="firstName" [(ngModel)]="viewModel.customer.firstName"
+                  [disabled]="isFormDisabled" required placeholder="Enter first name" aria-label="First name" />
                 <div class="error-message" *ngIf="viewModel.submitted && !viewModel.customer.firstName">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -108,14 +111,8 @@
                 <label class="form-label-modern">
                   Last Name <span class="required-dot">*</span>
                 </label>
-                <input type="text" 
-                       class="form-input-modern" 
-                       name="lastName" 
-                       [(ngModel)]="viewModel.customer.lastName"
-                       [disabled]="isFormDisabled" 
-                       required 
-                       placeholder="Enter last name" 
-                       aria-label="Last name" />
+                <input type="text" class="form-input-modern" name="lastName" [(ngModel)]="viewModel.customer.lastName"
+                  [disabled]="isFormDisabled" required placeholder="Enter last name" aria-label="Last name" />
                 <div class="error-message" *ngIf="viewModel.submitted && !viewModel.customer.lastName">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -131,18 +128,14 @@
                   Email Address <span class="required-dot">*</span>
                 </label>
                 <div class="input-with-icon">
-                  <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                     <polyline points="22,6 12,13 2,6"></polyline>
                   </svg>
-                  <input type="email" 
-                         class="form-input-modern with-icon" 
-                         name="email" 
-                         [(ngModel)]="viewModel.customer.email"
-                         [disabled]="isFormDisabled" 
-                         required 
-                         placeholder="you@example.com" 
-                         aria-label="Email address" />
+                  <input type="email" class="form-input-modern with-icon" name="email"
+                    [(ngModel)]="viewModel.customer.email" [disabled]="isFormDisabled" required
+                    placeholder="you@example.com" aria-label="Email address" />
                 </div>
                 <div class="error-message" *ngIf="viewModel.submitted && !viewModel.customer.email">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -159,21 +152,18 @@
                   Contact Number <span class="required-dot">*</span>
                 </label>
                 <div class="input-with-icon">
-                  <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path
+                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                    </path>
                   </svg>
-                  <input type="tel" 
-                         class="form-input-modern with-icon" 
-                         name="contact" 
-                         [(ngModel)]="viewModel.customer.contact"
-                         [disabled]="isFormDisabled" 
-                         required 
-                         pattern="^[0-9]{10}$" 
-                         placeholder="10-digit mobile number"
-                         aria-label="Contact number" />
+                  <input type="tel" class="form-input-modern with-icon" name="contact"
+                    [(ngModel)]="viewModel.customer.contact" [disabled]="isFormDisabled" required pattern="^[0-9]{10}$"
+                    placeholder="10-digit mobile number" aria-label="Contact number" />
                 </div>
                 <div class="error-message"
-                     *ngIf="viewModel.submitted && (!viewModel.customer.contact || viewModel.customer.contact.length !== 10)">
+                  *ngIf="viewModel.submitted && (!viewModel.customer.contact || viewModel.customer.contact.length !== 10)">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="8" x2="12" y2="12" stroke="white" stroke-width="2"></line>
@@ -193,7 +183,7 @@
                   <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                   <polyline points="9 22 9 12 15 12 15 22"></polyline>
                 </svg>
-                Home Delivery Address
+                {{selectedAddressType}}
               </h3>
               <span class="section-badge">Required</span>
             </div>
@@ -203,16 +193,10 @@
                 <label class="form-label-modern">
                   Street Address <span class="required-dot">*</span>
                 </label>
-                <input type="text" 
-                       class="form-input-modern" 
-                       name="homeAddressLine1"
-                       [(ngModel)]="viewModel.homeAddress.addressLine1" 
-                       [disabled]="isFormDisabled" 
-                       required
-                       placeholder="House number, building name, street" 
-                       aria-label="Address line 1" />
-                <div class="error-message"
-                     *ngIf="viewModel.submitted && !viewModel.homeAddress.addressLine1">
+                <input type="text" class="form-input-modern" name="homeAddressLine1"
+                  [(ngModel)]="viewModel.homeAddress.addressLine1" [disabled]="isFormDisabled" required
+                  placeholder="House number, building name, street" aria-label="Address line 1" />
+                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.homeAddress.addressLine1">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="8" x2="12" y2="12" stroke="white" stroke-width="2"></line>
@@ -226,14 +210,8 @@
                 <label class="form-label-modern">
                   City <span class="required-dot">*</span>
                 </label>
-                <input type="text" 
-                       class="form-input-modern" 
-                       name="homeCity" 
-                       [(ngModel)]="viewModel.homeAddress.city"
-                       [disabled]="isFormDisabled" 
-                       required 
-                       placeholder="City" 
-                       aria-label="City" />
+                <input type="text" class="form-input-modern" name="homeCity" [(ngModel)]="viewModel.homeAddress.city"
+                  [disabled]="isFormDisabled" required placeholder="City" aria-label="City" />
                 <div class="error-message" *ngIf="viewModel.submitted && !viewModel.homeAddress.city">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -248,14 +226,8 @@
                 <label class="form-label-modern">
                   State / Province <span class="required-dot">*</span>
                 </label>
-                <input type="text" 
-                       class="form-input-modern" 
-                       name="homeState" 
-                       [(ngModel)]="viewModel.homeAddress.state"
-                       [disabled]="isFormDisabled" 
-                       required 
-                       placeholder="State" 
-                       aria-label="State" />
+                <input type="text" class="form-input-modern" name="homeState" [(ngModel)]="viewModel.homeAddress.state"
+                  [disabled]="isFormDisabled" required placeholder="State" aria-label="State" />
                 <div class="error-message" *ngIf="viewModel.submitted && !viewModel.homeAddress.state">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -270,16 +242,10 @@
                 <label class="form-label-modern">
                   Postal Code <span class="required-dot">*</span>
                 </label>
-                <input type="text" 
-                       class="form-input-modern" 
-                       name="homeZip" 
-                       [(ngModel)]="viewModel.homeAddress.postalCode"
-                       [disabled]="isFormDisabled" 
-                       required 
-                       placeholder="ZIP / Postal code" 
-                       aria-label="Postal code" />
-                <div class="error-message"
-                     *ngIf="viewModel.submitted && !viewModel.homeAddress.postalCode">
+                <input type="text" class="form-input-modern" name="homeZip"
+                  [(ngModel)]="viewModel.homeAddress.postalCode" [disabled]="isFormDisabled" required
+                  placeholder="ZIP / Postal code" aria-label="Postal code" />
+                <div class="error-message" *ngIf="viewModel.submitted && !viewModel.homeAddress.postalCode">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="8" x2="12" y2="12" stroke="white" stroke-width="2"></line>
@@ -293,14 +259,9 @@
                 <label class="form-label-modern">
                   Country <span class="required-dot">*</span>
                 </label>
-                <input type="text" 
-                       class="form-input-modern" 
-                       name="homeCountry" 
-                       [(ngModel)]="viewModel.homeAddress.country"
-                       [disabled]="isFormDisabled" 
-                       required 
-                       placeholder="Country" 
-                       aria-label="Country" />
+                <input type="text" class="form-input-modern" name="homeCountry"
+                  [(ngModel)]="viewModel.homeAddress.country" [disabled]="isFormDisabled" required placeholder="Country"
+                  aria-label="Country" />
                 <div class="error-message" *ngIf="viewModel.submitted && !viewModel.homeAddress.country">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -313,77 +274,7 @@
             </div>
           </div>
 
-          <!-- Work Address Section (Optional) -->
-          <div class="form-section collapsible">
-            <div class="section-header">
-              <h3 class="section-title">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                </svg>
-                Work Address (Optional)
-              </h3>
-              <span class="section-badge optional">Optional</span>
-            </div>
-            <p class="section-hint">Add your office address for delivery during work hours</p>
 
-            <div class="form-grid">
-              <div class="form-group full-width">
-                <label class="form-label-modern">Office Address</label>
-                <input type="text" 
-                       class="form-input-modern" 
-                       name="workAddressLine1"
-                       [(ngModel)]="viewModel.workAddress.addressLine1" 
-                       [disabled]="isFormDisabled"
-                       placeholder="Building, street" 
-                       aria-label="Work address line 1" />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label-modern">City</label>
-                <input type="text" 
-                       class="form-input-modern" 
-                       name="workCity" 
-                       [(ngModel)]="viewModel.workAddress.city"
-                       [disabled]="isFormDisabled" 
-                       placeholder="City" 
-                       aria-label="Work city" />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label-modern">State</label>
-                <input type="text" 
-                       class="form-input-modern" 
-                       name="workState" 
-                       [(ngModel)]="viewModel.workAddress.state"
-                       [disabled]="isFormDisabled" 
-                       placeholder="State" 
-                       aria-label="Work state" />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label-modern">Postal Code</label>
-                <input type="text" 
-                       class="form-input-modern" 
-                       name="workZip" 
-                       [(ngModel)]="viewModel.workAddress.postalCode"
-                       [disabled]="isFormDisabled" 
-                       placeholder="Postal code" 
-                       aria-label="Work postal code" />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label-modern">Country</label>
-                <input type="text" 
-                       class="form-input-modern" 
-                       name="workCountry" 
-                       [(ngModel)]="viewModel.workAddress.country"
-                       [disabled]="isFormDisabled" 
-                       placeholder="Country" 
-                       aria-label="Work country" />
-              </div>
-            </div>
-          </div>
 
           <!-- Payment Method Section -->
           <div class="form-section">
@@ -399,13 +290,8 @@
 
             <div class="payment-options">
               <label class="payment-option">
-                <input class="payment-radio" 
-                       type="radio" 
-                       name="paymentMethod" 
-                       id="cod" 
-                       value="cod"
-                       [(ngModel)]="viewModel.paymentMethod" 
-                       aria-label="Cash on delivery" />
+                <input class="payment-radio" type="radio" name="paymentMethod" id="cod" value="cod"
+                  [(ngModel)]="viewModel.paymentMethod" aria-label="Cash on delivery" />
                 <div class="payment-card">
                   <div class="payment-icon cod">💵</div>
                   <div class="payment-details">
@@ -417,13 +303,8 @@
               </label>
 
               <label class="payment-option">
-                <input class="payment-radio" 
-                       type="radio" 
-                       name="paymentMethod" 
-                       id="online" 
-                       value="online"
-                       [(ngModel)]="viewModel.paymentMethod" 
-                       aria-label="Pay online" />
+                <input class="payment-radio" type="radio" name="paymentMethod" id="online" value="online"
+                  [(ngModel)]="viewModel.paymentMethod" aria-label="Pay online" />
                 <div class="payment-card">
                   <div class="payment-icon online">💳</div>
                   <div class="payment-details">
@@ -438,12 +319,11 @@
 
           <!-- Form Submit Button -->
           <div class="form-actions">
-            <button type="submit" 
-                    class="btn-primary-modern" 
-                    [disabled]="currentCard === 'order'"
-                    aria-label="Submit customer details or proceed to order">
+            <button type="submit" class="btn-primary-modern" [disabled]="currentCard === 'order'"
+              aria-label="Submit customer details or proceed to order">
               <span class="btn-text">{{ submitButtonLabel }}</span>
-              <svg class="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg class="btn-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
                 <polyline points="12 5 19 12 12 19"></polyline>
               </svg>
@@ -457,7 +337,7 @@
   <!-- RIGHT PANEL: Order Summary -->
   <div class="summary-panel" [class.hidden]="currentCard === 'customer'">
     <div class="panel-card sticky">
-      
+
       <div class="panel-header">
         <div class="header-content">
           <div class="header-icon">
@@ -472,11 +352,8 @@
             <p class="panel-subtitle">Review your cart items</p>
           </div>
         </div>
-        <button type="button" 
-                class="btn-back" 
-                *ngIf="currentCard === 'order'"
-                (click)="backToCustomer()"
-                aria-label="Back to customer details">
+        <button type="button" class="btn-back" *ngIf="currentCard === 'order'" (click)="backToCustomer()"
+          aria-label="Back to customer details">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
@@ -486,7 +363,7 @@
       </div>
 
       <div class="panel-body">
-        
+
         <!-- Delivery Information Preview -->
         <div class="delivery-preview" *ngIf="currentCard === 'order'">
           <div class="preview-header">
@@ -569,20 +446,16 @@
         <div class="coupon-section">
           <label class="coupon-label">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+              </polygon>
             </svg>
             Have a Coupon Code?
           </label>
           <div class="coupon-input-group">
-            <input class="coupon-input" 
-                   placeholder="Enter coupon code" 
-                   [(ngModel)]="couponCode" 
-                   name="couponCode"
-                   aria-label="Coupon code" />
-            <button class="coupon-btn" 
-                    (click)="applyCoupon()" 
-                    type="button" 
-                    aria-label="Apply coupon">
+            <input class="coupon-input" placeholder="Enter coupon code" [(ngModel)]="couponCode" name="couponCode"
+              aria-label="Coupon code" />
+            <button class="coupon-btn" (click)="applyCoupon()" type="button" aria-label="Apply coupon">
               Apply
             </button>
           </div>
@@ -591,10 +464,8 @@
 
         <!-- Place Order Button -->
         <div class="order-actions">
-          <button class="btn-order-now" 
-                  (click)="proceedToPayment()" 
-                  [disabled]="!canProceed()"
-                  aria-label="Place order now">
+          <button class="btn-order-now" (click)="proceedToPayment()" [disabled]="!canProceed()"
+            aria-label="Place order now">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>

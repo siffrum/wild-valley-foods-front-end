@@ -51,12 +51,13 @@ export class Checkout
     super(commonService, logHandlerService);
     this.viewModel = new CheckoutViewModel();
   }
-
+  selectedAddressType: any;
   async ngOnInit(): Promise<void> {
     await this.loadCart();
     await this.loadSavedCustomers();
     this.viewModel.homeAddress.addressType = AddressType.Home;
     this.viewModel.workAddress.addressType = AddressType.Work;
+    this.viewModel.otherAddress.addressType = AddressType.Other;
   }
 
   /**
@@ -78,9 +79,7 @@ export class Checkout
    * Select a saved customer and populate the form
    */
   selectCustomer(customerId: number): void {
-    const customer = this.savedCustomers.find(
-      (c) => c.id === customerId
-    );
+    const customer = this.savedCustomers.find((c) => c.id === customerId);
     if (!customer) return;
 
     this.selectedCustomerId = customerId;
@@ -102,7 +101,9 @@ export class Checkout
   async deleteCustomer(customerId: number, event: Event): Promise<void> {
     event.stopPropagation(); // Prevent triggering select
 
-    this.savedCustomers = this.savedCustomers.filter((c) => c.id !== customerId);
+    this.savedCustomers = this.savedCustomers.filter(
+      (c) => c.id !== customerId
+    );
     await this.storageService.saveToStorage(
       AppConstants.DbKeys.SAVED_CUSTOMER_DETAILS,
       this.savedCustomers
@@ -128,8 +129,10 @@ export class Checkout
     this.selectedCustomerId = null;
     this.isFormDisabled = false;
     this.viewModel.customer = new CustomerDetailSM();
-    this.viewModel.homeAddress = new (require('../../../../../models/service-models/app/v1/customer-address-detail-s-m').CustomerAddressDetailSM)();
-    this.viewModel.workAddress = new (require('../../../../../models/service-models/app/v1/customer-address-detail-s-m').CustomerAddressDetailSM)();
+    this.viewModel.homeAddress =
+      new (require('../../../../../models/service-models/app/v1/customer-address-detail-s-m').CustomerAddressDetailSM)();
+    this.viewModel.workAddress =
+      new (require('../../../../../models/service-models/app/v1/customer-address-detail-s-m').CustomerAddressDetailSM)();
     this.viewModel.homeAddress.addressType = AddressType.Home;
     this.viewModel.workAddress.addressType = AddressType.Work;
     this.viewModel.submitted = false;
@@ -157,7 +160,13 @@ export class Checkout
       return false;
     }
 
-    if (!homeAddr.addressLine1 || !homeAddr.city || !homeAddr.state || !homeAddr.country || !homeAddr.postalCode) {
+    if (
+      !homeAddr.addressLine1 ||
+      !homeAddr.city ||
+      !homeAddr.state ||
+      !homeAddr.country ||
+      !homeAddr.postalCode
+    ) {
       this._commonService.showSweetAlertToast({
         title: 'Validation Error',
         text: 'Please fill all required address fields (Deliver To section).',
@@ -211,15 +220,15 @@ export class Checkout
 
     try {
       this.viewModel.submitted = true;
-      this.viewModel.customer.addresses = [
-        this.viewModel.homeAddress,
-        this.viewModel.workAddress,
-      ];
-
+      this.viewModel.homeAddress.addressType = this.selectedAddressType;
+      this.viewModel.customer.addresses = [this.viewModel.homeAddress];
+      debugger;
       this._commonService.presentLoading();
 
       // Call existing create customer API
-      const resp = await this.customerService.createCustomer(this.viewModel.customer);
+      const resp = await this.customerService.createCustomer(
+        this.viewModel.customer
+      );
 
       if (resp.isError) {
         await this._exceptionHandler.logObject(resp.errorData);
@@ -350,8 +359,7 @@ export class Checkout
     }, 0);
 
     // Shipping: simple flat rule (can be replaced with real calc)
-    this.shippingAmount =
-      this.subTotal >= 1000 || this.subTotal === 0 ? 0 : 50;
+    this.shippingAmount = this.subTotal >= 1000 || this.subTotal === 0 ? 0 : 50;
 
     // Apply coupon (simple)
     const couponDiscount = this.calculateCouponDiscount(this.subTotal);

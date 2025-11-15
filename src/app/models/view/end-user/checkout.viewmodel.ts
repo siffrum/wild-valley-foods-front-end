@@ -7,8 +7,9 @@ export class CheckoutViewModel extends BaseViewModel {
   cartItems: ProductSM[] = [];
   totalPrice: number = 0;
   paymentMethod: string = 'online';
-  customer:CustomerDetailSM=new CustomerDetailSM ();
+  customer: CustomerDetailSM = new CustomerDetailSM();
   submitted = false;
-  workAddress: CustomerAddressDetailSM=new CustomerAddressDetailSM();
+  workAddress: CustomerAddressDetailSM = new CustomerAddressDetailSM();
   homeAddress: CustomerAddressDetailSM = new CustomerAddressDetailSM();
+  otherAddress: CustomerAddressDetailSM = new CustomerAddressDetailSM();
 }
