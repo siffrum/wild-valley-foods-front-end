@@ -358,7 +358,8 @@ export class Checkout
         });
         return;
       } else {
-        await this.verifyPayment(resp.successData);
+        window.open(resp.successData.paymentLink.short_url, '_blank');
+        // after this integrate webhook
       }
     } catch (err: any) {
       this._commonService.showSweetAlertToast({
