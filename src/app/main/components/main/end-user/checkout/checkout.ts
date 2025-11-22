@@ -54,7 +54,6 @@ export class Checkout
   }
 
   async ngOnInit() {
-    debugger;
     await this.loadSavedCustomers();
     await this.loadCart();
     this.selectedAddressType = AddressType.Home;
@@ -62,7 +61,6 @@ export class Checkout
   }
 
   async loadSavedCustomers() {
-    debugger;
     try {
       const saved: CustomerDetailSM[] =
         (await this.storageService.getFromStorage(
@@ -73,7 +71,6 @@ export class Checkout
       console.log(saved);
 
       this.savedCustomers = saved.slice(0, 10); // limit to 10
-      debugger;
     } catch (error) {
       this.savedCustomers = [];
     }
@@ -203,7 +200,6 @@ export class Checkout
             confirmButtonText: 'OK',
           });
         } else {
-          debugger;
           await this.savedCustomers.push(this.viewModel.createdCustomer);
           await this.storageService.saveToStorage(
             AppConstants.DbKeys.SAVED_CUSTOMER_DETAILS,

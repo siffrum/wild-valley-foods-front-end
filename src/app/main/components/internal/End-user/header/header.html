@@ -48,10 +48,12 @@
     <!-- Icons (desktop only) -->
     <ul class="navbar-nav ms-auto d-none d-lg-flex flex-row align-items-center me-lg-4">
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/home" routerLinkActive="active-route" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+        <a class="nav-link" routerLink="/home" routerLinkActive="active-route"
+          [routerLinkActiveOptions]="{ exact: true }">Home</a>
       </li>
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/shop" routerLinkActive="active-route" [routerLinkActiveOptions]="{ exact: true }">Shop</a>
+        <a class="nav-link" routerLink="/shop" routerLinkActive="active-route"
+          [routerLinkActiveOptions]="{ exact: true }">Shop</a>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" tabindex="0">Categories</a>
@@ -67,27 +69,30 @@
 
 
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/contact-us" routerLinkActive="active-route" [routerLinkActiveOptions]="{ exact: true }">Contact us</a>
+        <a class="nav-link" routerLink="/contact-us" routerLinkActive="active-route"
+          [routerLinkActiveOptions]="{ exact: true }">Contact us</a>
       </li>
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/about-us" routerLinkActive="active-route" [routerLinkActiveOptions]="{ exact: true }">About us</a>
+        <a class="nav-link" routerLink="/about-us" routerLinkActive="active-route"
+          [routerLinkActiveOptions]="{ exact: true }">About us</a>
       </li>
       <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/wishlist" routerLinkActive="active-route" [routerLinkActiveOptions]="{ exact: true }"><i class="bi bi-heart fs-5"></i><span
+        <a class="nav-link" routerLink="/wishlist" routerLinkActive="active-route"
+          [routerLinkActiveOptions]="{ exact: true }"><i class="bi bi-heart fs-5"></i><span
             class="position-absolute top-1 start-80 translate-middle badge rounded-pill bg-success">{{viewModel.wishListItems.length}}</span></a>
 
       </li>
       <li class="nav-item position-relative">
-        <a class="nav-link"><i class="bi bi-cart fs-5" data-bs-toggle="offcanvas" routerLinkActive="active-route" [routerLinkActiveOptions]="{ exact: true }"
-            data-bs-target="#offcanvasRight"></i>
+        <a class="nav-link"><i class="bi bi-cart fs-5" data-bs-toggle="offcanvas" routerLinkActive="active-route"
+            [routerLinkActiveOptions]="{ exact: true }" data-bs-target="#offcanvasRight"></i>
           <span
             class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-success">{{viewModel.cartItems.length}}</span></a>
 
 
       </li>
       <li class="nav-item ms-3">
-        <a class="nav-link" routerLink="/my-orders" routerLinkActive="active-route" [routerLinkActiveOptions]="{ exact: true }"><i
-            class="bi bi-basket fs-5"></i><span
+        <a class="nav-link" routerLink="/my-orders" routerLinkActive="active-route"
+          [routerLinkActiveOptions]="{ exact: true }"><i class="bi bi-basket fs-5"></i><span
             class="position-absolute top-1 start-80 translate-middle badge rounded-pill bg-success">0</span></a>
 
       </li>
@@ -123,10 +128,11 @@
           Orders</a>
 
         <a class="nav-link d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close"
-          routerLink="/cart"><i class="bi bi-heart me-2"></i> Cart <span class="badge bg-outline ms-auto">3</span></a>
+          routerLink="/cart"><i class="bi bi-heart me-2"></i> Cart <span
+            class="badge bg-outline ms-auto">{{viewModel.cartItems.length}}</span></a>
         <a class="nav-link d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close"
           routerLink="/wishlist"><i class="bi bi-heart me-2"></i> Wishlist <span
-            class="badge bg-outline ms-auto">3</span></a>
+            class="badge bg-outline ms-auto">{{viewModel.wishListItems.length}}</span></a>
         <a class="nav-link d-flex align-items-center" routerLink="/contact-us" data-bs-dismiss="offcanvas"
           aria-label="Close"><i class="bi bi-bag me-2"></i> Contact Us</a>
         <a class="nav-link d-flex align-items-center" routerLink="/about-us" data-bs-dismiss="offcanvas"
