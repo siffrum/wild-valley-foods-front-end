@@ -147,7 +147,8 @@
             <a class="nav-link dropdown-toggle" tabindex="0">Categories</a>
             <ul class="dropdown-menu">
               <li *ngFor="let category of viewModel.categoriesViewModel.categories">
-                <a class="dropdown-item" [routerLink]="['/shop',category.name, category.id]">
+                <a class="dropdown-item" data-bs-dismiss="offcanvas" aria-label="Close"
+                  [routerLink]="['/shop',category.name, category.id]">
                   {{ category.name }}
                 </a>
               </li>
