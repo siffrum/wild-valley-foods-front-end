@@ -53,7 +53,7 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
     this._commonService.presentLoading();
     await this.getAllBanners();
     await this.getAllProducts();
-    await this.getAllNewArrivals();
+    await this.getAllIsBestSelling();
     } catch (error) {
       this._commonService.showSweetAlertToast({
         title: 'Error',
@@ -139,9 +139,9 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
       });
     } 
   }
-  async getAllNewArrivals(): Promise<void> {
+  async getAllIsBestSelling(): Promise<void> {
     try {
-      let resp = await this.productService.getAllNewArrivals();
+      let resp = await this.productService.getAllIsBestSelling();
       if (resp.isError) {
         await this._exceptionHandler.logObject(resp.errorData);
         this._commonService.showSweetAlertToast({

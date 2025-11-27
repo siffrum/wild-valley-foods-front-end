@@ -133,9 +133,9 @@ export class ProductClient extends BaseApiClient {
     );
   };
 
-  GetAllNewArrivals = async (): Promise<ApiResponse<ProductSM[]>> => {
+  GetAllIsBestSelling = async (): Promise<ApiResponse<ProductSM[]>> => {
     return await this.GetResponseAsync<null, ProductSM[]>(
-      `${AppConstants.ApiUrls.BASE}/product/new-arrivals`,
+      `${AppConstants.ApiUrls.BASE}/product/isBestSelling`,
       'GET',
       null,
       new AdditionalRequestDetails<ProductSM[]>(false, Authentication.false)

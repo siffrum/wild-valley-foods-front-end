@@ -158,12 +158,11 @@
       </label>
       <input type="file"
              class="form-control"
-             accept=".jpg,.jpeg,.png,.webp"
+             accept=".jpg,.jpeg,.png,.webp,.gif,.bmp,.tiff,.svg,.heic,.heif,.avif"
              multiple
              (change)="onFileChange($event)"
              [ngClass]="{ 'is-invalid': !hasImages() && viewModel.FormSubmitted }">
       <div class="invalid-feedback">Please provide at least one product image</div>
-
       <!-- Show existing image count when editing -->
       <div *ngIf="product && viewModel.productFormData.images?.length" class="mt-2 small text-muted">
         {{ viewModel.productFormData.images?.length || 0 }} existing image(s) present. Selecting files will replace them.

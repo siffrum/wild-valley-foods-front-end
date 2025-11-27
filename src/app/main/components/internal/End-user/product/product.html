@@ -51,11 +51,11 @@
             <div class="mt-3 d-flex gap-2">
                 <button type="button" class="btn btn-sm btn-primary flex-fill" [disabled]="isOutOfStock"
                     (click)="onAddToCart()">
-                    Add to cart
+                    <i class="bi bi-cart"></i>
                 </button>
 
                 <button type="button" class="btn btn-sm btn-outline-secondary" (click)="onView()">
-                    View
+                    <i class="bi bi-eye"></i>
                 </button>
                 <button type="button" class="btn btn-sm" [class.btn-success]="product.isWishlisted"
                     [class.btn-outline-danger]="!product.isWishlisted" (click)="onToggleWishlist()">

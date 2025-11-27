@@ -83,8 +83,8 @@ export class ProductService extends BaseService {
   ): Promise<ApiResponse<ProductSM>> {
     return await this.productClient.UpdateProduct(formData, id);
   }
-  async getAllNewArrivals(): Promise<ApiResponse<ProductSM[]>> {
-    return await this.productClient.GetAllNewArrivals();
+  async getAllIsBestSelling(): Promise<ApiResponse<ProductSM[]>> {
+    return await this.productClient.GetAllIsBestSelling();
   }
 
   async getProductReviews(id: number): Promise<ApiResponse<ReviewSM[]>> {

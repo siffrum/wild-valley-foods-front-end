@@ -11,7 +11,7 @@
             <div class="list-group">
                 <div class="list-group-item d-flex flex-column flex-md-row align-items-center gap-3"
                     *ngFor="let item of viewModel.cartItems" role="listitem">
-                    <img [src]="item.images" [alt]="item.name" class="cart-item-img rounded" loading="lazy" />
+                    <img [src]="item.images?.[0]" [alt]="item.name" class="cart-item-img rounded" loading="lazy" />
                     <div class="flex-grow-1 px-3">
                         <h5 class="mb-2">{{ item.name }}</h5>
                         <p class="mb-1 text-muted small">Price: {{ item.price | currency:'INR':'symbol':'1.0-0' }}</p>
