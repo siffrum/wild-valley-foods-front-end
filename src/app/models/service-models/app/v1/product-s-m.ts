@@ -21,6 +21,7 @@ export class ProductSM extends WildValleyFoodsServiceModelBase<number> {
   addedAt?: number;
   status?: string;
   categoryId!: number;
+  isBestSelling!:boolean;
   // backend returns base64 images array as `images` (converted by server)
   images?: string[]; // e.g. ["data:image/png;base64,...", ...]
   selected?: boolean;

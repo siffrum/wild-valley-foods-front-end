@@ -10,7 +10,8 @@ import { ProductSM } from '../models/service-models/app/v1/product-s-m';
 import { UserProductViewModel } from '../models/view/end-user/product/user-product.viewmodel';
 import { ReviewSM } from '../models/service-models/app/v1/review-s-m';
 import { AppConstants } from '../../app-constants';
-import { ApiRequest } from '../models/service-models/app/base/api-request';
+import { BoolResponseRoot } from '../models/service-models/foundation/common-response/bool-response-root';
+import { ApiRequest } from '../models/service-models/foundation/api-contracts/base/api-request';
 
 @Injectable({
   providedIn: 'root',
@@ -82,6 +83,12 @@ export class ProductService extends BaseService {
     id: number
   ): Promise<ApiResponse<ProductSM>> {
     return await this.productClient.UpdateProduct(formData, id);
+  }
+
+   async setIsBestSellingProductState(id: number,state:BoolResponseRoot): Promise<ApiResponse<BoolResponseRoot>> {
+    let apiRequest = new ApiRequest<BoolResponseRoot>();
+    apiRequest.reqData = state
+    return await this.productClient.SetIsBestSellingProduct(id,apiRequest);
   }
   async getAllIsBestSelling(): Promise<ApiResponse<ProductSM[]>> {
     return await this.productClient.GetAllIsBestSelling();

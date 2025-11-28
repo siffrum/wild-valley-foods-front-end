@@ -35,6 +35,7 @@
         </th>
         <th>Category</th>
         <th>Images</th>
+        <th>IsBestSelling</th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -55,6 +56,28 @@
                class="table-img me-1"
                height="40" width="40">
         </td>
+  <td>
+  <!-- Single Toggle Best Selling Button -->
+  <button 
+    class="btn btn-sm"
+    [ngClass]="{
+      'btn-success': p.isBestSelling,
+      'btn-warning': !p.isBestSelling
+    }"
+    (click)="setIsBestSellingState(p.id, !p.isBestSelling)"
+  >
+    <i class="bi"
+       [ngClass]="{
+         'bi-check-circle-fill': p.isBestSelling,
+         'bi-x-circle-fill': !p.isBestSelling
+       }"
+    ></i>
+    {{ p.isBestSelling ? 'Yes' : 'Not' }}
+  </button>
+</td>
+
+
+
         <td>
           <div class="d-flex gap-1 flex-wrap">
             <button class="btn btn-sm btn-primary" (click)="openFormModal(p)">

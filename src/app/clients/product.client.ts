@@ -14,7 +14,8 @@ import {
 import { QueryFilter } from '../models/service-models/foundation/api-contracts/query-filter';
 import { ProductSM } from '../models/service-models/app/v1/product-s-m';
 import { ReviewSM } from '../models/service-models/app/v1/review-s-m';
-import { ApiRequest } from '../models/service-models/app/base/api-request';
+import { BoolResponseRoot } from '../models/service-models/foundation/common-response/bool-response-root';
+import { ApiRequest } from '../models/service-models/foundation/api-contracts/base/api-request';
 
 @Injectable({
   providedIn: 'root',
@@ -52,7 +53,17 @@ export class ProductClient extends BaseApiClient {
       details
     );
   };
-
+/** Update existing Product */
+SetIsBestSellingProduct = async (
+  id: number,
+  req: ApiRequest<BoolResponseRoot>
+): Promise<ApiResponse<BoolResponseRoot>> => {
+  return await this.GetResponseAsync<BoolResponseRoot, BoolResponseRoot>(
+    `${AppConstants.ApiUrls.BASE}/admin/product/bestselling/state/${id}`,
+    'PUT',
+    req
+  );
+};
   /** Retrieves all Products (paginated) */
   GetAllProduct = async (
     queryFilter: QueryFilter

@@ -1,6 +1,7 @@
 import { BaseViewModel } from '../../internal/base.viewmodel';
 import { CategorySM } from '../../service-models/app/v1/categories-s-m';
 import { ProductSM } from '../../service-models/app/v1/product-s-m';
+import { BoolResponseRoot } from '../../service-models/foundation/common-response/bool-response-root';
 import { UserProductViewModel } from '../end-user/product/user-product.viewmodel';
 import { AdminCategoriesViewModel } from './admin.categories.viewmodel';
 
@@ -19,4 +20,5 @@ export class AdminProductsViewModel extends BaseViewModel {
   sortDirection: 'asc' | 'desc' = 'asc';
   categoryId: number=0;
   searchstring:string='';
+  boolResponseRoot:BoolResponseRoot=new BoolResponseRoot();
 }

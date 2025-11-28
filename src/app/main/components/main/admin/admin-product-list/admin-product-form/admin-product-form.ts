@@ -57,7 +57,7 @@ export class AdminProductForm extends BaseComponent<AdminProductsViewModel> impl
       this._commonService.presentLoading();
       const catVm = new AdminCategoriesViewModel();
       catVm.pagination.PageNo = 1;
-      catVm.pagination.PageSize = 1000; // fetch all (practical)
+      catVm.pagination.PageSize = 50; // fetch all (practical)
       const resp = await this.categoryService.getAllCategories(catVm);
       if (resp.isError) {
         await this._logHandler.logObject(resp.errorData);

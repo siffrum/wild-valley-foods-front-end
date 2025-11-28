@@ -25,10 +25,10 @@ export abstract class BaseApiClient extends BaseAjaxClient {
   }
 
   protected GetResponseAsync = async <InReq, OutResp>(
-    relativeUrl: string,
-    reqMethod: Method = 'GET',
-    reqBody: ApiRequest<InReq> | FormData | null = null,
-    additionalRequestDetails: AdditionalRequestDetails<OutResp> = new AdditionalRequestDetails<OutResp>(false)
+  relativeUrl: string,
+  reqMethod: Method = 'GET',
+  reqBody: InReq | ApiRequest<InReq> | FormData | null = null,
+  additionalRequestDetails: AdditionalRequestDetails<OutResp> = new AdditionalRequestDetails<OutResp>(false)
   ): Promise<ApiResponse<OutResp>> => {
     let responseEntity: ApiResponse<OutResp> | null = null;
     let axiosResp: AxiosResponse<any> | null = null;

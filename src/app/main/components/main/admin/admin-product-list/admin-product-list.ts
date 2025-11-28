@@ -67,6 +67,67 @@ export class AdminProductList extends BaseComponent<AdminProductsViewModel> impl
       this._commonService.dismissLoader();
     }
   }
+ async setIsBestSellingState(id:number,state:boolean) {
+    try {
+      this._commonService.presentLoading();
+      this.viewModel.boolResponseRoot.boolResponse=state;
+      const resp = await this.productService.setIsBestSellingProductState(id,this.viewModel.boolResponseRoot);
+      if (resp.isError) {
+        await this._logHandler.logObject(resp.errorData);
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData.displayMessage,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      } else {
+        this.viewModel.boolResponseRoot = resp.successData;
+        this.loadPageData()
+      }
+    } catch (error) {
+      await this._logHandler.logObject(error);
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: 'Failed to load products.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    } finally {
+      this._commonService.dismissLoader();
+    }
+  }
+
+   private async updateProduct() {
+    try {
+      this._commonService.presentLoading();
+      const formData = new FormData();
+      formData.append('reqData', JSON.stringify(this.viewModel.productFormData));
+      const resp = await this.productService.updateProduct(formData, this.viewModel.productFormData.id);
+      if (resp.isError) {
+        await this._logHandler.logObject(resp.errorData);
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData.displayMessage,
+          icon: 'error'
+        });
+      } else {
+        this._commonService.showSweetAlertToast({
+          title: 'Success',
+          text: 'Product state updated successfully.',
+          icon: 'success'
+        });
+      }
+    } catch (error) {
+      await this._logHandler.logObject(error);
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: 'Failed to update product.',
+        icon: 'error'
+      });
+    } finally {
+      this._commonService.dismissLoader();
+    }
+  }
  async TotalProductCount() {
     try {
       this._commonService.presentLoading();
