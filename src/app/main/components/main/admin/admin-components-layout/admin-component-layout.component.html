@@ -1,7 +1,7 @@
 <div class="layout">
   <header class="top-nav">
     <button class="menu-toggle" (click)="isSidebarOpen = !isSidebarOpen">&#9776;</button>
-    <div class="logo">My App</div>
+    <div class="logo">Admin Dashboard</div>
   </header>
 
   <aside class="side-nav" [class.open]="isSidebarOpen">
@@ -18,7 +18,7 @@
   </aside>
 
 
-<main class="main-content" (click)="isSidebarOpen = false">
+  <main class="main-content" (click)="isSidebarOpen = false">
     <router-outlet></router-outlet>
   </main>
 </div>
