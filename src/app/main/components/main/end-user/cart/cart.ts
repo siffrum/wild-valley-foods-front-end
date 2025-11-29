@@ -7,11 +7,11 @@ import { LogHandlerService } from '../../../../../services/log-handler.service';
 import { IndexedDBStorageService } from '../../../../../services/indexdb.service';
 import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
 import { CartService } from '../../../../../services/cart.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './cart.html',
   styleUrl: './cart.scss',
 })
@@ -84,5 +84,9 @@ export class CartComponent
 
   proceedToCheckout() {
     this.router.navigate(['/checkout']);
+  }
+
+  imageError(event: any) {
+    this._commonService.onImageError(event);
   }
 }
