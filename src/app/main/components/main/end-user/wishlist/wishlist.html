@@ -40,7 +40,8 @@
 
           </td>
           <td>
-            <img [src]="item.images" [alt]="item.name" class="product-img" loading="lazy" />
+            <img [src]="item.images" [alt]="item.name" class="product-img" loading="lazy"
+              (error)="_commonService.onImageError($event)" />
           </td>
           <td class="title-col">
             <div class="title">{{ item.name }}</div>
