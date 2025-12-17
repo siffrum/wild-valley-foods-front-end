@@ -14,8 +14,13 @@ export class UserProductViewModel extends BaseViewModel {
   categoryId!: number;
   reviewsSM: ReviewSM[] = [];
   cartItems: ProductSM[] = [];
+  
+  // UI toggles
   showReviews = false;
-  averageRating = 0;
+  showDescription = true;  // Description expanded by default
+  showSpecs = false;       // Specifications collapsed by default
   showFullRichDesc = false;
+  
+  averageRating = 0;
   reviewFormData: ReviewSM = new ReviewSM();
 }

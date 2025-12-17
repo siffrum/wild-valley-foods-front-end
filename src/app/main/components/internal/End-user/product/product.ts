@@ -1,4 +1,6 @@
-// product-card.component.ts (fixed)
+/**
+ * Product Card Component
+ */
 import {
   ChangeDetectorRef,
   Component,
@@ -8,23 +10,25 @@ import {
   Output,
   OnChanges,
   SimpleChanges,
-  ChangeDetectionStrategy,
+  OnDestroy,
 } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
 import { WishlistService } from '../../../../../services/wishlist.service';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ProductUtils } from '../../../../../utils/product.utils';
 
 @Component({
   selector: 'app-product',
   templateUrl: './product.html',
-  styleUrls: ['./product.scss'], // <-- fixed
-  imports: [CommonModule],
+  styleUrls: ['./product.scss'],
+  imports: [CommonModule, FormsModule],
 })
-export class ProductCardComponent implements OnInit, OnChanges {
+export class ProductCardComponent implements OnInit, OnChanges, OnDestroy {
   @Input({ required: true }) product!: ProductSM;
 
   @Input() currency = '₹';
-  @Input() weightUnit = 'kg';
   @Input() placeholder = 'assets/logo.png';
   @Input() showActions = true;
 
@@ -32,46 +36,132 @@ export class ProductCardComponent implements OnInit, OnChanges {
   @Output() view = new EventEmitter<ProductSM>();
   @Output() wishlist = new EventEmitter<ProductSM>();
 
+  // Expose utils to template
+  utils = ProductUtils;
+
+  private wishlistSub?: Subscription;
+
   constructor(
     private wishlistService: WishlistService,
     private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit(): Promise<void> {
+    console.log('[ProductCard] ngOnInit for:', this.product?.name);
+    this.initializeSelectedVariant();
+    
+    // Subscribe to wishlist changes
+    this.wishlistSub = this.wishlistService.wishlist$.subscribe((wishlist) => {
+      if (this.product) {
+        const isNowWishlisted = wishlist.some(p => p.id === this.product.id);
+        if (this.product.isWishlisted !== isNowWishlisted) {
+          console.log('[ProductCard] Wishlist state changed for', this.product.name, ':', isNowWishlisted);
+          this.product.isWishlisted = isNowWishlisted;
+          this.cdr.detectChanges();
+        }
+      }
+    });
+    
     await this.setWishlistedFlag();
   }
-  async setWishlistedFlag() {
-    this.product.isWishlisted = await this.wishlistService.isWishlisted(
-      this.product
-    );
+
+  ngOnDestroy(): void {
+    this.wishlistSub?.unsubscribe();
   }
-  // also handle @Input changes (important if product input can change)
-  async ngOnChanges(changes: SimpleChanges) {
-    if (changes['product']) {
+
+  async ngOnChanges(changes: SimpleChanges): Promise<void> {
+    if (changes['product'] && !changes['product'].firstChange) {
+      this.initializeSelectedVariant();
+      await this.setWishlistedFlag();
     }
   }
 
-  get isOutOfStock(): boolean {
-    return (this.product?.stock ?? 0) <= 0;
-  }
-
-  onAddToCart() {
-    if (!this.isOutOfStock) {
-      this.addToCart.emit(this.product);
-    }
-  }
-
-  onView() {
-    this.view.emit(this.product);
-  }
-
-  async onToggleWishlist() {
-    this.product.isWishlisted = !this.product.isWishlisted;
-    await this.wishlistService.toggleWishlist(this.product);
+  private initializeSelectedVariant(): void {
+    ProductUtils.initializeSelectedVariant(this.product);
     this.cdr.detectChanges();
   }
 
-  onImageError(event: Event) {
+  private async setWishlistedFlag(): Promise<void> {
+    if (!this.product) return;
+    const isWishlisted = await this.wishlistService.isWishlisted(this.product);
+    console.log('[ProductCard] Initial wishlist check for', this.product.name, ':', isWishlisted);
+    this.product.isWishlisted = isWishlisted;
+    this.cdr.detectChanges();
+  }
+
+  get selectedVariant(): any {
+    return ProductUtils.getSelectedVariant(this.product);
+  }
+
+  get availableVariants(): any[] {
+    return ProductUtils.getAvailableVariants(this.product);
+  }
+
+  onVariantChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const variantId = Number(select.value);
+    
+    if (isNaN(variantId)) return;
+    
+    this.product.selectedVariantId = variantId;
+    this.product.cartQuantity = 1;
+    this.cdr.detectChanges();
+  }
+
+  onAddToCart(): void {
+    if (!ProductUtils.canAddToCart(this.product)) return;
+    
+    const variant = ProductUtils.getSelectedVariant(this.product);
+    if (!variant) {
+      console.warn('[ProductCard] Cannot add to cart without selected variant');
+      return;
+    }
+    
+    this.addToCart.emit(this.product);
+  }
+
+  onView(): void {
+    this.view.emit(this.product);
+  }
+
+  /**
+   * Toggle wishlist - called from template click handler
+   */
+  handleWishlistClick(event: MouseEvent): void {
+    event.stopPropagation();
+    event.preventDefault();
+    
+    console.log('[ProductCard] Wishlist button clicked for:', this.product?.name);
+    
+    if (!this.product) {
+      console.error('[ProductCard] No product!');
+      return;
+    }
+    
+    // Call async method
+    this.toggleWishlistAsync();
+  }
+
+  private async toggleWishlistAsync(): Promise<void> {
+    try {
+      console.log('[ProductCard] Calling wishlist service for:', this.product.name);
+      
+      const added = await this.wishlistService.toggleWishlist(this.product);
+      
+      console.log('[ProductCard] Wishlist toggle result:', added ? 'added' : 'removed');
+      
+      // Update local state
+      this.product.isWishlisted = added;
+      this.cdr.detectChanges();
+      
+      // NOTE: Do NOT emit event here - the service already handles everything
+      // Parent components subscribe to wishlistService.wishlist$ for updates
+    } catch (error) {
+      console.error('[ProductCard] Error toggling wishlist:', error);
+    }
+  }
+
+  onImageError(event: Event): void {
     const img = event.target as HTMLImageElement;
     img.src = this.placeholder;
   }

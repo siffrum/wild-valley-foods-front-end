@@ -15,7 +15,15 @@
                         (error)="imageError($event)" />
                     <div class="flex-grow-1 px-3">
                         <h5 class="mb-2">{{ item.name }}</h5>
-                        <p class="mb-1 text-muted small">Price: {{ item.price | currency:'INR':'symbol':'1.0-0' }}</p>
+                        <!-- Display variant info using utility -->
+                        @if (utils.getSelectedVariant(item); as variant) {
+                        <p class="mb-1 text-muted small">
+                            {{ variant.quantity }}{{ variant.unitSymbol || variant.unitName || '' }} - 
+                            Price: {{ variant.price | currency:'INR':'symbol':'1.0-0' }}
+                        </p>
+                        } @else {
+                        <p class="mb-1 text-muted small">Price: {{ utils.getPrice(item) | currency:'INR':'symbol':'1.0-0' }}</p>
+                        }
                         <div class="input-group quantity-input-group w-auto">
                             <button class="btn btn-outline-secondary btn-sm" title="Decrease quantity"
                                 (click)="decrement(item)" aria-label="Decrease quantity">
@@ -31,7 +39,10 @@
                         </div>
                     </div>
                     <div class="text-end">
-                        <p class="mb-2 fw-bold">{{ (item.price) | currency:'INR':'symbol':'1.0-0' }}</p>
+                        <!-- Use utility for total calculation -->
+                        <p class="mb-2 fw-bold">
+                            {{ (utils.getPrice(item) * item.cartQuantity) | currency:'INR':'symbol':'1.0-0' }}
+                        </p>
                         <button class="btn btn-danger btn-sm" aria-label="Remove item" (click)="removeItem(item)">
                             Remove
                         </button>

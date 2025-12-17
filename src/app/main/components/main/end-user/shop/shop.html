@@ -35,7 +35,7 @@
           <div class="col-4 col-md-3 col-lg-3 m-4 ms-1 md-1 d-flex justify-content-center"
             *ngFor="let p of viewModel.products; trackBy: trackByProduct">
             <app-product class="product-item" [product]="p" (addToCart)="onAddToCart($event)"
-              (view)="openProduct($event)" (wishlist)="toggleWishlist($event)">
+              (view)="openProduct($event)" (wishlist)="onWishlistChanged($event)">
             </app-product>
           </div>
         </ng-container>

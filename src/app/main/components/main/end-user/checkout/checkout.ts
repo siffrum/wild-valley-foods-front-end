@@ -15,6 +15,7 @@ import { CustomerService } from '../../../../../services/customer.service';
 import { CustomerDetailSM } from '../../../../../models/service-models/app/v1/customer-detail-s-m';
 import { CustomerAddressDetailSM } from '../../../../../models/service-models/app/v1/customer-address-detail-s-m';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { ProductUtils } from '../../../../../utils/product.utils';
 
 @Component({
   selector: 'app-checkout',
@@ -28,6 +29,9 @@ export class Checkout
   implements OnInit
 {
   @ViewChild('customerForm') customerForm!: NgForm;
+
+  // Expose ProductUtils to template
+  utils = ProductUtils;
 
   savedCustomers: CustomerDetailSM[] = [];
   selectedCustomerId: number | null = null;
@@ -66,11 +70,7 @@ export class Checkout
         (await this.storageService.getFromStorage(
           AppConstants.DbKeys.SAVED_CUSTOMER_DETAILS
         )) || [];
-      console.log('saved');
-
-      console.log(saved);
-
-      this.savedCustomers = saved.slice(0, 10); // limit to 10
+      this.savedCustomers = saved.slice(0, 10);
     } catch (error) {
       this.savedCustomers = [];
     }
@@ -88,13 +88,11 @@ export class Checkout
     this.isFormDisabled = true;
     this.viewModel.customer = { ...customer };
     this.viewModel.createdCustomer = { ...customer };
-    console.log('selected customer', this.viewModel.createdCustomer);
 
     const homeAddr = customer.addresses?.find(
       (a) => a.addressType === AddressType.Home
     );
     if (homeAddr) this.viewModel.homeAddress = { ...homeAddr };
-    // Optional: handle multiple address types
   }
 
   async deleteCustomer(customerId: number, event: Event) {
@@ -170,10 +168,6 @@ export class Checkout
       this.currentCard = 'order';
       return;
     }
-    // if (!this.validateForm()) {
-    //   this.viewModel.submitted = true;
-    //   return;
-    // }
     try {
       this.viewModel.submitted = true;
       this.viewModel.homeAddress.addressType = this.selectedAddressType;
@@ -228,9 +222,13 @@ export class Checkout
     } catch {
       this.viewModel.cartItems = [];
     }
-    this.viewModel.cartItems.forEach((it: ProductSM) => {
-      if (!it.cartQuantity || it.cartQuantity < 1) it.cartQuantity = 1;
+    
+    // Initialize selected variant for each cart item
+    this.viewModel.cartItems.forEach((item: ProductSM) => {
+      if (!item.cartQuantity || item.cartQuantity < 1) item.cartQuantity = 1;
+      ProductUtils.initializeSelectedVariant(item);
     });
+    
     this.recalculate();
   }
 
@@ -243,14 +241,57 @@ export class Checkout
           );
   }
 
+  /**
+   * Get variant for display using ProductUtils
+   */
+  getSelectedVariant(item: ProductSM): any {
+    return ProductUtils.getSelectedVariant(item);
+  }
+
+  /**
+   * Get price for item using ProductUtils
+   */
+  getItemPrice(item: ProductSM): number {
+    return ProductUtils.getPrice(item);
+  }
+
+  /**
+   * Get SKU for item using ProductUtils
+   */
+  getItemSku(item: ProductSM): string {
+    return ProductUtils.getSku(item);
+  }
+
+  /**
+   * Get unit display for item
+   */
+  getItemUnitDisplay(item: ProductSM): string {
+    const variant = ProductUtils.getSelectedVariant(item);
+    if (!variant) return '';
+    return `${variant.quantity}${variant.unitSymbol || variant.unitName || ''}`;
+  }
+
+  /**
+   * Calculate item total
+   */
+  getItemTotal(item: ProductSM): number {
+    return ProductUtils.getPrice(item) * (item.cartQuantity || 1);
+  }
+
+  /**
+   * Update cart item quantity
+   */
   async updateCart(item: ProductSM) {
     item.cartQuantity = Number(item.cartQuantity) || 1;
-    await this.cartService.updateCartItem(item.id, item.cartQuantity);
+    await this.cartService.updateCartItem(item.id, item.cartQuantity, item.selectedVariantId);
     this.recalculate();
   }
 
+  /**
+   * Remove item from cart
+   */
   async removeItem(item: ProductSM) {
-    await this.cartService.removeById(item.id);
+    await this.cartService.removeById(item.id, item.selectedVariantId);
     this.viewModel.cartItems = this.viewModel.cartItems.filter(
       (x) => x !== item
     );
@@ -263,27 +304,32 @@ export class Checkout
     this.recalculate();
   }
 
+  /**
+   * Recalculate totals using ProductUtils for variant prices
+   */
   recalculate() {
     const items = this.viewModel.cartItems || [];
-    this.subTotal = items.reduce(
-      (acc, it) => acc + Number(it.price || 0) * Number(it.cartQuantity || 1),
-      0
-    );
-    this.taxAmount = items.reduce(
-      (acc, it) =>
-        acc +
-        (Number(it.price || 0) *
-          Number(it.cartQuantity || 1) *
-          Number(it.taxRate || 0)) /
-          100,
-      0
-    );
+    
+    // Calculate subtotal using variant prices
+    this.subTotal = items.reduce((acc, item) => {
+      const price = ProductUtils.getPrice(item);
+      return acc + price * (item.cartQuantity || 1);
+    }, 0);
+    
+    // Calculate tax using variant prices
+    this.taxAmount = items.reduce((acc, item) => {
+      const price = ProductUtils.getPrice(item);
+      const taxRate = item.taxRate || 0;
+      return acc + (price * (item.cartQuantity || 1) * taxRate) / 100;
+    }, 0);
+    
+    // Free shipping over ₹1000
     this.shippingAmount = this.subTotal >= 1000 || this.subTotal === 0 ? 0 : 50;
 
+    // Apply coupon discount
     const couponDiscount = this.calculateCouponDiscount(this.subTotal);
-    const total =
-      this.subTotal + this.taxAmount + this.shippingAmount - couponDiscount;
-    this.viewModel.totalPrice = Math.max(0, Number(Number(total).toFixed(2)));
+    const total = this.subTotal + this.taxAmount + this.shippingAmount - couponDiscount;
+    this.viewModel.totalPrice = Math.max(0, Number(total.toFixed(2)));
   }
 
   calculateCouponDiscount(subtotal: number): number {
@@ -318,6 +364,16 @@ export class Checkout
     this.currentCard = 'customer';
   }
 
+  /**
+   * Proceed to payment
+   * Creates order with variant-specific data:
+   * - productId
+   * - variantId (productVariantId)
+   * - variantPrice
+   * - unitSymbol
+   * - quantity
+   * - sku
+   */
   async proceedToPayment() {
     if (!this.canProceed()) {
       this._commonService.ShowToastAtTopEnd(
@@ -328,24 +384,52 @@ export class Checkout
     }
     this.recalculate();
 
-    // Prepare items for the backend
-    const orderItems = this.viewModel.cartItems.map((i) => ({
-      productId: i.id,
-      quantity: i.cartQuantity,
-    }));
+    // Validate all items have selected variants
+    for (const item of this.viewModel.cartItems) {
+      const variant = ProductUtils.getSelectedVariant(item);
+      if (!variant) {
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: `Product "${item.name}" does not have a selected variant. Please refresh and try again.`,
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+        return;
+      }
+    }
+
+    // Build order items with full variant information
+    const orderItems = this.viewModel.cartItems.map((item) => {
+      const variant = ProductUtils.getSelectedVariant(item);
+      return {
+        productId: item.id,
+        productVariantId: variant.id,
+        variantPrice: variant.price,
+        unitSymbol: variant.unitSymbol || variant.unitName || '',
+        quantity: item.cartQuantity || 1,
+        sku: variant.sku || '',
+      };
+    });
 
     const payload = {
       customerId: this.viewModel.createdCustomer.id,
       items: orderItems,
+      subtotal: this.subTotal,
+      taxAmount: this.taxAmount,
+      shippingAmount: this.shippingAmount,
+      totalAmount: this.viewModel.totalPrice,
+      couponCode: this.couponCode || null,
     };
-    console.log(payload);
+    
+    console.log('[Checkout] Order payload:', payload);
 
     try {
-      // Step 1: Create Backend Order
+      this._commonService.presentLoading();
+      
+      // Create Backend Order
       let resp = await this.customerService.proccedToOrder(payload);
-      const createRes = resp.successData;
-
-      if (!createRes) {
+      
+      if (resp.isError) {
         this._commonService.showSweetAlertToast({
           title: 'Error',
           text: resp.errorData.displayMessage,
@@ -353,28 +437,51 @@ export class Checkout
           confirmButtonText: 'OK',
         });
         return;
-      } else {
-        window.open(resp.successData.paymentLink.short_url, '_blank');
-        // after this integrate webhook
+      }
+      
+      const createRes = resp.successData;
+      if (!createRes) {
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: 'Failed to create order. Please try again.',
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+        return;
+      }
+
+      // Open Razorpay payment link
+      if (createRes.paymentLink?.short_url) {
+        window.open(createRes.paymentLink.short_url, '_blank');
+        
+        // Clear cart after successful order creation
+        await this.cartService.clearCart();
+        this.viewModel.cartItems = [];
+        
+        this._commonService.showSweetAlertToast({
+          title: 'Order Created',
+          text: 'Please complete payment in the new window.',
+          icon: 'success',
+          confirmButtonText: 'OK',
+        });
       }
     } catch (err: any) {
+      console.error('[Checkout] Order error:', err);
       this._commonService.showSweetAlertToast({
         title: 'Order Error',
-        text: err.message || 'Order failed!',
+        text: err.message || 'Order failed! Please try again.',
         icon: 'error',
         confirmButtonText: 'OK',
       });
+    } finally {
+      this._commonService.dismissLoader();
     }
   }
 
   verifyPayment(order: any) {
-    // placeholder
     const { razorpayOrderId, paymentId, signature } = order;
     let payload = { razorpayOrderId, paymentId, signature };
-    console.log(payload);
-
+    console.log('[Checkout] Verifying payment:', payload);
     let resp = this.customerService.verifyPayment(payload);
-    // if (resp.) {
-    // }
   }
 }

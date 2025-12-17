@@ -115,11 +115,13 @@
                     <img [src]="it.image" [alt]="it.name" />
                     <div>
                       <div class="p-name">{{ it.name }}</div>
-                      <div class="muted small">{{ it.variant }}</div>
+                      <!-- REFACTOR: Display variant info (when connected to real backend, this will show unit/quantity) -->
+                      <div class="muted small">{{ it.variant || 'N/A' }}</div>
                     </div>
                   </div>
                 </td>
                 <td class="center">{{ it.quantity }}</td>
+                <!-- REFACTOR: Price from order record (already variant price from backend) -->
                 <td class="right">₹{{ it.price | number:'1.0-0' }}</td>
                 <td class="right">₹{{ (it.price * it.quantity) | number:'1.0-0' }}</td>
               </tr>

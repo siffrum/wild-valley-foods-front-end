@@ -78,8 +78,13 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
     await this.cartService.toggleCart(product);
   }
 
-  async toggleWishlist(product: ProductSM) {
-    await this.wishlistService.toggleWishlist(product);
+  /**
+   * Handle wishlist event from product card.
+   * Note: The ProductCardComponent already toggles the wishlist internally,
+   * so we just log it here for debugging. No action needed.
+   */
+  onWishlistChanged(product: ProductSM) {
+    console.log('[Home] Wishlist changed for:', product.name, '- isWishlisted:', product.isWishlisted);
   }
 
   openProduct(product: ProductSM) {
@@ -128,6 +133,7 @@ export class Home extends BaseComponent<HomeViewModel> implements OnInit {
         });
       } else {
         this.viewModel.productsViewModel.products = resp.successData;
+        console.log(this.viewModel.productsViewModel.products);
         await this.getAllCategories();
       }
     } catch (error) {

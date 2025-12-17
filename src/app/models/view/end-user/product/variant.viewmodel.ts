@@ -1,8 +1,8 @@
 import { BaseViewModel } from "../../../internal/base.viewmodel";
-import { VariantsSM } from "../../../service-models/app/v1/variants-s-m";
+import { ProductVariantSM } from "../../../service-models/app/v1/variants-s-m";
 
 export class VariantViewModel extends BaseViewModel{
      updateMode: boolean = false;
-     variants: VariantsSM[] = []
-    variant:VariantsSM=new VariantsSM()
+     variants: ProductVariantSM[] = []
+    variant:ProductVariantSM=new ProductVariantSM()
 }

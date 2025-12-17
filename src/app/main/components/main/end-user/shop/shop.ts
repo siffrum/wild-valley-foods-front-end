@@ -17,6 +17,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../../../../services/product.service';
 import { CategoryService } from '../../../../../services/category.service';
 import { CategorySM } from '../../../../../models/service-models/app/v1/categories-s-m';
+import { ProductUtils } from '../../../../../utils/product.utils';
 
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -102,9 +103,11 @@ export class Shop extends BaseComponent<AdminProductsViewModel> implements OnIni
     this.subscriptions.unsubscribe();
   }
 
-  /** trackBy helpers */
+  /** trackBy helpers
+   * REFACTOR: Use variant SKU if available, fallback to product ID
+   */
   trackByProduct(_: number, item: ProductSM) {
-    return item?.id ?? item?.sku ?? _;
+    return item?.id ?? item?.selectedVariant?.sku ?? item?.sku ?? _;
   }
   trackByCategory(_: number, item: CategorySM) {
     return item?.id ?? _;
@@ -115,9 +118,12 @@ export class Shop extends BaseComponent<AdminProductsViewModel> implements OnIni
     this.router.navigate(['/product', product.id]);
   }
 
-  /** wishlist & cart */
-  async toggleWishlist(product: ProductSM) {
-    await this.wishlistService.toggleWishlist(product);
+  /** 
+   * Handle wishlist event from product card.
+   * Note: The ProductCardComponent already toggles the wishlist internally.
+   */
+  onWishlistChanged(product: ProductSM) {
+    console.log('[Shop] Wishlist changed for:', product.name, '- isWishlisted:', product.isWishlisted);
   }
 
   async onAddToCart(product: ProductSM) {
@@ -149,14 +155,18 @@ export class Shop extends BaseComponent<AdminProductsViewModel> implements OnIni
     }
   }
 
-  /** Sorting logic */
+  /** Sorting logic using ProductUtils for variant price */
   sortProducts(list: ProductSM[], sortKey: string | null): ProductSM[] {
     if (!sortKey) return list;
     const copy = [...list];
+    
+    // Initialize selected variant for products without one
+    copy.forEach(p => ProductUtils.initializeSelectedVariant(p));
+    
     if (sortKey === 'price_asc')
-      copy.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+      copy.sort((a, b) => ProductUtils.getPrice(a) - ProductUtils.getPrice(b));
     else if (sortKey === 'price_desc')
-      copy.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+      copy.sort((a, b) => ProductUtils.getPrice(b) - ProductUtils.getPrice(a));
     else if (sortKey === 'name_asc')
       copy.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
     else if (sortKey === 'name_desc')

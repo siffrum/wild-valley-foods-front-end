@@ -78,4 +78,19 @@ background-color: transparent;
       font-size: 1.1rem;
     }
   }
+
+  .topbar {
+    background-color: #f9aa3c;
+    border-bottom: 1px solid #e9ecef;
+    color: white;
+    .icons {
+      cursor: pointer;
+      margin-right: 10px;
+    }
+  }
+  .bi-list,
+  .bi-three-dots-vertical {
+    font-size: 26px;
+    color: black;
+  }
 }

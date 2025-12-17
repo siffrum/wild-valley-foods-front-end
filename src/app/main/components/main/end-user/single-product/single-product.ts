@@ -21,6 +21,7 @@ import { WishlistService } from '../../../../../services/wishlist.service';
 import { ProductCardComponent } from '../../../internal/End-user/product/product';
 import { ReviewSM } from '../../../../../models/service-models/app/v1/review-s-m';
 import { ReviewService } from '../../../../../services/review.service';
+import { ProductUtils } from '../../../../../utils/product.utils';
 
 @Component({
   selector: 'app-product-page',
@@ -32,6 +33,9 @@ export class SingleProduct
   extends BaseComponent<UserProductViewModel>
   implements OnInit
 {
+  // Expose utils to template
+  utils = ProductUtils;
+
   constructor(
     commonService: CommonService,
     private logHandlerService: LogHandlerService,
@@ -58,10 +62,10 @@ export class SingleProduct
         this.loadProductData(+params['id']);
       }
     });
-    //
 
     this.calculateAverageRating();
   }
+
   toggleReviews(): void {
     this.viewModel.showReviews = !this.viewModel.showReviews;
   }
@@ -77,24 +81,21 @@ export class SingleProduct
       this.viewModel.averageRating = 0;
     }
   }
+
   showReviewModal = false;
   openAddReviewModal(): void {
     this.showReviewModal = true;
   }
-submitReview(reviewForm: NgForm) {
-  if (!reviewForm.invalid) {
-    this.showReviewModal = false;
 
-    this.viewModel.reviewFormData = reviewForm.value;
-
-    // ✅ Append rating value manually
-    this.viewModel.reviewFormData.rating = this.rating;
-
-    this.viewModel.reviewFormData.productId = this.viewModel.product.id;
-
-    this.addReview(this.viewModel.reviewFormData);
+  submitReview(reviewForm: NgForm) {
+    if (!reviewForm.invalid) {
+      this.showReviewModal = false;
+      this.viewModel.reviewFormData = reviewForm.value;
+      this.viewModel.reviewFormData.rating = this.rating;
+      this.viewModel.reviewFormData.productId = this.viewModel.product.id;
+      this.addReview(this.viewModel.reviewFormData);
+    }
   }
-}
 
   async addReview(form: ReviewSM) {
     let resp = await this.reviewService.addReview(form);
@@ -110,9 +111,11 @@ submitReview(reviewForm: NgForm) {
       await this.getProductReviews(this.viewModel.product.id);
     }
   }
+
   closeModal() {
     this.showReviewModal = false;
   }
+
   toggleRichDesc() {
     this.viewModel.showFullRichDesc = !this.viewModel.showFullRichDesc;
   }
@@ -121,29 +124,26 @@ submitReview(reviewForm: NgForm) {
     this.viewModel.selectedImageIndex = index;
   }
 
-rating = 0;
-ratingText = "";
+  rating = 0;
+  ratingText = '';
 
-ratingMessages: any = {
-  0.5: "Very Poor 😠",
-  1: "Poor 😟",
-  1.5: "Below Average 😕",
-  2: "Not Good 😐",
-  2.5: "Average 🙂",
-  3: "Okay 🙂",
-  3.5: "Good 🙂👍",
-  4: "Very Good 😄",
-  4.5: "Excellent 😍",
-  5: "Outstanding 🤩🔥"
-};
+  ratingMessages: any = {
+    0.5: 'Very Poor 😠',
+    1: 'Poor 😟',
+    1.5: 'Below Average 😕',
+    2: 'Not Good 😐',
+    2.5: 'Average 🙂',
+    3: 'Okay 🙂',
+    3.5: 'Good 🙂👍',
+    4: 'Very Good 😄',
+    4.5: 'Excellent 😍',
+    5: 'Outstanding 🤩🔥',
+  };
 
-setRating(value: number) {
-  // force 0.5 steps
-  this.rating = Math.max(0.5, Math.min(5, value));
-
-  this.ratingText = this.ratingMessages[this.rating] || "";
-}
-
+  setRating(value: number) {
+    this.rating = Math.max(0.5, Math.min(5, value));
+    this.ratingText = this.ratingMessages[this.rating] || '';
+  }
 
   /**
    * Main entry point for loading product + related data
@@ -178,7 +178,73 @@ setRating(value: number) {
     }
     this.viewModel.product = resp.successData;
     this.viewModel.categoryId = this.viewModel.product.categoryId;
+
+    // Check URL for variant parameter
+    const variantIdParam = this.activatedRoute.snapshot.queryParams['variant'];
+    if (variantIdParam) {
+      const variantId = Number(variantIdParam);
+      const variant = this.viewModel.product.variants?.find(
+        (v) => v.id === variantId
+      );
+      if (variant) {
+        this.viewModel.product.selectedVariantId = variantId;
+      } else {
+        this.initializeSelectedVariant();
+      }
+    } else {
+      this.initializeSelectedVariant();
+    }
+    
+    // Update maxQty based on selected variant
+    const selectedVariant = ProductUtils.getSelectedVariant(this.viewModel.product);
+    if (selectedVariant) {
+      this.viewModel.maxQty = selectedVariant.stock || 1;
+    }
   }
+
+  /**
+   * Initialize selected variant to default variant
+   */
+  private initializeSelectedVariant(): void {
+    ProductUtils.initializeSelectedVariant(this.viewModel.product);
+    const selectedVariant = ProductUtils.getSelectedVariant(this.viewModel.product);
+    if (selectedVariant) {
+      this.viewModel.maxQty = selectedVariant.stock || 1;
+    }
+  }
+
+  /**
+   * Handle variant selection change
+   */
+  onVariantChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const variantId = Number(select.value);
+    this.viewModel.product.selectedVariantId = variantId;
+
+    // Update max quantity based on variant stock
+    const selectedVariant = ProductUtils.getSelectedVariant(this.viewModel.product);
+    if (selectedVariant) {
+      this.viewModel.maxQty = selectedVariant.stock || 1;
+      if (this.viewModel.product.cartQuantity > this.viewModel.maxQty) {
+        this.viewModel.product.cartQuantity = this.viewModel.maxQty;
+      }
+    }
+  }
+
+  /**
+   * Get selected variant using utility
+   */
+  get selectedVariant(): any {
+    return ProductUtils.getSelectedVariant(this.viewModel.product);
+  }
+
+  /**
+   * Get available variants for dropdown
+   */
+  get availableVariants(): any[] {
+    return this.viewModel.product?.variants || [];
+  }
+
   private async getProductReviews(id: number): Promise<void> {
     const resp = await this.productService.getProductReviews(id);
     if (resp.isError) {
@@ -188,25 +254,33 @@ setRating(value: number) {
       );
       return;
     }
-    // ✅ Keep only approved reviews
-    this.viewModel.reviewsSM = resp.successData.filter(x => x.isApproved);
+    this.viewModel.reviewsSM = resp.successData.filter((x) => x.isApproved);
     this.calculateAverageRating();
   }
-getFullStars(): number {
-  return Math.floor(this.viewModel.averageRating);
-}
 
-hasHalfStar(): boolean {
-  return (this.viewModel.averageRating % 1) >= 0.5;
-}
+  getFullStars(): number {
+    return Math.floor(this.viewModel.averageRating);
+  }
+
+  hasHalfStar(): boolean {
+    return this.viewModel.averageRating % 1 >= 0.5;
+  }
+
   /**
    * Sync cart info with current product
    */
   private async getCartItemById(id: number): Promise<void> {
     const items = await this.cartService.getAll();
-    const found = items.find((item) => item.id === id);
+    const found = this.viewModel.product.selectedVariantId
+      ? items.find(
+          (item) =>
+            item.id === id &&
+            item.selectedVariantId === this.viewModel.product.selectedVariantId
+        )
+      : items.find((item) => item.id === id);
+
     if (found) {
-      this.viewModel.product = found;
+      this.viewModel.product.cartQuantity = found.cartQuantity;
     } else {
       this.viewModel.product.cartQuantity = 1;
     }
@@ -283,8 +357,10 @@ hasHalfStar(): boolean {
    * Cart Methods
    */
   increment(item: ProductSM): void {
-    item.cartQuantity++;
-    this.saveCart();
+    if (item.cartQuantity < this.viewModel.maxQty) {
+      item.cartQuantity++;
+      this.saveCart();
+    }
   }
 
   decrement(item: ProductSM): void {
@@ -321,10 +397,11 @@ hasHalfStar(): boolean {
   }
 
   /**
-   * Wishlist
+   * Handle wishlist event from product card.
+   * Note: The ProductCardComponent already toggles the wishlist internally.
    */
-  async toggleWishlist(product: ProductSM): Promise<void> {
-    await this.wishlistService.toggleWishlist(product);
+  onWishlistChanged(product: ProductSM): void {
+    console.log('[SingleProduct] Wishlist changed for:', product.name, '- isWishlisted:', product.isWishlisted);
   }
 
   openProduct(product: ProductSM): void {
@@ -333,15 +410,29 @@ hasHalfStar(): boolean {
     this.router.navigate(['/product', product.id]);
   }
 
+  /**
+   * Share product with variant info
+   */
   shareProduct(): void {
     if (!this.viewModel.product) return;
 
+    let shareUrl =
+      window.location.origin + `/product/${this.viewModel.product.id}`;
+    if (this.viewModel.product.selectedVariantId) {
+      shareUrl += `?variant=${this.viewModel.product.selectedVariantId}`;
+    }
+
+    const variant = ProductUtils.getSelectedVariant(this.viewModel.product);
+    const variantInfo = variant
+      ? ` - ${variant.quantity}${variant.unitSymbol || ''} - ${this.viewModel.product.currency}${ProductUtils.getPrice(this.viewModel.product)}`
+      : '';
+
     const shareData = {
       title: this.viewModel.product.name,
-      text: `${this.viewModel.product.name} — ${
+      text: `${this.viewModel.product.name}${variantInfo} — ${
         this.viewModel.product.description ?? ''
       }`,
-      url: window.location.href,
+      url: shareUrl,
     };
 
     if ((navigator as any).share) {
@@ -349,7 +440,7 @@ hasHalfStar(): boolean {
         this._commonService.ShowToastAtTopEnd('Error sharing', 'error');
       });
     } else {
-      navigator.clipboard?.writeText(window.location.href);
+      navigator.clipboard?.writeText(shareUrl);
       this._commonService.ShowToastAtTopEnd(
         'Link copied to clipboard',
         'success'

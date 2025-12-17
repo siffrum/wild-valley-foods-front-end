@@ -1,69 +1,154 @@
 <article class="card product-card h-100" role="group">
-    <div class="position-relative" (click)="onView()">
-        <img [src]="product.images?.[0]" (error)="onImageError($event)" class="card-img-top product-img"
-            [attr.alt]="product.name || 'product image'" loading="lazy">
+    <!-- Image Section with Overlays -->
+    <div class="position-relative product-image-container" (click)="onView()">
+        <img [src]="product.images?.[0] || placeholder" 
+             (error)="onImageError($event)" 
+             class="card-img-top product-img"
+             [attr.alt]="product.name || 'product image'" 
+             loading="lazy">
 
+        <!-- Top-Left: Stock Badge -->
+        <div class="position-absolute top-0 start-0 m-2">
+            <span class="badge" [ngClass]="utils.getStockStatusClass(product)">
+                {{ utils.getStockStatus(product) }}
+            </span>
+        </div>
 
-        <!-- Badge -->
-        @if (product.stock) {
-        <span class="badge bg-danger position-absolute top-0 start-0 m-2">{{ product!.stock }}</span>
+        <!-- Top-Right: Action Icons (Vertical Stack) -->
+        <div class="position-absolute top-0 end-0 m-2 d-flex flex-column gap-1">
+            <button type="button" 
+                    class="btn btn-sm btn-light rounded-circle shadow-sm action-icon"
+                    [class.btn-danger]="product.isWishlisted"
+                    [class.text-white]="product.isWishlisted"
+                    (click)="handleWishlistClick($event)"
+                    [attr.aria-label]="product.isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'"
+                    title="{{ product.isWishlisted ? 'Remove from wishlist' : 'Add to wishlist' }}">
+                <i class="bi" [class.bi-heart-fill]="product.isWishlisted" [class.bi-heart]="!product.isWishlisted"></i>
+            </button>
+            <button type="button" 
+                    class="btn btn-sm btn-light rounded-circle shadow-sm action-icon"
+                    (click)="onView(); $event.stopPropagation()"
+                    aria-label="View product details"
+                    title="View Details">
+                <i class="bi bi-eye"></i>
+            </button>
+        </div>
+
+        <!-- Discount Badge -->
+        @if (utils.hasDiscount(product)) {
+            <span class="badge bg-danger position-absolute bottom-0 start-0 m-2">
+                -{{ utils.getDiscountPercentage(product) }}%
+            </span>
         }
 
-        <!-- Out of stock overlay -->
-        @if (isOutOfStock) {
-        <div class="stock-overlay d-flex align-items-center justify-content-center">
-            Out of stock
-        </div>
+        <!-- Out of Stock Overlay -->
+        @if (utils.isOutOfStock(product)) {
+            <div class="stock-overlay d-flex align-items-center justify-content-center">
+                <span class="fw-bold text-muted">Out of Stock</span>
+            </div>
         }
     </div>
 
     <div class="card-body d-flex flex-column">
+        <!-- Product Name -->
         <h6 class="card-title mb-1 text-truncate" title="{{ product.name }}">{{ product.name }}</h6>
 
-        @if (product.category) {
-        <small class="text-muted mb-2 d-block" title="{{ product.category.name }}">{{ product.category.name }}</small>
-        }
-        @if (product.description) {
-        <p class="card-text text-muted small mb-2 description d-none">
-            {{ product.description }}
-        </p>
-        }
-        <div class="mt-auto">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <div class="price h6 mb-0">
-                       <span class="currency fw-bold display-1">{{ currency }}</span>
-                        <span class="amount">{{ product.price | number:'1.2-2' }}</span>
+        <!-- Category & Rating Row -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <!-- Category -->
+            @if (product.category) {
+                <small class="text-muted text-truncate" title="{{ product.category.name }}" style="max-width: 60%;">
+                    {{ product.category.name }}
+                </small>
+            }
+            
+            <!-- Rating -->
+            <div class="rating-display d-flex align-items-center">
+                @if (utils.hasReviews(product)) {
+                    <div class="stars-mini me-1">
+                        @for (s of [1,2,3,4,5]; track s) {
+                            @if (s <= utils.getFullStars(product)) {
+                                <i class="bi bi-star-fill text-warning" style="font-size: 0.65rem;"></i>
+                            } @else if (s === utils.getFullStars(product) + 1 && utils.hasHalfStar(product)) {
+                                <i class="bi bi-star-half text-warning" style="font-size: 0.65rem;"></i>
+                            } @else {
+                                <i class="bi bi-star text-muted" style="font-size: 0.65rem;"></i>
+                            }
+                        }
                     </div>
-                    <!-- <small class="text-muted">SKU: {{ product.sku }}</small> -->
-                </div>
+                    <small class="text-muted" style="font-size: 0.7rem;">
+                        {{ utils.getFormattedRating(product) }} ({{ utils.getReviewCount(product) }})
+                    </small>
+                } @else {
+                    <small class="text-muted" style="font-size: 0.7rem;">
+                        <i class="bi bi-star text-muted" style="font-size: 0.65rem;"></i> No reviews
+                    </small>
+                }
+            </div>
+        </div>
 
-                <div class="text-end">
-                    @if (product.weight) {
-                    <small class="d-block">Wt: {{ product.weight }}{{ weightUnit }}</small>
-                    } @else {
-                    <small class="text-muted">—</small>
+        <div class="mt-auto">
+            <!-- Price Row: Left = Price, Right = Weight + Unit -->
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <!-- Price Section -->
+                <div>
+                    <div class="price h6 mb-0 d-flex align-items-baseline">
+                        <span class="currency fw-bold">{{ currency }}</span>
+                        <span class="amount fw-bold">{{ utils.getPrice(product) | number:'1.2-2' }}</span>
+                    </div>
+                    @if (utils.hasDiscount(product)) {
+                        <small class="text-muted text-decoration-line-through">
+                            {{ currency }}{{ utils.getComparePrice(product) | number:'1.2-2' }}
+                        </small>
                     }
                 </div>
 
+                <!-- Weight + Unit Section -->
+                <div class="text-end">
+                    @if (selectedVariant) {
+                        <small class="d-block fw-semibold">
+                            {{ selectedVariant.quantity }}{{ selectedVariant.unitSymbol || selectedVariant.unitName || '' }}
+                        </small>
+                        @if (utils.getWeight(product)) {
+                            <small class="d-block text-muted">{{ utils.getFormattedWeight(product) }}</small>
+                        }
+                    }
+                </div>
             </div>
 
-            <div class="mt-3 d-flex gap-2">
-                <button type="button" class="btn btn-sm btn-primary flex-fill" [disabled]="isOutOfStock"
+            <!-- Variant Dropdown (Unit Selection) -->
+            @if (utils.hasMultipleVariants(product)) {
+                <div class="mb-3">
+                    <select class="form-select form-select-sm variant-select" 
+                            [ngModel]="product.selectedVariantId" 
+                            (ngModelChange)="product.selectedVariantId = $event"
+                            (change)="onVariantChange($event)">
+                        @for (variant of availableVariants; track variant.id) {
+                            <option [ngValue]="variant.id" [disabled]="variant.stock <= 0">
+                                {{ variant.quantity }}{{ variant.unitSymbol || variant.unitName || '' }} 
+                                - {{ currency }}{{ variant.price | number:'1.2-2' }}
+                                @if (variant.stock <= 0) { (Out of Stock) }
+                            </option>
+                        }
+                    </select>
+                </div>
+            } @else if (product.variants?.length === 1) {
+                <!-- Single variant - show unit info without dropdown -->
+                <div class="mb-3 text-center">
+                    <small class="text-muted">
+                        {{ selectedVariant?.quantity }}{{ selectedVariant?.unitSymbol || selectedVariant?.unitName || '' }}
+                    </small>
+                </div>
+            }
+
+            <!-- Full-Width Add to Cart Button -->
+            <button type="button" 
+                    class="btn btn-primary w-100 add-to-cart-btn" 
+                    [disabled]="!utils.canAddToCart(product)"
                     (click)="onAddToCart()">
-                    <i class="bi bi-cart"></i>
-                </button>
-
-                <button type="button" class="btn btn-sm btn-outline-secondary" (click)="onView()">
-                    <i class="bi bi-eye"></i>
-                </button>
-                <button type="button" class="btn btn-sm" [class.btn-success]="product.isWishlisted"
-                    [class.btn-outline-danger]="!product.isWishlisted" (click)="onToggleWishlist()">
-                    ♥
-                </button>
-
-
-            </div>
+                <i class="bi bi-cart-plus me-1"></i>
+                Add to Cart
+            </button>
         </div>
     </div>
 </article>

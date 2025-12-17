@@ -1,28 +1,198 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, AfterViewInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { TestimonialService } from '../../../../../services/testimonial.service';
+import { TestimonialSM } from '../../../../../models/service-models/app/v1/website-resource/testimonial-s-m';
+import { TestimonialViewModel } from '../../../../../models/view/website-resource/testimonial.viewmodel';
+import { CommonService } from '../../../../../services/common.service';
+import { BaseComponent } from '../../../../../base.component';
+import { LogHandlerService } from '../../../../../services/log-handler.service';
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-testimonial',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './testimonial.html',
   styleUrl: './testimonial.scss',
 })
-export class Testimonial {
-  @Input() testimonials = [
-    {
-      image: 'https://randomuser.me/api/portraits/men/32.jpg',
-      title: 'Amazing Service',
-      description:
-        'I loved using this product! It truly exceeded my expectations.',
-      rating: 5,
-      author: 'John Doe',
-    },
-    {
-      image: 'https://randomuser.me/api/portraits/women/44.jpg',
-      title: 'Highly recommended',
-      description: 'Excellent experience from start to finish.',
-      rating: 4,
-      author: 'Jane Smith',
-    },
-    // Add more testimonials here
-  ];
+export class Testimonial extends BaseComponent<TestimonialViewModel> implements OnInit {
+  testimonials: TestimonialSM[] = [];
+  groupedTestimonials: TestimonialSM[][] = [];
+  
+  loading = true;
+  error = '';
+  currentSlide = 0;
+  
+  private carousel: any = null;
+  private autoSlideInterval: any = null;
+  readonly AUTO_SLIDE_DELAY = 5000;
+
+  constructor(
+    private commonService: CommonService,private loghandler:LogHandlerService,
+    private testimonialService: TestimonialService,
+    private cdr: ChangeDetectorRef
+  ) {
+    super(commonService, loghandler);
+    this.viewModel = new TestimonialViewModel();
+  }
+
+  ngOnInit(): void {
+    this.loadTestimonials();
+  }
+  async loadTestimonials(): Promise<void> {
+    try {
+      this._commonService.presentLoading();
+      this.viewModel.pagination.PageNo = 1;
+      this.viewModel.pagination.PageSize = 20; // Get more testimonials for carousel
+
+      const resp=await this.testimonialService.getAllPaginatedTestimonial(this.viewModel);
+      if(resp.isError){
+       await this._exceptionHandler.logObject(resp.errorData);
+        this._commonService.showSweetAlertToast({
+          title: 'Error',
+          text: resp.errorData.displayMessage,
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+      } else {
+        this.testimonials = resp.successData || [];
+        this.groupedTestimonials = this.chunkArray(this.testimonials, 2);
+        
+        // Reinitialize carousel after data loads
+        this.cdr.detectChanges();
+        setTimeout(() => this.initCarousel(), 100);
+      }
+    } catch (err) {
+      this.error = 'Failed to load testimonials';
+      console.error('[Testimonial] Exception:', err);
+    } finally {
+      this._commonService.dismissLoader();
+      this.cdr.detectChanges();
+    }
+  }
+
+  /**
+   * Initialize Bootstrap carousel
+   */
+  private initCarousel(): void {
+    const carouselEl = document.getElementById('testimonialCarousel');
+    if (!carouselEl || typeof bootstrap === 'undefined') return;
+
+    // Dispose existing carousel
+    if (this.carousel) {
+      try {
+        this.carousel.dispose();
+      } catch (e) {}
+    }
+
+    this.carousel = new bootstrap.Carousel(carouselEl, {
+      interval: false,
+      wrap: true,
+      touch: true
+    });
+
+    // Listen for slide change
+    carouselEl.addEventListener('slid.bs.carousel', (event: any) => {
+      this.currentSlide = event.to;
+      this.cdr.detectChanges();
+    });
+
+    // Start auto-slide
+    this.startAutoSlide();
+  }
+
+  /**
+   * Start auto-sliding
+   */
+  private startAutoSlide(): void {
+    this.clearAutoSlide();
+    
+    this.autoSlideInterval = setInterval(() => {
+      if (this.carousel && this.groupedTestimonials.length > 1) {
+        this.carousel.next();
+      }
+    }, this.AUTO_SLIDE_DELAY);
+  }
+
+  /**
+   * Clear auto-slide interval
+   */
+  private clearAutoSlide(): void {
+    if (this.autoSlideInterval) {
+      clearInterval(this.autoSlideInterval);
+      this.autoSlideInterval = null;
+    }
+  }
+
+  /**
+   * Manual navigation - reset auto-slide timer
+   */
+  onManualNavigation(): void {
+    this.startAutoSlide();
+  }
+
+  /**
+   * Chunk array into groups
+   */
+  private chunkArray<T>(arr: T[], size: number): T[][] {
+    const result: T[][] = [];
+    for (let i = 0; i < arr.length; i += size) {
+      result.push(arr.slice(i, i + size));
+    }
+    return result;
+  }
+
+  /**
+   * Get star array for rating display
+   */
+  getStars(rating: number | undefined): { filled: boolean }[] {
+    const ratingValue = rating || 5;
+    return Array(5).fill(null).map((_, i) => ({
+      filled: i < ratingValue
+    }));
+  }
+
+  /**
+   * Get initials from name for avatar
+   */
+  getInitials(name: string): string {
+    if (!name) return '?';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  }
+
+  /**
+   * Get avatar background color based on name
+   */
+  getAvatarColor(name: string): string {
+    const colors = [
+      '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
+      '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F',
+      '#BB8FCE', '#85C1E9', '#F8B500', '#00CED1'
+    ];
+    
+    if (!name) return colors[0];
+    
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    
+    return colors[Math.abs(hash) % colors.length];
+  }
+
+  /**
+   * Track by function for ngFor
+   */
+  trackByIndex(index: number): number {
+    return index;
+  }
+
+  trackByTestimonial(index: number, testimonial: TestimonialSM): number {
+    return testimonial.id || index;
+  }
 }

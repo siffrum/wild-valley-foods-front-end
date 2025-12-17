@@ -202,8 +202,16 @@
           <div class="d-flex justify-content-between align-items-start">
             <div class="fw-semibold">{{item.name}}</div>
             <div class="text-end">
-              <div class="fw-bold">{{ (item.price) | currency : 'INR' }}</div>
-              <small class="text-muted">{{item.sku}}</small>
+              <!-- Use utility to get variant price -->
+              <div class="fw-bold">
+                {{ getItemPrice(item) | currency : 'INR' }}
+              </div>
+              <small class="text-muted">
+                @if (getSelectedVariant(item); as variant) {
+                  {{ variant.sku }}
+                  <span class="d-block">{{ variant.quantity }}{{ variant.unitSymbol || variant.unitName || '' }}</span>
+                }
+              </small>
             </div>
           </div>
 

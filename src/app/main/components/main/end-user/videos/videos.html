@@ -1,76 +1,138 @@
-<div
-  id="videoCarousel"
-  class="carousel slide"
-  data-bs-ride="carousel"
-  data-bs-interval="5000"
->
-  <!-- Indicators -->
-  <div class="carousel-indicators">
-    <button
-      *ngFor="let group of groupedVideos; let i = index"
-      type="button"
-      data-bs-target="#videoCarousel"
-      [attr.data-bs-slide-to]="i"
-      [class.active]="i === 0"
-      [attr.aria-current]="i === 0 ? 'true' : null"
-      [attr.aria-label]="'Slide ' + (i + 1)"
-    ></button>
-  </div>
-
-  <!-- Slides -->
-  <div class="carousel-inner">
-    <div
-      class="carousel-item"
-      *ngFor="let group of groupedVideos; let i = index"
-      [class.active]="i === 0"
-    >
-      <div class="row g-3 justify-content-center">
-        <div
-          class="col-12 col-md-6"
-          *ngFor="let video of group; let j = index"
-        >
-          <!-- Responsive YouTube embed -->
-          <div class="video-wrapper">
-            <iframe
-              [id]="'youtube-' + (i*2 + j)"
-              class="rounded shadow w-100"
-              [src]="getSafeYoutubeUrl(video.youtubeUrl)"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
-            ></iframe>
-          </div>
-
-          <!-- Caption -->
-          <!-- <div class="carousel-caption d-none d-md-block">
-            <h6>{{ video.title }}</h6>
-            <p class="small">{{ video.description }}</p>
-          </div> -->
-        </div>
-      </div>
+<!-- Video Carousel Section -->
+@if (groupedVideos.length > 0) {
+<div class="video-section">
+  <!-- Header Controls -->
+  <div class="video-controls d-flex justify-content-between align-items-center mb-3 px-2">
+    <div class="d-flex align-items-center gap-2">
+      @if (isAnyVideoPlaying) {
+        <span class="badge bg-danger d-flex align-items-center gap-1">
+          <span class="playing-dot"></span>
+          Now Playing
+        </span>
+      }
     </div>
+    
+    <button 
+      type="button" 
+      class="btn btn-sm"
+      [class.btn-success]="autoScrollEnabled"
+      [class.btn-outline-secondary]="!autoScrollEnabled"
+      (click)="toggleAutoScroll()"
+      [title]="autoScrollEnabled ? 'Auto-scroll is ON (Click to disable)' : 'Auto-scroll is OFF (Click to enable)'">
+      <i class="bi" [class.bi-play-circle-fill]="autoScrollEnabled" [class.bi-pause-circle]="!autoScrollEnabled"></i>
+      <span class="ms-1 d-none d-sm-inline">{{ autoScrollEnabled ? 'Auto-scroll' : 'Paused' }}</span>
+    </button>
   </div>
 
-  <!-- Controls -->
-  <button
-    class="carousel-control-prev"
-    type="button"
-    data-bs-target="#videoCarousel"
-    data-bs-slide="prev"
-    (click)="pauseAllVideos()"
-  >
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
+  <!-- Carousel -->
+  <div id="videoCarousel" class="carousel slide">
+    <!-- Slides -->
+    <div class="carousel-inner">
+      @for (group of groupedVideos; track trackByIndex($index); let i = $index) {
+        <div class="carousel-item" [class.active]="i === 0">
+          <div class="row g-4 justify-content-center px-md-5">
+            @for (video of group; track trackByVideo($index, video); let j = $index) {
+              <div class="col-12 col-md-6">
+                <div class="video-card">
+                  <!-- Video Container -->
+                  <div class="video-container" [class.is-playing]="isVideoPlaying(i, j)">
+                    <iframe
+                      [id]="'youtube-' + getVideoIndex(i, j)"
+                      [src]="getSafeYoutubeUrl(video.youtubeUrl)"
+                      frameborder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowfullscreen
+                    ></iframe>
+                    
+                    <!-- Playing indicator border -->
+                    @if (isVideoPlaying(i, j)) {
+                      <div class="playing-border"></div>
+                    }
+                  </div>
 
-  <button
-    class="carousel-control-next"
-    type="button"
-    data-bs-target="#videoCarousel"
-    data-bs-slide="next"
-    (click)="pauseAllVideos()"
-  >
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
+                  <!-- Video Info -->
+                  @if (video.title) {
+                    <div class="video-info mt-2 px-1">
+                      <h6 class="video-title mb-0" [title]="video.title">
+                        @if (isVideoPlaying(i, j)) {
+                          <i class="bi bi-play-fill text-danger me-1"></i>
+                        }
+                        {{ video.title }}
+                      </h6>
+                      @if (video.description) {
+                        <p class="video-desc text-muted small mb-0" [title]="video.description">
+                          {{ video.description }}
+                        </p>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Navigation: Only show if more than one slide -->
+    @if (groupedVideos.length > 1) {
+      <!-- Prev Button -->
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#videoCarousel"
+        data-bs-slide="prev"
+        (click)="onManualNavigation()">
+        <span class="carousel-nav-icon">
+          <i class="bi bi-chevron-left"></i>
+        </span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+
+      <!-- Next Button -->
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#videoCarousel"
+        data-bs-slide="next"
+        (click)="onManualNavigation()">
+        <span class="carousel-nav-icon">
+          <i class="bi bi-chevron-right"></i>
+        </span>
+        <span class="visually-hidden">Next</span>
+      </button>
+
+      <!-- Indicators -->
+      <div class="carousel-indicators">
+        @for (group of groupedVideos; track trackByIndex($index); let i = $index) {
+          <button
+            type="button"
+            data-bs-target="#videoCarousel"
+            [attr.data-bs-slide-to]="i"
+            [class.active]="i === currentSlide"
+            [attr.aria-current]="i === currentSlide ? 'true' : null"
+            [attr.aria-label]="'Slide ' + (i + 1)"
+            (click)="onManualNavigation()">
+          </button>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Status Message -->
+  @if (isAnyVideoPlaying && autoScrollEnabled) {
+    <div class="status-message text-center mt-2">
+      <small class="text-muted">
+        <i class="bi bi-info-circle me-1"></i>
+        Auto-scroll paused while video is playing
+      </small>
+    </div>
+  }
 </div>
+} @else {
+  <!-- Empty State -->
+  <div class="empty-state text-center py-5">
+    <i class="bi bi-youtube fs-1 text-muted d-block mb-3"></i>
+    <p class="text-muted mb-0">No videos available</p>
+  </div>
+}

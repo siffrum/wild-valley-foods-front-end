@@ -35,7 +35,7 @@
       </thead>
       <tbody>
         @for (item of viewModel.allItems; track $index) {
-        <tr [class.selected]="item.selected">
+        <tr>
           <td class="checkbox-cell">
 
           </td>
@@ -47,12 +47,18 @@
             <div class="title">{{ item.name }}</div>
           </td>
 
-          <td class="price-col">{{ item.price | currency : "INR" }}</td>
+          <!-- Use utility for variant price -->
+          <td class="price-col">
+            {{ utils.getPrice(item) | currency : "INR" }}
+            @if (utils.getSelectedVariant(item); as variant) {
+              <small class="text-muted d-block">{{ variant.quantity }}{{ variant.unitSymbol || variant.unitName || '' }}</small>
+            }
+          </td>
 
           <td class="actions text-right">
             <button class="icon" (click)="moveToCart(item)">🛒</button>
             <button class="icon" (click)="shareItem(item)">🔗</button>
-            <button class="icon" (click)="removeFromWishlist(item.id)">
+            <button class="icon" (click)="removeFromWishlist(item.id, item.selectedVariantId)">
               ✖
             </button>
           </td>
@@ -62,18 +68,26 @@
 
     <!-- Mobile cards -->
     <div class="card-grid" *ngIf=" viewModel.isMobile">
-      <div class="card" *ngFor="let item of  viewModel.allItems" [class.selected]="item.selected">
+      <div class="card" *ngFor="let item of  viewModel.allItems">
         <div class="card-head">
-          <img [src]="item.images" [alt]="item.name" loading="lazy" />
+          <img [src]="item.images?.[0]" [alt]="item.name" loading="lazy" />
           <div class="card-info">
             <div class="title">{{ item.name }}</div>
+            @if (utils.getSelectedVariant(item); as variant) {
             <div class="muted small">
-              {{ item.addedAt | date : "shortDate" }}
+              {{ variant.quantity }}{{ variant.unitSymbol || variant.unitName || '' }}
             </div>
+            }
           </div>
         </div>
         <div class="card-body">
-          <div class="price">{{ item.price | currency : "INR" }}</div>
+          <!-- Use utility for variant price -->
+          <div class="price">
+            {{ utils.getPrice(item) | currency : "INR" }}
+            @if (utils.getSelectedVariant(item); as variant) {
+              <small class="text-muted d-block">{{ variant.quantity }}{{ variant.unitSymbol || variant.unitName || '' }}</small>
+            }
+          </div>
 
         </div>
         <div class="card-actions">
@@ -81,7 +95,7 @@
             Move to cart
           </button>
           <button class="btn ghost" (click)="shareItem(item)">Share</button>
-          <button class="btn danger ghost" (click)="removeFromWishlist(item.id)">
+          <button class="btn danger ghost" (click)="removeFromWishlist(item.id, item.selectedVariantId)">
             Remove
           </button>
         </div>

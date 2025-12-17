@@ -10,6 +10,7 @@ import { PaginationComponent } from '../../../internal/pagination/pagination.com
 import { AdminProductForm } from './admin-product-form/admin-product-form';
 import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
 import { AdminProductsViewModel } from '../../../../../models/view/Admin/admin-product.viewmodel';
+import { ProductVariantSM } from '../../../../../models/service-models/app/v1/variants-s-m';
 
 @Component({
   selector: 'app-admin-product-list',
@@ -128,7 +129,26 @@ export class AdminProductList extends BaseComponent<AdminProductsViewModel> impl
       this._commonService.dismissLoader();
     }
   }
- async TotalProductCount() {
+  /**
+   * Get total stock across all variants for a product
+   * REFACTOR: Helper method to calculate total variant stock
+   */
+  getTotalStock(product: ProductSM): number {
+    if (!product.variants || product.variants.length === 0) {
+      return 0;
+    }
+    return product.variants.reduce((sum, v) => sum + (v.stock || 0), 0);
+  }
+
+  /**
+   * Get category name from product
+   * REFACTOR: Helper method to safely access category
+   */
+  getCategoryName(product: ProductSM): string {
+    return (product as any).category?.name || '-';
+  }
+
+  async TotalProductCount() {
     try {
       this._commonService.presentLoading();
       const resp = await this.productService.getTotatProductCount();
@@ -170,7 +190,7 @@ export class AdminProductList extends BaseComponent<AdminProductsViewModel> impl
       this.viewModel.filteredProducts = this.viewModel.products.filter(p =>
         (p.name && p.name.toLowerCase().includes(term)) ||
         (p.description && p.description.toLowerCase().includes(term)) ||
-        (p.sku && p.sku.toLowerCase().includes(term)) ||
+        // (p.sku && p.sku.toLowerCase().includes(term)) ||
         ((p as any).category && (p as any).category.name && (p as any).category.name.toLowerCase().includes(term))
       );
     }

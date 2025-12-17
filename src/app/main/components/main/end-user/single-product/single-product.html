@@ -32,85 +32,118 @@
             <p class="text-muted small mb-2">
               Category:
               <a [routerLink]="['/category', viewModel.product.categoryId]" class="link-primary text-decoration-none">
-                {{ viewModel.product.category.name }}
+                {{ viewModel.product.category?.name || 'N/A' }}
               </a>
+            </p>
+            <!-- SKU Display -->
+            <p class="text-muted small mb-0">
+              <i class="bi bi-upc me-1"></i>SKU: {{ utils.getSku(viewModel.product) || 'N/A' }}
             </p>
           </div>
           <div class="text-end">
-            <span class="badge stock-badge"
-              [ngClass]="{'bg-success': viewModel.product.stock > 0, 'bg-danger': viewModel.product.stock === 0}">
-              {{ viewModel.product.stock > 0 ? 'In Stock' : 'Out of Stock' }}
+            <!-- Stock Status Badge -->
+            <span class="badge stock-badge" [ngClass]="utils.getStockStatusClass(viewModel.product)">
+              {{ utils.getStockStatus(viewModel.product) }}
             </span>
             <div class="stock small text-muted">
-              @if (viewModel.product.stock > 0) {
-              <small>{{ viewModel.product.stock }} available</small>
+              @if (utils.isOutOfStock(viewModel.product)) {
+                <small>Currently unavailable</small>
+              } @else if (utils.isLowStock(viewModel.product)) {
+                <small>Only {{ utils.getStock(viewModel.product) }} left</small>
               } @else {
-              <small>Currently unavailable</small>
+                <small>{{ utils.getStock(viewModel.product) }} available</small>
               }
             </div>
           </div>
         </div>
 
-<div class="rating-summary d-flex align-items-center mb-3">
-
-  <div class="stars me-2">
-    @for (s of [1,2,3,4,5]; track s) {
-
-      <!-- Full Star -->
-      @if (s <= getFullStars()) {
-        <i class="bi bi-star-fill text-warning"></i>
-      }
-
-      <!-- Half Star -->
-      @else if (s === getFullStars() + 1 && hasHalfStar()) {
-        <i class="bi bi-star-half text-warning"></i>
-      }
-
-      <!-- Empty Star -->
-      @else {
-        <i class="bi bi-star text-muted"></i>
-      }
-
-    }
-  </div>
-
-  <span class="fw-semibold">{{ viewModel.averageRating.toFixed(1) }}/5</span>
-  <a href="#reviews-section" class="ms-2 small text-primary text-decoration-none">
-    {{ viewModel.reviewsSM.length }} Ratings & Reviews
-  </a>
-</div>
-
-
-
-
-        <div class="price-row mb-3">
-          <h3 class="price mb-0">₹ {{ viewModel.product.price | number:'1.2-2' }}</h3>
+        <!-- Rating Summary -->
+        <div class="rating-summary d-flex align-items-center mb-3">
+          <div class="stars me-2">
+            @for (s of [1,2,3,4,5]; track s) {
+              @if (s <= getFullStars()) {
+                <i class="bi bi-star-fill text-warning"></i>
+              }
+              @else if (s === getFullStars() + 1 && hasHalfStar()) {
+                <i class="bi bi-star-half text-warning"></i>
+              }
+              @else {
+                <i class="bi bi-star text-muted"></i>
+              }
+            }
+          </div>
+          <span class="fw-semibold">{{ viewModel.averageRating.toFixed(1) }}/5</span>
+          <a href="#reviews-section" class="ms-2 small text-primary text-decoration-none">
+            {{ viewModel.reviewsSM.length }} Ratings & Reviews
+          </a>
         </div>
 
-        <p class="product-desc text-muted mb-4">{{ viewModel.product.description }}</p>
+        <!-- Variant selector dropdown -->
+        @if (viewModel.product.variants && viewModel.product.variants.length > 1) {
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Select Variant:</label>
+          <select class="form-select" 
+            [ngModel]="viewModel.product.selectedVariantId" 
+            (ngModelChange)="viewModel.product.selectedVariantId = $event"
+            (change)="onVariantChange($event)">
+            @for (variant of availableVariants; track variant.id) {
+            <option [ngValue]="variant.id" [disabled]="variant.stock <= 0">
+              {{ variant.quantity }}{{ variant.unitSymbol || variant.unitName || '' }} - ₹{{ variant.price | number:'1.2-2' }}
+              @if (variant.stock > 0) {
+                ({{ variant.stock }} available)
+              } @else {
+                (Out of Stock)
+              }
+            </option>
+            }
+          </select>
+        </div>
+        } @else if (selectedVariant) {
+        <!-- Single variant - display info -->
+        <div class="mb-3">
+          <span class="badge bg-secondary">
+            {{ selectedVariant.quantity }}{{ selectedVariant.unitSymbol || selectedVariant.unitName || '' }}
+          </span>
+        </div>
+        }
+
+        <!-- Price Display -->
+        <div class="price-row mb-3 d-flex align-items-center gap-2">
+          <h3 class="price mb-0 text-success">₹{{ utils.getPrice(viewModel.product) | number:'1.2-2' }}</h3>
+          @if (utils.hasDiscount(viewModel.product)) {
+            <small class="text-muted text-decoration-line-through">
+              ₹{{ utils.getComparePrice(viewModel.product) | number:'1.2-2' }}
+            </small>
+            <span class="badge bg-danger">-{{ utils.getDiscountPercentage(viewModel.product) }}%</span>
+          }
+        </div>
+        
+        <!-- Weight info -->
+        @if (utils.getWeight(viewModel.product)) {
+          <div class="text-muted small mb-3">
+            <i class="bi bi-box-seam me-1"></i>Weight: {{ utils.getFormattedWeight(viewModel.product) }}
+          </div>
+        }
 
         <!-- 🛒 Cart & Quantity -->
         <div class="d-flex align-items-center gap-3 mb-4">
           <div class="qty-selector d-flex align-items-center border rounded-pill px-2">
-            <button class="btn btn-link btn-sm" (click)="decrement(viewModel.product)">
+            <button class="btn btn-link btn-sm" (click)="decrement(viewModel.product)" [disabled]="viewModel.product.cartQuantity <= 1">
               <i class="bi bi-dash-lg"></i>
             </button>
-            <input type="number" class="form-control form-control-sm text-center border-0 mx-1"
+            <input type="number" class="form-control form-control-sm text-center border-0 mx-1" style="width: 50px;"
               [(ngModel)]="viewModel.product.cartQuantity" [min]="1" [max]="viewModel.maxQty" />
-            <button class="btn btn-link btn-sm" (click)="increment(viewModel.product)">
+            <button class="btn btn-link btn-sm" (click)="increment(viewModel.product)" [disabled]="viewModel.product.cartQuantity >= viewModel.maxQty">
               <i class="bi bi-plus-lg"></i>
             </button>
           </div>
 
           <div>
-            <button class="btn btn-primary me-2 shadow-sm" [disabled]="viewModel.product.stock === 0"
-              (click)="onAddToCart(viewModel.product)">
+            <button class="btn btn-primary me-2 shadow-sm" 
+                    [disabled]="!utils.canAddToCart(viewModel.product)"
+                    (click)="onAddToCart(viewModel.product)">
               <i class="bi bi-cart-plus me-1"></i> Add to Cart
             </button>
-            <!-- <button class="btn btn-outline-success shadow-sm" [disabled]="viewModel.product.stock === 0"
-              (click)="buyNow()">
-              Buy Now
-            </button> -->
           </div>
         </div>
 
@@ -118,10 +151,81 @@
           <i class="bi bi-share me-1"></i> Share Product
         </button>
 
-        <!-- 🧾 Description -->
-        <div class="description mt-4">
-          <h4 class="fw-bold mb-2">Product Description</h4>
-          <p class="text-muted lh-lg">{{ viewModel.product.description }}</p>
+        <!-- 📋 Collapsible Description Section -->
+        <div class="description-section mt-4 border-top pt-3">
+          <div class="d-flex justify-content-between align-items-center cursor-pointer" 
+               (click)="viewModel.showDescription = !viewModel.showDescription"
+               style="cursor: pointer;">
+            <h5 class="fw-bold mb-0">
+              <i class="bi bi-file-text me-2"></i>Product Description
+            </h5>
+            <button class="btn btn-sm btn-outline-secondary rounded-circle" style="width: 30px; height: 30px; padding: 0;">
+              <i class="bi" [ngClass]="viewModel.showDescription ? 'bi-dash' : 'bi-plus'"></i>
+            </button>
+          </div>
+          @if (viewModel.showDescription) {
+          <div class="description-content mt-3">
+            <p class="text-muted lh-lg mb-0">{{ viewModel.product.description || 'No description available.' }}</p>
+          </div>
+          }
+        </div>
+
+        <!-- 📋 Collapsible Specifications Section -->
+        <div class="specs-section mt-3 border-top pt-3">
+          <div class="d-flex justify-content-between align-items-center cursor-pointer" 
+               (click)="viewModel.showSpecs = !viewModel.showSpecs"
+               style="cursor: pointer;">
+            <h5 class="fw-bold mb-0">
+              <i class="bi bi-list-check me-2"></i>Specifications
+            </h5>
+            <button class="btn btn-sm btn-outline-secondary rounded-circle" style="width: 30px; height: 30px; padding: 0;">
+              <i class="bi" [ngClass]="viewModel.showSpecs ? 'bi-dash' : 'bi-plus'"></i>
+            </button>
+          </div>
+          @if (viewModel.showSpecs) {
+          <div class="specs-content mt-3">
+            <table class="table table-sm table-borderless">
+              <tbody>
+                <tr>
+                  <td class="text-muted" style="width: 40%;">SKU</td>
+                  <td class="fw-semibold">{{ utils.getSku(viewModel.product) || 'N/A' }}</td>
+                </tr>
+                @if (selectedVariant) {
+                <tr>
+                  <td class="text-muted">Unit</td>
+                  <td class="fw-semibold">{{ selectedVariant.quantity }}{{ selectedVariant.unitSymbol || selectedVariant.unitName || '' }}</td>
+                </tr>
+                }
+                @if (utils.getWeight(viewModel.product)) {
+                <tr>
+                  <td class="text-muted">Weight</td>
+                  <td class="fw-semibold">{{ utils.getFormattedWeight(viewModel.product) }}</td>
+                </tr>
+                }
+                @if (viewModel.product.hsnCode) {
+                <tr>
+                  <td class="text-muted">HSN Code</td>
+                  <td class="fw-semibold">{{ viewModel.product.hsnCode }}</td>
+                </tr>
+                }
+                @if (viewModel.product.taxRate) {
+                <tr>
+                  <td class="text-muted">Tax Rate</td>
+                  <td class="fw-semibold">{{ viewModel.product.taxRate }}%</td>
+                </tr>
+                }
+                <tr>
+                  <td class="text-muted">Availability</td>
+                  <td class="fw-semibold">
+                    <span [ngClass]="utils.isOutOfStock(viewModel.product) ? 'text-danger' : 'text-success'">
+                      {{ utils.getStockStatus(viewModel.product) }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          }
         </div>
       </div>
     </div>
@@ -138,6 +242,12 @@
 
     @if (viewModel.showReviews) {
     <div class="reviews-list mt-3">
+      @if (viewModel.reviewsSM.length === 0) {
+        <div class="text-muted text-center py-4">
+          <i class="bi bi-chat-square-text fs-1 d-block mb-2"></i>
+          No reviews yet. Be the first to review this product!
+        </div>
+      }
       @for (review of viewModel.reviewsSM; track review) {
       <div class="card review-card mb-3 p-3">
         <div class="d-flex justify-content-between align-items-start mb-1">
@@ -167,16 +277,21 @@
   <!-- 📜 Rich Description with See More -->
   @if (viewModel.product.richDescription) {
   <div class="mt-5 rich-desc">
-    <h3 class="fw-bold mb-3">Detailed Information</h3>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="fw-bold mb-0">
+        <i class="bi bi-info-circle me-2"></i>Detailed Information
+      </h3>
+      <button class="btn btn-sm btn-outline-secondary rounded-circle" 
+              (click)="viewModel.showFullRichDesc = !viewModel.showFullRichDesc"
+              style="width: 30px; height: 30px; padding: 0;">
+        <i class="bi" [ngClass]="viewModel.showFullRichDesc ? 'bi-dash' : 'bi-plus'"></i>
+      </button>
+    </div>
+    @if (viewModel.showFullRichDesc) {
     <p class="text-secondary" style="white-space: pre-line;">
-      {{ viewModel.showFullRichDesc ? viewModel.product.richDescription : (viewModel.product.richDescription |
-      slice:0:200) }}
-      @if (viewModel.product.richDescription.length > 200) {
-      <a href="javascript:void(0)" (click)="toggleRichDesc()" class="see-more text-primary ms-1">
-        {{ viewModel.showFullRichDesc ? 'See Less' : '...See More' }}
-      </a>
-      }
+      {{ viewModel.product.richDescription }}
     </p>
+    }
   </div>
   }
 
@@ -186,9 +301,9 @@
     <div class="row justify-content-center">
       @if (viewModel.products.length > 0) {
       @for (product of viewModel.products; track product) {
-      <div class="col-6 col-md-4 col-lg-4 mb-4 d-flex justify-content-center">
+      <div class="col-6 col-md-4 col-lg-3 mb-4 d-flex justify-content-center">
         <app-product [product]="product" (addToCart)="onAddToCart(product)" (view)="openProduct($event)"
-          (wishlist)="toggleWishlist(product)"></app-product>
+          (wishlist)="onWishlistChanged($event)"></app-product>
       </div>
       }
       } @else {
@@ -199,9 +314,6 @@
   }
 </div>
 }
-
-
-
 
 <!-- Review Modal -->
 <div class="modal-backdrop fade show" *ngIf="showReviewModal"></div>
@@ -229,31 +341,23 @@
             <input class="form-control" type="email" name="email" ngModel required placeholder="example@email.com" />
           </div>
 
-          <!-- ⭐ Half Star Rating -->
-          <div class="star-rating mb-2">
-            <ng-container *ngFor="let star of [1,2,3,4,5]; let i = index">
-
-              <i class="bi pointer" [ngClass]="{
-        'bi-star-fill': rating >= star,
-        'bi-star-half': rating >= star - 0.5 && rating < star,
-        'bi-star': rating < star - 0.5
-       }" (click)="setRating(star)" (dblclick)="setRating(star - 0.5)">
-              </i>
-
-            </ng-container>
+          <!-- ⭐ Star Rating -->
+          <div class="mb-3">
+            <label class="form-label">Rating</label>
+            <div class="star-rating">
+              <ng-container *ngFor="let star of [1,2,3,4,5]; let i = index">
+                <i class="bi pointer fs-4" [ngClass]="{
+                  'bi-star-fill text-warning': rating >= star,
+                  'bi-star-half text-warning': rating >= star - 0.5 && rating < star,
+                  'bi-star text-muted': rating < star - 0.5
+                }" (click)="setRating(star)" (dblclick)="setRating(star - 0.5)" style="cursor: pointer;">
+                </i>
+              </ng-container>
+            </div>
+            <div class="rating-text text-warning fw-bold mt-1" *ngIf="ratingText">
+              {{ rating }} ★ — {{ ratingText }}
+            </div>
           </div>
-
-          <div class="rating-text text-warning fw-bold" *ngIf="ratingText">
-            {{ rating }} ★ — {{ ratingText }}
-          </div>
-
-
-          <!-- rating message -->
-          <div class="rating-text mt-2" *ngIf="ratingText">
-            {{ ratingText }}
-          </div>
-
-
 
           <!-- Comment -->
           <div class="mb-3">
@@ -262,9 +366,9 @@
               placeholder="Share your experience..."></textarea>
           </div>
 
-          <div class="modal-footer">
+          <div class="modal-footer px-0 pb-0">
             <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
-            <button type="submit" class="btn btn-primary" [disabled]="reviewForm.invalid">Submit Review</button>
+            <button type="submit" class="btn btn-primary" [disabled]="reviewForm.invalid || rating === 0">Submit Review</button>
           </div>
 
         </form>

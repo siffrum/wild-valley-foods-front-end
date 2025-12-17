@@ -1,5 +1,5 @@
 import { CommonModule, NgIf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CartService } from '../../../../../services/cart.service';
 import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
@@ -10,6 +10,7 @@ import { BaseComponent } from '../../../../../base.component';
 import { CategoryService } from '../../../../../services/category.service';
 import { CommonService } from '../../../../../services/common.service';
 import { LogHandlerService } from '../../../../../services/log-handler.service';
+import { ProductUtils } from '../../../../../utils/product.utils';
 
 @Component({
   selector: 'app-header',
@@ -17,36 +18,48 @@ import { LogHandlerService } from '../../../../../services/log-handler.service';
   imports: [CommonModule, RouterModule],
   templateUrl: './header.html',
   styleUrls: ['./header.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Header extends BaseComponent<HeaderViewModel> implements OnInit {
-  private sub: Subscription | null = null;
-  private wishListSub: Subscription | null = null;
+export class Header extends BaseComponent<HeaderViewModel> implements OnInit, OnDestroy {
+  private cartSub: Subscription | null = null;
+  private wishlistSub: Subscription | null = null;
+
+  // Expose utils to template
+  utils = ProductUtils;
 
   constructor(
     commonService: CommonService,
     logHandlerService: LogHandlerService,
     private categoryService: CategoryService,
-      private cartService: CartService,
-    private wishlistService: WishlistService
+    private cartService: CartService,
+    private wishlistService: WishlistService,
+    private cdr: ChangeDetectorRef
   ) {
     super(commonService, logHandlerService);
     this.viewModel = new HeaderViewModel();
   }
+
   ngOnInit(): void {
-    this.sub = this.cartService.cart$.subscribe((items) => {
+    // Subscribe to cart changes
+    this.cartSub = this.cartService.cart$.subscribe((items) => {
+      console.log('[Header] Cart updated:', items?.length, 'items');
       this.viewModel.cartItems = items || [];
-      // optionally compute subtotal live here
-      this.viewModel.subTotal = this.viewModel.cartItems.reduce(
-        (sum, item) => sum + (item.price ?? 0) * item.cartQuantity,
-        0
-      );
+      this.viewModel.subTotal = this.viewModel.cartItems.reduce((sum, item) => {
+        const price = ProductUtils.getPrice(item);
+        return sum + price * (item.cartQuantity || 1);
+      }, 0);
+      this.cdr.detectChanges();
     });
-    this.wishListSub = this.wishlistService.wishlist$.subscribe((items) => {
+
+    // Subscribe to wishlist changes
+    this.wishlistSub = this.wishlistService.wishlist$.subscribe((items) => {
+      console.log('[Header] Wishlist updated:', items?.length, 'items');
       this.viewModel.wishListItems = items || [];
+      this.cdr.detectChanges();
     });
+
     this.loadPageData();
   }
-
 
   trackById(_: number, item: any) {
     return item.id ?? item.name;
@@ -67,6 +80,7 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit {
         });
       } else {
         this.viewModel.categoriesViewModel.categories = resp.successData;
+        this.cdr.detectChanges();
       }
     } catch (error) {
       this._commonService.showSweetAlertToast({
@@ -78,22 +92,22 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit {
     }
   }
 
-
   ngOnDestroy(): void {
-    this.sub?.unsubscribe();
-    this.wishListSub?.unsubscribe();
+    this.cartSub?.unsubscribe();
+    this.wishlistSub?.unsubscribe();
   }
-  // Compute total price
+
   async cartTotal() {
     return await this.cartService.cartTotal();
   }
+
   async getCartItems() {
     this.viewModel.cartItems = await this.cartService.getAll();
-    // console.log(this.viewModel.cartItems);
+    this.cdr.detectChanges();
   }
+
   increment(item: ProductSM) {
     item.cartQuantity++;
-
     this.saveCart();
   }
 
@@ -106,13 +120,21 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit {
 
   async saveCart() {
     for (const item of this.viewModel.cartItems) {
-      await this.cartService.updateCartItem(item.id, item.cartQuantity);
+      await this.cartService.updateCartItem(item.id, item.cartQuantity, item.selectedVariantId);
     }
     await this.getCartItems();
   }
 
   removeItem(item: ProductSM) {
-    this.cartService.removeById(item.id);
+    this.cartService.removeById(item.id, item.selectedVariantId);
     this.getCartItems();
+  }
+
+  getSelectedVariant(item: ProductSM): any {
+    return ProductUtils.getSelectedVariant(item);
+  }
+
+  getItemPrice(item: ProductSM): number {
+    return ProductUtils.getPrice(item);
   }
 }

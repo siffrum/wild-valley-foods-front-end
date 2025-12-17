@@ -155,7 +155,6 @@
             </div>
           </div>
 
-
           <!-- Form Submit Button -->
           <div class="form-actions">
             <button type="submit" class="btn-primary-modern" [disabled]="currentCard === 'order'">
@@ -195,6 +194,7 @@
             <p class="preview-country">{{ viewModel.homeAddress.country }}</p>
           </div>
         </div>
+        
         <!-- Cart Items List -->
         <div class="cart-section">
           <h3 class="cart-title">Cart Items <span class="cart-count">{{ viewModel.cartItems.length || 0 }}</span></h3>
@@ -205,14 +205,18 @@
               </div>
               <div class="item-details">
                 <h4 class="item-name">{{ item.name }}</h4>
-                <p class="item-sku">SKU: {{ item.sku || 'N/A' }}</p>
+                <!-- Variant SKU and Unit Info -->
+                <p class="item-sku">
+                  SKU: {{ getItemSku(item) || 'N/A' }}
+                  <span class="text-muted" *ngIf="getItemUnitDisplay(item)">({{ getItemUnitDisplay(item) }})</span>
+                </p>
                 <div class="item-footer">
                   <span class="item-quantity">Qty: {{ item.cartQuantity }}</span>
-                  <span class="item-price">₹{{ item.price | number:'1.2-2' }}</span>
+                  <span class="item-price">₹{{ getItemPrice(item) | number:'1.2-2' }}</span>
                 </div>
               </div>
               <div class="item-total">
-                ₹{{ item.price * item.cartQuantity | number:'1.2-2' }}
+                ₹{{ getItemTotal(item) | number:'1.2-2' }}
               </div>
             </div>
           </div>
@@ -220,15 +224,16 @@
             <p>Your cart is empty</p>
           </div>
         </div>
+        
         <!-- Order Calculations -->
         <div class="order-calculations">
           <div class="calc-row"><span>Subtotal</span><span>₹{{ subTotal | number:'1.2-2' }}</span></div>
           <div class="calc-row"><span>Tax (GST)</span><span>₹{{ taxAmount | number:'1.2-2' }}</span></div>
           <div class="calc-row"><span>Shipping</span><span>{{ shippingLabel }}</span></div>
           <div class="calc-divider"></div>
-          <div class="calc-row total"><span>Total Amount</span><span>₹{{ viewModel.totalPrice | number:'1.2-2' }}</span>
-          </div>
+          <div class="calc-row total"><span>Total Amount</span><span>₹{{ viewModel.totalPrice | number:'1.2-2' }}</span></div>
         </div>
+        
         <!-- Coupon Section -->
         <div class="coupon-section">
           <label class="coupon-label">Have a Coupon Code?</label>
@@ -238,6 +243,7 @@
           </div>
           <p class="coupon-hint">Try: SAVE50 (₹50 off) or PCT10 (10% off)</p>
         </div>
+        
         <!-- Place Order Button -->
         <div class="order-actions">
           <button class="btn-order-now" (click)="proceedToPayment()" [disabled]="!canProceed()">Place Order Now</button>

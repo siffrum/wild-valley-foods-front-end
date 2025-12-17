@@ -45,10 +45,38 @@
       <tr *ngFor="let p of viewModel.filteredProducts; let i = index" class="table-row-hover">
         <td>{{ i + 1 }}</td>
         <td class="text-wrap text-break" title="{{ p.name }}">{{ p.name }}</td>
-        <td class="text-wrap text-break">{{ p.sku }}</td>
-        <td>{{ p.price }} {{ p.currency || 'INR' }}</td>
-        <td>{{ p.stock }}</td>
-        <td class="text-wrap text-break" title="{{ p.category.name }}">{{ p.category.name || '-' }}</td>
+        <!-- REFACTOR: Show variant info instead of product-level SKU -->
+        <td class="text-wrap text-break">
+          @if (p.variants && p.variants.length > 0) {
+            {{ p.variants.length }} variant(s)
+            @if (p.defaultVariant) {
+              <small class="text-muted d-block">Default: {{ p.defaultVariant.sku }}</small>
+            }
+          } @else {
+            N/A
+          }
+        </td>
+        <!-- REFACTOR: Show variant price range or default variant price -->
+        <td>
+          @if (p.variants && p.variants.length > 0) {
+            @if (p.variants.length === 1) {
+              {{ p.price | number:'1.2-2' }} {{ p.currency || 'INR' }}
+            } @else {
+              <span class="text-muted">From</span> {{ p.price | number:'1.2-2' }} {{ p.currency || 'INR' }}
+            }
+          } @else {
+            N/A
+          }
+        </td>
+        <!-- REFACTOR: Show total stock across all variants -->
+        <td>
+          @if (p.variants && p.variants.length > 0) {
+            {{ getTotalStock(p) }}
+          } @else {
+            0
+          }
+        </td>
+        <td class="text-wrap text-break" [title]="getCategoryName(p)">{{ getCategoryName(p) }}</td>
         <td>
           <img *ngIf="p.images && p.images.length > 0"
                [src]="p.images[0]"
