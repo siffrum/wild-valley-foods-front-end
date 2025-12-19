@@ -1,43 +1,22 @@
-<div class="topbar  border-bottom py-1">
-  <div class="container-fluid">
-    <div class="d-flex align-items-center justify-content-between">
-      <!-- left: email & phone -->
-      <div class="d-flex align-items-center topbar-left">
-        <a class="me-3 contact-item" href="mailto:wildvalley@example.com" aria-label="Email">
-          <i class="bi bi-envelope-fill me-1 text-white"></i>
-          <span class="d-none d-sm-inline text-white">wildvalley@example.com</span>
-        </a>
-
-        <a class="me-3 contact-item" href="tel:+911234567890" aria-label="Phone">
-          <i class="bi bi-telephone-fill me-1 text-white"></i>
-          <span class="d-none d-sm-inline text-white">+91 12345 67890</span>
-        </a>
-      </div>
-
-      <!-- right: address and social (address hidden on xs) -->
-      <div class="d-flex align-items-center topbar-right">
-        <div class="me-3 contact-item d-none d-md-flex align-items-center" aria-hidden="false">
-          <i class="bi bi-geo-alt-fill me-1 text-white"></i>
-          <span>123, MG Road, Srinagar</span>
-        </div>
-
-        <!-- optional small social icons -->
-        <div class="d-flex align-items-center">
-          <a class="me-2 text-muted small" aria-label="Facebook"><i class="bi bi-facebook text-white"></i></a>
-          <a class="me-2 text-muted small" aria-label="Twitter"><i class="bi bi-twitter-x text-white"></i></a>
-          <a class="text-muted small" aria-label="Instagram"><i class="bi bi-instagram text-white"></i></a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<!--  -->
 
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
   <div class="container-fluid">
-    <button class="btn btn-outline-secondary  me-2 d-lg-none border-0 p-0" type="button" data-bs-toggle="offcanvas"
-      data-bs-target="#offcanvasLeft">
-      <i class="bi bi-list"></i>
-    </button>
+    <!-- Mobile Menu & Search Icons -->
+    <div class="d-flex align-items-center d-lg-none">
+      <button class="btn btn-outline-secondary me-2 border-0 p-0" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#offcanvasLeft">
+        <i class="bi bi-list"></i>
+      </button>
+      
+      <!-- Mobile Search Icon -->
+      <button class="btn btn-outline-secondary border-0 p-0 position-relative" 
+              type="button" 
+              (click)="toggleSearch()"
+              [attr.aria-expanded]="showSearchDropdown">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
 
     <a class="navbar-brand d-flex align-items-center flex-row-reverse flex-lg-row" [routerLink]="['/home']"
       routerLinkActive="router-link-active">
@@ -74,8 +53,85 @@
       </li>
       <li class="nav-item me-3">
         <a class="nav-link" routerLink="/about-us" routerLinkActive="active-route"
-          [routerLinkActiveOptions]="{ exact: true }">About us</a>
+          [routerLinkActiveOptions]="{ exact: true }">Our Story</a>
       </li>
+      
+      <!-- Search Icon -->
+      <li class="nav-item me-3 position-relative">
+        <a class="nav-link search-icon-link" (click)="toggleSearch()" style="cursor: pointer;">
+          <i class="bi bi-search fs-5"></i>
+        </a>
+        
+        <!-- Search Dropdown -->
+        @if (showSearchDropdown) {
+          <div class="search-dropdown" (click)="$event.stopPropagation()">
+            <div class="search-input-wrapper">
+              <i class="bi bi-search search-icon"></i>
+              <input 
+                type="text" 
+                class="form-control search-input" 
+                placeholder="Search products..."
+                [(ngModel)]="searchQuery"
+                (input)="onSearchInput($event)"
+                (keydown.enter)="navigateToShop()"
+                #searchInput
+                autocomplete="off">
+              @if (searchQuery) {
+                <button class="btn-close-search" (click)="clearSearch()" type="button">
+                  <i class="bi bi-x"></i>
+                </button>
+              }
+            </div>
+            
+            <!-- Search Results -->
+            @if (isSearching) {
+              <div class="search-loading">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <span class="ms-2">Searching...</span>
+              </div>
+            } @else if (searchResults.length > 0) {
+              <div class="search-results">
+                <div class="search-results-header">
+                  <span class="text-muted small">{{ searchResults.length }} result(s) found</span>
+                </div>
+                <div class="search-results-list">
+                  @for (product of searchResults.slice(0, 5); track product.id) {
+                    <div class="search-result-item" (click)="navigateToProduct(product)">
+                      <img [src]="product.images && product.images.length > 0 ? product.images[0] : 'assets/logo.png'" 
+                           alt="{{ product.name }}" 
+                           class="result-image">
+                      <div class="result-info">
+                        <div class="result-name">{{ product.name }}</div>
+                        <div class="result-price">{{ getProductPrice(product) | currency : 'INR' }}</div>
+                      </div>
+                    </div>
+                  }
+                </div>
+                @if (searchResults.length > 5) {
+                  <div class="search-footer">
+                    <button class="btn btn-sm btn-outline-primary w-100" (click)="navigateToShop()">
+                      View All {{ searchResults.length }} Results
+                    </button>
+                  </div>
+                }
+              </div>
+            } @else if (searchQuery && searchQuery.length >= 3 && !isSearching) {
+              <div class="search-no-results">
+                <i class="bi bi-search fs-4 text-muted"></i>
+                <p class="text-muted mb-0">No products found</p>
+                <small class="text-muted">Try a different search term</small>
+              </div>
+            } @else if (searchQuery && searchQuery.length < 3) {
+              <div class="search-hint">
+                <small class="text-muted">Type at least 3 characters to search</small>
+              </div>
+            }
+          </div>
+        }
+      </li>
+      
       <li class="nav-item me-3">
         <a class="nav-link" routerLink="/wishlist" routerLinkActive="active-route"
           [routerLinkActiveOptions]="{ exact: true }"><i class="bi bi-heart fs-5"></i><span
@@ -100,81 +156,231 @@
   </div>
 </nav>
 
+<!-- Mobile Search Dropdown (shown below navbar) -->
+@if (showSearchDropdown) {
+  <div class="mobile-search-dropdown d-lg-none" (click)="$event.stopPropagation()">
+    <div class="search-input-wrapper">
+      <i class="bi bi-search search-icon"></i>
+      <input 
+        type="text" 
+        class="form-control search-input" 
+        placeholder="Search products..."
+        [(ngModel)]="searchQuery"
+        (input)="onSearchInput($event)"
+        (keydown.enter)="navigateToShop()"
+        #mobileSearchInput
+        autocomplete="off">
+      @if (searchQuery) {
+        <button class="btn-close-search" (click)="clearSearch()" type="button">
+          <i class="bi bi-x"></i>
+        </button>
+      }
+    </div>
+    
+    <!-- Search Results -->
+    @if (isSearching) {
+      <div class="search-loading">
+        <div class="spinner-border spinner-border-sm text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <span class="ms-2">Searching...</span>
+      </div>
+    } @else if (searchResults.length > 0) {
+      <div class="search-results">
+        <div class="search-results-header">
+          <span class="text-muted small">{{ searchResults.length }} result(s) found</span>
+        </div>
+        <div class="search-results-list">
+          @for (product of searchResults.slice(0, 5); track product.id) {
+            <div class="search-result-item" (click)="navigateToProduct(product)">
+              <img [src]="product.images && product.images.length > 0 ? product.images[0] : 'assets/logo.png'" 
+                   alt="{{ product.name }}" 
+                   class="result-image">
+              <div class="result-info">
+                <div class="result-name">{{ product.name }}</div>
+                <div class="result-price">{{ getProductPrice(product) | currency : 'INR' }}</div>
+              </div>
+            </div>
+          }
+        </div>
+        @if (searchResults.length > 5) {
+          <div class="search-footer">
+            <button class="btn btn-sm btn-outline-primary w-100" (click)="navigateToShop()">
+              View All {{ searchResults.length }} Results
+            </button>
+          </div>
+        }
+      </div>
+    } @else if (searchQuery && searchQuery.length >= 3 && !isSearching) {
+      <div class="search-no-results">
+        <i class="bi bi-search fs-4 text-muted"></i>
+        <p class="text-muted mb-0">No products found</p>
+        <small class="text-muted">Try a different search term</small>
+      </div>
+    } @else if (searchQuery && searchQuery.length < 3) {
+      <div class="search-hint">
+        <small class="text-muted">Type at least 3 characters to search</small>
+      </div>
+    }
+  </div>
+  
+  <!-- Search Overlay (for mobile) -->
+  <div class="search-overlay" (click)="closeSearch()"></div>
+}
+
 <!-- Left Offcanvas Menu -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
   <div class="offcanvas-header">
     <div class="d-flex align-items-center branding">
-      <img src="assets/logo.png" alt="" class="img-fluid">
-      <h5 class="offcanvas-title" id="offcanvasLeftLabel">Wild Valley Foods</h5>
+      <img src="assets/logo.png" alt="Logo" class="offcanvas-logo">
+      <h5 class="offcanvas-title mb-0" id="offcanvasLeftLabel">Wild Valley Foods</h5>
     </div>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
 
   <div class="offcanvas-body p-0 d-flex flex-column">
-
+    <!-- Mobile Search -->
+    <div class="mobile-search p-3 border-bottom">
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0">
+          <i class="bi bi-search text-muted"></i>
+        </span>
+        <input 
+          type="text" 
+          class="form-control border-start-0" 
+          placeholder="Search products..."
+          [(ngModel)]="searchQuery"
+          (input)="onSearchInput($event)"
+          (keydown.enter)="navigateToShop()"
+          (focus)="showSearchDropdown = true"
+          autocomplete="off"
+          #mobileSearchInput>
+        @if (searchQuery) {
+          <button class="btn btn-outline-secondary border-start-0" type="button" (click)="clearSearch()">
+            <i class="bi bi-x"></i>
+          </button>
+        }
+      </div>
+      @if (showSearchDropdown && searchQuery && searchQuery.length >= 3) {
+        <div class="mobile-search-results mt-2">
+          @if (isSearching) {
+            <div class="text-center py-2">
+              <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          } @else if (searchResults.length > 0) {
+            <div class="list-group">
+              @for (product of searchResults.slice(0, 3); track product.id) {
+                <a class="list-group-item list-group-item-action" 
+                   (click)="navigateToProduct(product); $event.preventDefault()"
+                   [routerLink]="['/product', product.id]"
+                   data-bs-dismiss="offcanvas">
+                  <div class="d-flex align-items-center">
+                    <img [src]="product.images && product.images.length > 0 ? product.images[0] : 'assets/logo.png'" 
+                         alt="{{ product.name }}" 
+                         class="mobile-search-img me-2">
+                    <div class="flex-grow-1">
+                      <div class="fw-semibold small">{{ product.name }}</div>
+                      <div class="text-danger small fw-bold">{{ getProductPrice(product) | currency : 'INR' }}</div>
+                    </div>
+                  </div>
+                </a>
+              }
+              @if (searchResults.length > 3) {
+                <a class="list-group-item list-group-item-action text-center fw-semibold"
+                   (click)="navigateToShop(); $event.preventDefault()"
+                   routerLink="/shop"
+                   [queryParams]="{ search: searchQuery }"
+                   data-bs-dismiss="offcanvas">
+                  View All {{ searchResults.length }} Results
+                </a>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
 
     <!-- Main nav list -->
     <div class="p-3 flex-grow-1 overflow-auto">
       <nav class="nav flex-column gap-2">
-        <!-- Home / Offers -->
+        <!-- Main Navigation -->
         <a class="nav-link d-flex align-items-center" routerLink="/home" data-bs-dismiss="offcanvas" aria-label="Close">
-          <i class="bi bi-house me-2"></i> Home
+          <i class="bi bi-house me-3"></i> <span>Home</span>
         </a>
         <a class="nav-link d-flex align-items-center" routerLink="/shop" data-bs-dismiss="offcanvas" aria-label="Close">
-          <i class="bi bi-basket-fill me-2"></i> Shop
+          <i class="bi bi-basket-fill me-3"></i> <span>Shop</span>
         </a>
-        <a class="nav-link d-flex align-items-center" routerLink="/my-orders" data-bs-dismiss="offcanvas"
-          aria-label="Close"><i class="bi bi-bag me-2"></i> My
-          Orders</a>
-
-        <a class="nav-link d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close"
-          routerLink="/cart"><i class="bi bi-heart me-2"></i> Cart <span
-            class="badge bg-outline ms-auto">{{viewModel.cartItems.length}}</span></a>
-        <a class="nav-link d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close"
-          routerLink="/wishlist"><i class="bi bi-heart me-2"></i> Wishlist <span
-            class="badge bg-outline ms-auto">{{viewModel.wishListItems.length}}</span></a>
-        <a class="nav-link d-flex align-items-center" routerLink="/contact-us" data-bs-dismiss="offcanvas"
-          aria-label="Close"><i class="bi bi-bag me-2"></i> Contact Us</a>
-        <a class="nav-link d-flex align-items-center" routerLink="/about-us" data-bs-dismiss="offcanvas"
-          aria-label="Close"><i class="bi bi-bag me-2"></i> About Us</a>
-        <hr>
-
-        <!-- Categories accordion -->
-        <div class="mb-2">
-          <div class="small text-uppercase text-muted mb-1">Shop by category</div>
-
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" tabindex="0">Categories</a>
-            <ul class="dropdown-menu">
-              <li *ngFor="let category of viewModel.categoriesViewModel.categories">
-                <a class="dropdown-item" data-bs-dismiss="offcanvas" aria-label="Close"
-                  [routerLink]="['/shop',category.name, category.id]">
+        
+        <!-- Categories Dropdown -->
+        <div class="nav-item dropdown">
+          <a class="nav-link d-flex align-items-center dropdown-toggle" 
+             tabindex="0" 
+             data-bs-toggle="dropdown"
+             aria-expanded="false">
+            <i class="bi bi-grid me-3"></i> <span>Categories</span>
+          </a>
+          <ul class="dropdown-menu">
+            @for (category of viewModel.categoriesViewModel.categories; track category.id) {
+              <li>
+                <a class="dropdown-item" 
+                   data-bs-dismiss="offcanvas" 
+                   aria-label="Close"
+                   [routerLink]="['/shop',category.name, category.id]">
                   {{ category.name }}
                 </a>
               </li>
-            </ul>
-          </li>
+            }
+          </ul>
         </div>
 
-        <hr>
+        <hr class="my-2">
 
+        <!-- Account & Orders -->
+        <a class="nav-link d-flex align-items-center" 
+           routerLink="/my-orders" 
+           data-bs-dismiss="offcanvas"
+           aria-label="Close">
+          <i class="bi bi-bag me-3"></i> <span>My Orders</span>
+        </a>
+        <a class="nav-link d-flex align-items-center" 
+           data-bs-dismiss="offcanvas" 
+           aria-label="Close"
+           routerLink="/cart">
+          <i class="bi bi-cart me-3"></i> <span>Cart</span>
+        </a>
+        <a class="nav-link d-flex align-items-center" 
+           data-bs-dismiss="offcanvas" 
+           aria-label="Close"
+           routerLink="/wishlist">
+          <i class="bi bi-heart me-3"></i> <span>Wishlist</span>
+          @if (viewModel.wishListItems.length > 0) {
+            <span class="badge bg-danger ms-auto">{{viewModel.wishListItems.length}}</span>
+          }
+        </a>
 
-        <!-- Help & settings -->
-        <div class="mb-2">
-          <div class="small text-uppercase text-muted mb-1">Support</div>
-          <a class="nav-link d-flex align-items-center"><i class="bi bi-question-circle me-2"></i> Help
-            Center</a>
-          <a class="nav-link d-flex align-items-center"><i class="bi bi-chat-left-text me-2"></i> Contact
-            Us</a>
-          <a class="nav-link d-flex align-items-center"><i class="bi bi-gear me-2"></i> Settings</a>
-        </div>
+        <hr class="my-2">
 
+        <!-- Information -->
+        <a class="nav-link d-flex align-items-center" 
+           routerLink="/about-us" 
+           data-bs-dismiss="offcanvas"
+           aria-label="Close">
+          <i class="bi bi-info-circle me-3"></i> <span>Our Story</span>
+        </a>
+        <a class="nav-link d-flex align-items-center" 
+           routerLink="/contact-us" 
+           data-bs-dismiss="offcanvas"
+           aria-label="Close">
+          <i class="bi bi-envelope me-3"></i> <span>Contact Us</span>
+        </a>
       </nav>
     </div>
 
     <!-- Footer actions -->
-    <div class="p-3 border-top">
-      <div class="d-flex justify-content-between align-items-center mt-3 small text-muted">
+    <div class="p-3 border-top bg-light">
+      <div class="d-flex justify-content-between align-items-center small text-muted">
         <div><i class="bi bi-globe me-1"></i> English</div>
         <div><i class="bi bi-currency-rupee me-1"></i> INR</div>
       </div>

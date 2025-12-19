@@ -1,59 +1,62 @@
-<div class="container my-4">
-  <div class="row ">
+<div class="container-fluid container-md my-3 my-md-4 px-2 px-md-3">
+  <div class="row">
     <!-- PRODUCTS -->
     <section class="col-12">
-      <div class="d-flex align-items-center justify-content-between mb-3 flex-nowrap">
-        <!-- Left: Title & count -->
-        <div class="me-3">
-          <h5 class="mb-0">{{viewModel.PageTitle}}</h5>
-          <div class="small text-muted text-truncate">{{ viewModel.pagination.totalCount }} items</div>
+      <!-- Header Section - Responsive -->
+      <div class="shop-header mb-3">
+        <!-- Title & Count -->
+        <div class="shop-title-section mb-3 mb-md-0">
+          <h5 class="mb-1 mb-md-0 shop-title">{{viewModel.PageTitle}}</h5>
+          <div class="small text-muted">{{ viewModel.pagination.totalCount }} items</div>
         </div>
 
-        <!-- Center: Search -->
-        <div class="flex-grow-1 mx-3" style="min-width: 150px;">
-          <input class="form-control form-control-sm" placeholder="🔍 Search products, Name..."
-            [(ngModel)]="viewModel.searchstring" (ngModelChange)="onSearchChange($event)"
-            aria-label="Search products" />
-        </div>
+        <!-- Search & Filter Row -->
+        <div class="shop-controls">
+          <!-- Search -->
+          <div class="shop-search">
+            <input class="form-control form-control-sm" placeholder="🔍 Search products..."
+              [(ngModel)]="viewModel.searchstring" (ngModelChange)="onSearchChange($event)"
+              aria-label="Search products" />
+          </div>
 
-        <!-- Right: Filter -->
-        <div class="d-flex gap-2 align-items-center ms-1" style="min-width: 120px;">
-          <select class="form-select form-select-sm" (change)="onSortChange($event)">
-            <option value="">Filter</option>
-            <option value="price_asc">Price: Low to High</option>
-            <option value="price_desc">Price: High to Low</option>
-            <option value="name_asc">Name: A → Z</option>
-            <option value="name_desc">Name: Z → A</option>
-          </select>
+          <!-- Filter -->
+          <div class="shop-filter">
+            <select class="form-select form-select-sm" (change)="onSortChange($event)">
+              <option value="">Filter</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="name_asc">Name: A → Z</option>
+              <option value="name_desc">Name: Z → A</option>
+            </select>
+          </div>
         </div>
       </div>
 
-
       <!-- GRID -->
-      <div class="row justify-content-evenly m-0">
-        <ng-container *ngIf="viewModel.products && viewModel.products.length; else noProducts">
-          <div class="col-4 col-md-3 col-lg-3 m-4 ms-1 md-1 d-flex justify-content-center"
-            *ngFor="let p of viewModel.products; trackBy: trackByProduct">
-            <app-product class="product-item" [product]="p" (addToCart)="onAddToCart($event)"
-              (view)="openProduct($event)" (wishlist)="onWishlistChanged($event)">
-            </app-product>
-          </div>
-        </ng-container>
-
-        <ng-template #noProducts>
-          <div class="col-12 text-center py-6">
+      <div class="products-grid">
+        @if (viewModel.products && viewModel.products.length) {
+          @for (p of viewModel.products; track trackByProduct($index, p)) {
+            <div class="product-item-wrapper">
+              <app-product class="product-item" [product]="p" (addToCart)="onAddToCart($event)"
+                (view)="openProduct($event)" (wishlist)="onWishlistChanged($event)">
+              </app-product>
+            </div>
+          }
+        } @else {
+          <div class="no-products text-center py-5">
+            <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
             <p class="text-muted mb-0">No products match your filters.</p>
           </div>
-        </ng-template>
+        }
       </div>
 
       <!-- PAGINATION -->
-      <nav class="mt-4" aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
+      <nav class="pagination-wrapper mt-4" aria-label="Page navigation">
+        <ul class="pagination justify-content-center flex-wrap">
           <li class="page-item" [class.disabled]="currentPage === 1">
             <a class="page-link" (click)="goToPage(currentPage - 1)" role="button"
               [attr.aria-disabled]="currentPage === 1 ? 'true' : 'false'">
-              Prev
+              <i class="bi bi-chevron-left"></i> Prev
             </a>
           </li>
 
@@ -64,7 +67,7 @@
           <li class="page-item" [class.disabled]="currentPage >= totalPages">
             <a class="page-link" (click)="goToPage(currentPage + 1)" role="button"
               [attr.aria-disabled]="currentPage >= totalPages ? 'true' : 'false'">
-              Next
+              Next <i class="bi bi-chevron-right"></i>
             </a>
           </li>
         </ul>

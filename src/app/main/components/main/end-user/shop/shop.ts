@@ -97,6 +97,17 @@ export class Shop extends BaseComponent<AdminProductsViewModel> implements OnIni
         }
       })
     );
+
+    // ✅ Handle search query parameter from header
+    this.subscriptions.add(
+      this.activatedRoute.queryParams.subscribe((queryParams) => {
+        if (queryParams['search']) {
+          this.viewModel.searchstring = queryParams['search'];
+          this.viewModel.PageTitle = `Search Results for "${queryParams['search']}"`;
+          this.loadProductsPageDataBysearchString();
+        }
+      })
+    );
   }
 
   ngOnDestroy(): void {

@@ -13,10 +13,11 @@ import {
   SPINNER,
 } from 'ngx-ui-loader';
 import { routes } from './app.routes';
-import {
-  provideClientHydration,
-  withEventReplay,
-} from '@angular/platform-browser';
+// Client hydration removed - not using SSR
+// import {
+//   provideClientHydration,
+//   withEventReplay,
+// } from '@angular/platform-browser';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   // Background spinner (non-blocking small spinner)
@@ -63,7 +64,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideClientHydration(withEventReplay()),
+    // provideClientHydration(withEventReplay()), // Removed - not using SSR
     provideCharts(withDefaultRegisterables()),
     importProvidersFrom(NgxUiLoaderModule.forRoot(ngxUiLoaderConfig)),
   ],

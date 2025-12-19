@@ -79,4 +79,12 @@ export class CustomerService extends BaseService {
     apiRequest.reqData = payload; //
     return this.customerClient.VerifyPayment(apiRequest);
   }
+
+  /**
+   * Get Razorpay Public Key (Secure)
+   * Fetches the public key from backend - never exposes secret key
+   */
+  getRazorpayKey(): Promise<ApiResponse<{ keyId: string; environment?: string }>> {
+    return this.customerClient.GetRazorpayKey();
+  }
 }

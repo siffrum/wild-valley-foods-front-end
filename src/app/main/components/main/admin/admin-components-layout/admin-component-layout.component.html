@@ -6,15 +6,54 @@
 
   <aside class="side-nav" [class.open]="isSidebarOpen">
     <nav>
-      <a routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a>
-      <a routerLink="/admin/website-resources" routerLinkActive="active">website-Resources</a>
-      <a routerLink="/admin/unit-list" routerLinkActive="active">Products</a>
-      <a routerLink="/admin/product-list" routerLinkActive="active">Products</a>
-      <a routerLink="/admin/category-list" routerLinkActive="active">Categories</a>
-      <a routerLink="/admin/contact-us" routerLinkActive="active">Contact</a>
-      <a routerLink="/admin/review-list" routerLinkActive="active">Reviews</a>
-      <a routerLink="/admin/testimonial-list" routerLinkActive="active">Testimonials</a>
-      <a routerLink="/admin/videos" routerLinkActive="active">Videos</a>
+      <a routerLink="/admin/dashboard" routerLinkActive="active">
+        <i class="bi bi-speedometer2 me-2"></i>Dashboard
+      </a>
+      
+      <!-- Sales & Orders Section -->
+      <div class="nav-section-header">Sales & Orders</div>
+      <a routerLink="/admin/order" routerLinkActive="active">
+        <i class="bi bi-bag-check me-2"></i>Orders
+      </a>
+      <a routerLink="/admin/invoice" routerLinkActive="active">
+        <i class="bi bi-receipt me-2"></i>Invoices
+      </a>
+      <a routerLink="/admin/customer" routerLinkActive="active">
+        <i class="bi bi-people-fill me-2"></i>Customers
+      </a>
+      
+      <!-- Products Section -->
+      <div class="nav-section-header">Products</div>
+      <a routerLink="/admin/product-list" routerLinkActive="active">
+        <i class="bi bi-box-seam me-2"></i>Products
+      </a>
+      <a routerLink="/admin/category-list" routerLinkActive="active">
+        <i class="bi bi-tags me-2"></i>Categories
+      </a>
+      <a routerLink="/admin/unit-list" routerLinkActive="active">
+        <i class="bi bi-rulers me-2"></i>Units
+      </a>
+      
+      <!-- Website Resources Section -->
+      <div class="nav-section-header">Website Resources</div>
+      <a routerLink="/admin/website-resources" routerLinkActive="active">
+        <i class="bi bi-image me-2"></i>Banners
+      </a>
+      <a routerLink="/admin/testimonial-list" routerLinkActive="active">
+        <i class="bi bi-chat-quote me-2"></i>Testimonials
+      </a>
+      <a routerLink="/admin/videos" routerLinkActive="active">
+        <i class="bi bi-play-circle me-2"></i>Videos
+      </a>
+      
+      <!-- Other Section -->
+      <div class="nav-section-header">Other</div>
+      <a routerLink="/admin/review-list" routerLinkActive="active">
+        <i class="bi bi-star me-2"></i>Reviews
+      </a>
+      <a routerLink="/admin/contact-us" routerLinkActive="active">
+        <i class="bi bi-envelope me-2"></i>Contact Us
+      </a>
     </nav>
   </aside>
 

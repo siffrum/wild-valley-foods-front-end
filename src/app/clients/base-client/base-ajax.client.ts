@@ -70,8 +70,8 @@ export abstract class BaseAjaxClient {
       timeout: 0,
       withCredentials: false,
       responseType: 'json',
-       maxContentLength: Infinity,
-    maxBodyLength: Infinity,
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
       validateStatus(status) {
         return true; // handle errors globally
       },

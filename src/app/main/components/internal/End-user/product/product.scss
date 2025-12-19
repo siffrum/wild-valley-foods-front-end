@@ -62,6 +62,22 @@
   i {
     font-size: 0.875rem;
   }
+  
+  /* Wishlist icon - red background when active */
+  &.btn-danger {
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: #fff !important;
+    
+    &:hover {
+      background-color: #bb2d3b !important;
+      border-color: #b02a37 !important;
+    }
+    
+    i {
+      color: #fff !important;
+    }
+  }
 }
 
 /* Stock Badges */

@@ -11,6 +11,12 @@ import { TestimonialList } from './website-resources/Testimonial/testimonial-lis
 import { VideoList } from './website-resources/video/video-list/video-list';
 import { AuthGuard } from '../../../../guard/auth.guard';
 import { AdminUnitList } from './admin-unit-list/admin-unit-list';
+import { InvoiceListComponent } from './invoice/invoice-list/invoice-list.component';
+import { InvoiceDetailComponent } from './invoice/invoice-detail/invoice-detail.component';
+import { OrderListComponent } from './order/order-list/order-list.component';
+import { OrderDetailComponent } from './order/order-detail/order-detail.component';
+import { CustomerListComponent } from './customer/customer-list/customer-list.component';
+
 const routes: Routes = [
   {
     path: '',
@@ -19,13 +25,19 @@ const routes: Routes = [
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'website-resources', component: WebsiteResourcesComponent },
-      {path:'category-list',component:AdminCategoryList},
-      {path:'product-list',component:AdminProductList},
-      {path:'contact-us',component:ContactUs},
-      {path:'review-list',component:ReviewList},
-      {path:'testimonial-list',component:TestimonialList},
-      {path:'videos',component:VideoList},
-      {path:'unit-list',component:AdminUnitList}
+      { path: 'category-list', component: AdminCategoryList },
+      { path: 'product-list', component: AdminProductList },
+      { path: 'contact-us', component: ContactUs },
+      { path: 'review-list', component: ReviewList },
+      { path: 'testimonial-list', component: TestimonialList },
+      { path: 'videos', component: VideoList },
+      { path: 'unit-list', component: AdminUnitList },
+      { path: 'invoice', component: InvoiceListComponent },
+      { path: 'invoice/:invoiceNumber', component: InvoiceDetailComponent },
+      { path: 'invoice/order/:orderId', component: InvoiceDetailComponent },
+      { path: 'order', component: OrderListComponent },
+      { path: 'order/:id', component: OrderDetailComponent },
+      { path: 'customer', component: CustomerListComponent }
     ]
   }
 ];

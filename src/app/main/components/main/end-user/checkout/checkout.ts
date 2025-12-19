@@ -17,6 +17,9 @@ import { CustomerAddressDetailSM } from '../../../../../models/service-models/ap
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ProductUtils } from '../../../../../utils/product.utils';
 
+// Razorpay Checkout Type Declaration
+declare var Razorpay: any;
+
 @Component({
   selector: 'app-checkout',
   standalone: true,
@@ -43,6 +46,10 @@ export class Checkout
   shippingAmount = 0;
   couponCode = '';
   selectedAddressType: AddressType = AddressType.Home;
+  
+  // Razorpay state
+  razorpayKeyId: string | null = null;
+  isPaymentInProgress = false;
 
   constructor(
     commonService: CommonService,
@@ -62,6 +69,28 @@ export class Checkout
     await this.loadCart();
     this.selectedAddressType = AddressType.Home;
     this.viewModel.homeAddress.addressType = AddressType.Home;
+    
+    // Load Razorpay key securely from backend
+    await this.loadRazorpayKey();
+  }
+
+  /**
+   * Load Razorpay public key from backend (secure)
+   */
+  async loadRazorpayKey(): Promise<void> {
+    try {
+      const resp = await this.customerService.getRazorpayKey();
+      if (resp.isError) {
+        console.error('[Checkout] Failed to load Razorpay key:', resp.errorData);
+        // Don't block UI, will retry when payment is initiated
+      } else {
+        this.razorpayKeyId = resp.successData?.keyId || null;
+        console.log('[Checkout] Razorpay key loaded successfully');
+      }
+    } catch (error) {
+      console.error('[Checkout] Error loading Razorpay key:', error);
+      // Don't block UI, will retry when payment is initiated
+    }
   }
 
   async loadSavedCustomers() {
@@ -450,21 +479,33 @@ export class Checkout
         return;
       }
 
-      // Open Razorpay payment link
-      if (createRes.paymentLink?.short_url) {
-        window.open(createRes.paymentLink.short_url, '_blank');
-        
-        // Clear cart after successful order creation
-        await this.cartService.clearCart();
-        this.viewModel.cartItems = [];
-        
+      // Validate order data
+      if (!createRes.order?.razorpayOrderId) {
         this._commonService.showSweetAlertToast({
-          title: 'Order Created',
-          text: 'Please complete payment in the new window.',
-          icon: 'success',
+          title: 'Error',
+          text: 'Invalid order response. Missing Razorpay order ID.',
+          icon: 'error',
           confirmButtonText: 'OK',
         });
+        return;
       }
+
+      // Ensure Razorpay key is loaded
+      if (!this.razorpayKeyId) {
+        await this.loadRazorpayKey();
+        if (!this.razorpayKeyId) {
+          this._commonService.showSweetAlertToast({
+            title: 'Error',
+            text: 'Payment gateway not available. Please refresh and try again.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+          });
+          return;
+        }
+      }
+
+      // Open Razorpay Checkout
+      await this.openRazorpayCheckout(createRes);
     } catch (err: any) {
       console.error('[Checkout] Order error:', err);
       this._commonService.showSweetAlertToast({
@@ -478,10 +519,229 @@ export class Checkout
     }
   }
 
+  /**
+   * Open Razorpay Checkout with Cards, UPI, and Netbanking only
+   */
+  async openRazorpayCheckout(orderData: any): Promise<void> {
+    if (this.isPaymentInProgress) {
+      console.warn('[Checkout] Payment already in progress');
+      return;
+    }
+
+    // Validate Razorpay SDK is loaded
+    if (typeof Razorpay === 'undefined') {
+      this._commonService.showSweetAlertToast({
+        title: 'Error',
+        text: 'Payment gateway SDK not loaded. Please refresh the page.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+      return;
+    }
+
+    const order = orderData.order;
+    const customer = order.customerDetails || this.viewModel.createdCustomer;
+
+    try {
+      this.isPaymentInProgress = true;
+
+      const options = {
+        key: this.razorpayKeyId, // Public key from backend
+        amount: Math.round(orderData.order.amount * 100), // Convert to paise
+        currency: 'INR',
+        name: 'Wild Valley Foods',
+        description: `Order #${order.id}`,
+        order_id: order.razorpayOrderId,
+        
+        // Prefill customer details
+        prefill: {
+          name: customer?.name || `${customer?.firstName || ''} ${customer?.lastName || ''}`.trim() || 'Customer',
+          email: customer?.email || '',
+          contact: customer?.contact || '',
+        },
+        
+        // Theme customization
+        theme: {
+          color: '#3399cc',
+        },
+        
+        // Payment method configuration - Only Cards, UPI, Netbanking
+        method: {
+          netbanking: true,
+          wallet: false, // Disabled
+          upi: true,
+          card: true,
+          emi: false, // Disabled
+          paylater: false, // Disabled
+        },
+        
+        // Handler for successful payment
+        handler: async (response: any) => {
+          console.log('[Checkout] Payment success response:', response);
+          await this.handlePaymentSuccess(response, order.id);
+        },
+        
+        // Handler for payment failure
+        modal: {
+          ondismiss: () => {
+            console.log('[Checkout] Payment cancelled by user');
+            this.isPaymentInProgress = false;
+            this._commonService.showSweetAlertToast({
+              title: 'Payment Cancelled',
+              text: 'You cancelled the payment. Your order is still pending.',
+              icon: 'info',
+              confirmButtonText: 'OK',
+            });
+          },
+        },
+        
+        // Additional security options
+        retry: {
+          enabled: true,
+          max_count: 3,
+        },
+        
+        // Readonly fields for security
+        readonly: {
+          email: !!customer?.email,
+          contact: !!customer?.contact,
+        },
+      };
+
+      console.log('[Checkout] Opening Razorpay Checkout with options:', {
+        ...options,
+        key: '***HIDDEN***', // Don't log the key
+      });
+
+      const razorpay = new Razorpay(options);
+      
+      razorpay.on('payment.failed', (response: any) => {
+        console.error('[Checkout] Payment failed:', response);
+        this.isPaymentInProgress = false;
+        this.handlePaymentFailure(response);
+      });
+
+      razorpay.on('payment.authorized', (response: any) => {
+        console.log('[Checkout] Payment authorized:', response);
+        // This is for card payments that need authorization
+      });
+
+      razorpay.open();
+      
+    } catch (error: any) {
+      console.error('[Checkout] Razorpay Checkout error:', error);
+      this.isPaymentInProgress = false;
+      
+      this._commonService.showSweetAlertToast({
+        title: 'Payment Error',
+        text: error.message || 'Failed to open payment gateway. Please try again.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    }
+  }
+
+  /**
+   * Handle successful payment
+   */
+  async handlePaymentSuccess(response: any, orderId: number): Promise<void> {
+    try {
+      this._commonService.presentLoading();
+      this.isPaymentInProgress = false;
+
+      // Validate response structure
+      if (!response.razorpay_payment_id || !response.razorpay_order_id || !response.razorpay_signature) {
+        throw new Error('Invalid payment response structure');
+      }
+
+      // Verify payment with backend
+      const verifyPayload = {
+        razorpay_order_id: response.razorpay_order_id,
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_signature: response.razorpay_signature,
+      };
+
+      console.log('[Checkout] Verifying payment with backend:', {
+        ...verifyPayload,
+        razorpay_signature: '***HIDDEN***',
+      });
+
+      const verifyResp = await this.customerService.verifyPayment(verifyPayload);
+
+      if (verifyResp.isError) {
+        throw new Error(verifyResp.errorData?.displayMessage || 'Payment verification failed');
+      }
+
+      // Payment verified successfully
+      this._commonService.showSweetAlertToast({
+        title: 'Payment Successful!',
+        text: 'Your order has been confirmed. You will receive an email confirmation shortly.',
+        icon: 'success',
+        confirmButtonText: 'OK',
+      });
+
+      // Clear cart after successful payment
+      await this.cartService.clearCart();
+      this.viewModel.cartItems = [];
+
+      // Redirect to home or order success page
+      setTimeout(() => {
+        this.router.navigate(['/home']);
+      }, 2000);
+
+    } catch (error: any) {
+      console.error('[Checkout] Payment verification error:', error);
+      
+      this._commonService.showSweetAlertToast({
+        title: 'Verification Error',
+        text: error.message || 'Payment was successful but verification failed. Please contact support with order ID: ' + orderId,
+        icon: 'warning',
+        confirmButtonText: 'OK',
+      });
+    } finally {
+      this._commonService.dismissLoader();
+    }
+  }
+
+  /**
+   * Handle payment failure
+   */
+  handlePaymentFailure(response: any): void {
+    let errorMessage = 'Payment failed. Please try again.';
+    
+    if (response.error) {
+      const error = response.error;
+      if (error.code === 'BAD_REQUEST_ERROR') {
+        errorMessage = error.description || errorMessage;
+      } else if (error.code === 'GATEWAY_ERROR') {
+        errorMessage = 'Payment gateway error. Please try again later.';
+      } else if (error.code === 'NETWORK_ERROR') {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      }
+    }
+
+    this._commonService.showSweetAlertToast({
+      title: 'Payment Failed',
+      text: errorMessage,
+      icon: 'error',
+      confirmButtonText: 'OK',
+    });
+  }
+
+  /**
+   * Legacy verify payment method (kept for compatibility)
+   */
   verifyPayment(order: any) {
     const { razorpayOrderId, paymentId, signature } = order;
-    let payload = { razorpayOrderId, paymentId, signature };
-    console.log('[Checkout] Verifying payment:', payload);
-    let resp = this.customerService.verifyPayment(payload);
+    let payload = { 
+      razorpay_order_id: razorpayOrderId,
+      razorpay_payment_id: paymentId,
+      razorpay_signature: signature 
+    };
+    console.log('[Checkout] Verifying payment:', {
+      ...payload,
+      razorpay_signature: '***HIDDEN***',
+    });
+    return this.customerService.verifyPayment(payload);
   }
 }

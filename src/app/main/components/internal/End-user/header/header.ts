@@ -1,21 +1,24 @@
 import { CommonModule, NgIf } from '@angular/common';
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { RouterModule, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { CartService } from '../../../../../services/cart.service';
 import { ProductSM } from '../../../../../models/service-models/app/v1/product-s-m';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { WishlistService } from '../../../../../services/wishlist.service';
 import { HeaderViewModel } from '../../../../../models/view/end-user/header.viewmodel';
 import { BaseComponent } from '../../../../../base.component';
 import { CategoryService } from '../../../../../services/category.service';
 import { CommonService } from '../../../../../services/common.service';
 import { LogHandlerService } from '../../../../../services/log-handler.service';
+import { ProductService } from '../../../../../services/product.service';
 import { ProductUtils } from '../../../../../utils/product.utils';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './header.html',
   styleUrls: ['./header.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,9 +26,19 @@ import { ProductUtils } from '../../../../../utils/product.utils';
 export class Header extends BaseComponent<HeaderViewModel> implements OnInit, OnDestroy {
   private cartSub: Subscription | null = null;
   private wishlistSub: Subscription | null = null;
+  private searchSub: Subscription | null = null;
+  private searchSubject = new Subject<string>();
+
+  // Search state
+  showSearchDropdown: boolean = false;
+  searchQuery: string = '';
+  searchResults: ProductSM[] = [];
+  isSearching: boolean = false;
 
   // Expose utils to template
   utils = ProductUtils;
+
+  @ViewChild('searchInput', { static: false }) searchInput?: ElementRef<HTMLInputElement>;
 
   constructor(
     commonService: CommonService,
@@ -33,7 +46,9 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit, On
     private categoryService: CategoryService,
     private cartService: CartService,
     private wishlistService: WishlistService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private productService: ProductService,
+    private router: Router
   ) {
     super(commonService, logHandlerService);
     this.viewModel = new HeaderViewModel();
@@ -57,6 +72,16 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit, On
       this.viewModel.wishListItems = items || [];
       this.cdr.detectChanges();
     });
+
+    // Setup debounced search
+    this.searchSub = this.searchSubject
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged()
+      )
+      .subscribe((query) => {
+        this.performSearch(query);
+      });
 
     this.loadPageData();
   }
@@ -95,6 +120,126 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit, On
   ngOnDestroy(): void {
     this.cartSub?.unsubscribe();
     this.wishlistSub?.unsubscribe();
+    this.searchSub?.unsubscribe();
+  }
+
+  // Search functionality
+  toggleSearch(): void {
+    this.showSearchDropdown = !this.showSearchDropdown;
+    if (this.showSearchDropdown) {
+      setTimeout(() => {
+        // Try mobile search input first, then desktop
+        const mobileInput = document.querySelector('.mobile-search-dropdown .search-input') as HTMLInputElement;
+        if (mobileInput) {
+          mobileInput.focus();
+        } else {
+          this.searchInput?.nativeElement.focus();
+        }
+      }, 100);
+    }
+    this.cdr.detectChanges();
+  }
+
+  closeSearch(): void {
+    this.showSearchDropdown = false;
+    this.searchQuery = '';
+    this.searchResults = [];
+    this.cdr.detectChanges();
+  }
+
+  onSearchInput(event: any): void {
+    const query = event.target.value.trim();
+    this.searchQuery = query;
+    
+    if (query.length >= 3) {
+      this.searchSubject.next(query);
+    } else {
+      this.searchResults = [];
+      this.isSearching = false;
+    }
+    this.cdr.detectChanges();
+  }
+
+  clearSearch(): void {
+    this.searchQuery = '';
+    this.searchResults = [];
+    this.isSearching = false;
+    this.searchInput?.nativeElement.focus();
+    this.cdr.detectChanges();
+  }
+
+  private async performSearch(query: string): Promise<void> {
+    if (!query || query.length < 3) {
+      this.searchResults = [];
+      this.isSearching = false;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.isSearching = true;
+    this.cdr.detectChanges();
+
+    try {
+      const resp = await this.productService.getAllProductsBySearchString(query);
+      
+      if (resp.isError) {
+        this.searchResults = [];
+      } else {
+        this.searchResults = resp.successData || [];
+      }
+    } catch (error) {
+      console.error('[Header] Search error:', error);
+      this.searchResults = [];
+    } finally {
+      this.isSearching = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  navigateToShop(): void {
+    if (this.searchQuery && this.searchQuery.trim().length >= 3) {
+      this.router.navigate(['/shop'], { 
+        queryParams: { search: this.searchQuery.trim() } 
+      });
+      this.closeSearch();
+    }
+  }
+
+  navigateToProduct(product: ProductSM): void {
+    this.router.navigate(['/product', product.id]);
+    this.closeSearch();
+  }
+
+  getProductPrice(product: ProductSM): number {
+    return ProductUtils.getPrice(product);
+  }
+
+  // Close search on outside click
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (this.showSearchDropdown) {
+      // Check for desktop search dropdown
+      const isDesktopSearch = target.closest('.search-dropdown') || target.closest('.search-icon-link');
+      // Check for mobile search dropdown or button
+      const isMobileSearch = target.closest('.mobile-search-dropdown') || 
+                            (target.closest('.d-lg-none') && target.closest('button[type="button"]') && target.closest('button')?.querySelector('.bi-search'));
+      
+      // Don't close if clicking on overlay (it will close via overlay click handler)
+      const isOverlay = target.classList.contains('search-overlay');
+      
+      if (!isDesktopSearch && !isMobileSearch && !isOverlay) {
+        this.closeSearch();
+      }
+    }
+  }
+
+  // Close search on ESC key
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    if (this.showSearchDropdown) {
+      this.closeSearch();
+    }
   }
 
   async cartTotal() {

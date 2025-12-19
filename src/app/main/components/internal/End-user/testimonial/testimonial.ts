@@ -42,6 +42,8 @@ export class Testimonial extends BaseComponent<TestimonialViewModel> implements 
   }
   async loadTestimonials(): Promise<void> {
     try {
+      this.loading = true;
+      this.error = '';
       this._commonService.presentLoading();
       this.viewModel.pagination.PageNo = 1;
       this.viewModel.pagination.PageSize = 20; // Get more testimonials for carousel
@@ -49,6 +51,7 @@ export class Testimonial extends BaseComponent<TestimonialViewModel> implements 
       const resp=await this.testimonialService.getAllPaginatedTestimonial(this.viewModel);
       if(resp.isError){
        await this._exceptionHandler.logObject(resp.errorData);
+        this.error = resp.errorData.displayMessage || 'Failed to load testimonials';
         this._commonService.showSweetAlertToast({
           title: 'Error',
           text: resp.errorData.displayMessage,
@@ -57,8 +60,7 @@ export class Testimonial extends BaseComponent<TestimonialViewModel> implements 
         });
       } else {
         this.testimonials = resp.successData || [];
-        this.groupedTestimonials = this.chunkArray(this.testimonials, 2);
-        
+        this.groupedTestimonials = this.chunkArray(this.testimonials, 2);      
         // Reinitialize carousel after data loads
         this.cdr.detectChanges();
         setTimeout(() => this.initCarousel(), 100);
@@ -67,6 +69,7 @@ export class Testimonial extends BaseComponent<TestimonialViewModel> implements 
       this.error = 'Failed to load testimonials';
       console.error('[Testimonial] Exception:', err);
     } finally {
+      this.loading = false;
       this._commonService.dismissLoader();
       this.cdr.detectChanges();
     }

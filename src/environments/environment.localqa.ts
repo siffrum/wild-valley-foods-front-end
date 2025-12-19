@@ -1,10 +1,13 @@
 export const environment = {
+  appVersion: '0.0.0',
   production: true,
   apiResponseCacheTimeoutInMinutes: 5,
   enableResponseCacheProcessing: true,
   applicationVersion: '0.0.1',
   apiBaseUrl: 'https://wild-valley-foods-backend-api.onrender.com',
   apiDefaultTimeout: 10,
+  indexedDBName: 'WildValleyFoodsDB',
+  indexedDBVersion: 1,
   LoggingInfo: {
     cacheLogs: false,
     cacheLogsToConsole: true,

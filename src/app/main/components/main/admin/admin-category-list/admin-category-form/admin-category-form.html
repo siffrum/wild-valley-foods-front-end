@@ -96,10 +96,12 @@
       <div class="invalid-feedback">
         Category icon is required
       </div>
-      <div *ngIf="selectedFile || viewModel.categoryFormData.category_icon_base64" class="mt-2">
-        <img [src]="selectedFile || viewModel.categoryFormData.category_icon_base64" alt="Category Icon"
-             class="img-thumbnail" style="max-width: 100px;">
-      </div>
+      @if (selectedFile || viewModel.categoryFormData.category_icon_base64) {
+        <div class="mt-2">
+          <img [src]="selectedFile || viewModel.categoryFormData.category_icon_base64" alt="Category Icon"
+               class="img-thumbnail" style="max-width: 100px;">
+        </div>
+      }
     </div>
   </div>
 
@@ -110,7 +112,9 @@
             (click)="activeModal.dismiss()">Cancel</button>
     <button type="submit" class="btn btn-primary"
             [disabled]="isSubmitting || categoryForm.invalid || (!selectedFile && !category)">
-      <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-1"></span>
+      @if (isSubmitting) {
+        <span class="spinner-border spinner-border-sm me-1"></span>
+      }
       {{ category ? 'Update' : 'Create' }}
     </button>
   </div>

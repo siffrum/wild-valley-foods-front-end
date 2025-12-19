@@ -16,10 +16,6 @@
       .main-image {
         max-height: 420px;
         object-fit: contain;
-        transition: transform 0.3s;
-        &:hover {
-          transform: scale(1.02);
-        }
       }
     }
 

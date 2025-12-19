@@ -79,7 +79,10 @@ export abstract class BaseApiClient extends BaseAjaxClient {
         axiosResp,
         additionalRequestDetails.custRespResolver
       );
-      if (responseEntity == null) throw new Error('Null Response Formed.');
+      if (responseEntity == null) {
+        console.error('[BaseApiClient] Response entity is null. Axios response:', axiosResp);
+        throw new Error('Null Response Formed.');
+      }
 
       // Cache response
       await this.storageCacheHelper.AddOrUpdateResponseInCacheIfApplicable<OutResp>(
@@ -104,29 +107,43 @@ export abstract class BaseApiClient extends BaseAjaxClient {
   ): Promise<ApiResponse<OutResp> | null> => {
     let retObject: ApiResponse<OutResp> | null = null;
 
-    if (this.IsSuccessCode(axiosResp.status)) {
-      if (respResolver != null) {
-        const data = respResolver(axiosResp);
-        data.axiosResponse = axiosResp;
-        retObject = data;
+    try {
+      if (this.IsSuccessCode(axiosResp.status)) {
+        if (respResolver != null) {
+          const data = respResolver(axiosResp);
+          data.axiosResponse = axiosResp;
+          retObject = data;
+        } else {
+          // Ensure data is an object, not a string
+          if (typeof axiosResp.data === 'string') {
+            console.error('[BaseApiClient] Response data is a string, expected object:', axiosResp.data.substring(0, 200));
+            throw new Error('Response data is a string instead of parsed JSON object');
+          }
+          const data = axiosResp.data as ApiResponse<OutResp>;
+          data.axiosResponse = axiosResp;
+          retObject = data;
+        }
       } else {
-        const data = axiosResp.data as ApiResponse<OutResp>;
-        data.axiosResponse = axiosResp;
-        retObject = data;
+        if (axiosResp.data != null && typeof axiosResp.data === 'object' && axiosResp.data.isError !== undefined) {
+          retObject = axiosResp.data as ApiResponse<OutResp>;
+          retObject.axiosResponse = axiosResp;
+        }
       }
-    } else {
-      if (axiosResp.data != null && axiosResp.data.isError !== undefined) {
-        retObject = axiosResp.data as ApiResponse<OutResp>;
-        retObject.axiosResponse = axiosResp;
-      }
-    }
 
-    if (retObject == null) {
-      retObject = this.CreateGenericApiResponseObject<OutResp>(
-        `Unknown error occurred - status code '${axiosResp.status}'`
-      );
-      retObject!.axiosResponse = axiosResp;
+      if (retObject == null) {
+        retObject = this.CreateGenericApiResponseObject<OutResp>(
+          `Unknown error occurred - status code '${axiosResp.status}'`
+        );
+        retObject!.axiosResponse = axiosResp;
+      }
+    } catch (err: any) {
+      console.error('[BaseApiClient] Error creating response entity:', err);
+      console.error('[BaseApiClient] Axios response status:', axiosResp.status);
+      console.error('[BaseApiClient] Axios response data type:', typeof axiosResp.data);
+      console.error('[BaseApiClient] Axios response data:', axiosResp.data);
+      throw err;
     }
+    
     return retObject;
   };
 

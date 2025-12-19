@@ -107,6 +107,20 @@ export class CustomerClient extends BaseApiClient {
     return resp;
   };
 
+  /**
+   * Get Razorpay Public Key (Secure)
+   * Returns only the public key_id - never exposes secret
+   */
+  GetRazorpayKey = async (): Promise<ApiResponse<{ keyId: string; environment?: string }>> => {
+    let resp = await this.GetResponseAsync<null, { keyId: string; environment?: string }>(
+      `${AppConstants.ApiUrls.ORDER}/razorpay-key`,
+      'GET',
+      undefined,
+      new AdditionalRequestDetails<any>(false, Authentication.false)
+    );
+    return resp;
+  };
+
   /**delete ContactUs by id */
   DeleteCustomerById = async (
     Id: number

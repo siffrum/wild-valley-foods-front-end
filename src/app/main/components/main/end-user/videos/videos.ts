@@ -96,9 +96,17 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
           keyboard: true
         });
 
-        // Listen for slide change
+        // Listen for slide change events
         carouselEl.addEventListener('slide.bs.carousel', (event: any) => {
+          // Ensure iframes are visible during transition
+          this.ensureIframesVisible();
           this.onSlideChange(event.to);
+        });
+        
+        // Listen for slid event (after transition completes)
+        carouselEl.addEventListener('slid.bs.carousel', (event: any) => {
+          // Refresh iframes after slide change to prevent black screens
+          this.refreshInactiveIframes();
         });
       }
 
@@ -107,6 +115,43 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
         this.startAutoScroll();
       }
     }, 300);
+  }
+
+  /**
+   * Ensure iframes are visible during carousel transitions
+   */
+  private ensureIframesVisible(): void {
+    const iframes = document.querySelectorAll<HTMLIFrameElement>('iframe[id^="youtube-"]');
+    iframes.forEach(iframe => {
+      if (iframe) {
+        iframe.style.opacity = '1';
+        iframe.style.visibility = 'visible';
+      }
+    });
+  }
+
+  /**
+   * Refresh inactive iframes to prevent black screens
+   */
+  private refreshInactiveIframes(): void {
+    // Get all carousel items
+    const carouselItems = document.querySelectorAll('.carousel-item');
+    carouselItems.forEach((item, index) => {
+      const isActive = item.classList.contains('active');
+      const iframes = item.querySelectorAll<HTMLIFrameElement>('iframe[id^="youtube-"]');
+      
+      iframes.forEach(iframe => {
+        if (!isActive) {
+          // For inactive slides, ensure iframe is still loaded but with reduced opacity
+          iframe.style.opacity = '0.7';
+          iframe.style.pointerEvents = 'none';
+        } else {
+          // For active slide, ensure full visibility
+          iframe.style.opacity = '1';
+          iframe.style.pointerEvents = 'auto';
+        }
+      });
+    });
   }
 
   /**
@@ -282,6 +327,12 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
   private onSlideChange(slideIndex: number): void {
     this.currentSlide = slideIndex;
     this.pauseAllVideos();
+    
+    // Ensure iframes are properly visible
+    setTimeout(() => {
+      this.refreshInactiveIframes();
+    }, 100);
+    
     this.cdr.detectChanges();
   }
 
