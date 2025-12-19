@@ -680,9 +680,6 @@ export class Checkout
         confirmButtonText: 'OK',
       });
 
-      // Clear cart after successful payment
-      await this.cartService.clearCart();
-      this.viewModel.cartItems = [];
 
       // Redirect to home or order success page
       setTimeout(() => {
