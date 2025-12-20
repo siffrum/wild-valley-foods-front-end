@@ -25,22 +25,25 @@ export class TestimonialClient extends BaseApiClient {
   ) {
     super(storageService, storageCache, commonResponseCodeHandler);
   }
-   GetAllPaginatedTestimonial = async (
-     queryFilter: QueryFilter
-   ): Promise<ApiResponse<TestimonialSM[]>> => {
-     let resp = await this.GetResponseAsync<null, TestimonialSM[]>(
-       `${AppConstants.ApiUrls.TESTIMONIAL}/getall/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`,
-       'GET'
-     );
-     
-     return resp;
-   };
+  GetAllPaginatedTestimonial = async (
+    queryFilter: QueryFilter
+  ): Promise<ApiResponse<TestimonialSM[]>> => {
+    let resp = await this.GetResponseAsync<null, TestimonialSM[]>(
+      `${AppConstants.ApiUrls.TESTIMONIAL}/getall/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`,
+      'GET',
+      null,
+      new AdditionalRequestDetails<TestimonialSM[]>(false, Authentication.false) // ✅ Add this
+    );
+    return resp;
+  };
  
    GetTotatTestimonialCount = async (): Promise<ApiResponse<IntResponseRoot>> => {
      let resp = await this.GetResponseAsync<null, IntResponseRoot>(
        `${AppConstants.ApiUrls.TESTIMONIAL}/count`,
-       'GET'
-     );
+          'GET',
+          null,
+          new AdditionalRequestDetails<IntResponseRoot>(false, Authentication.false) // ✅ Add this
+        );
      return resp;
    };
  
@@ -49,7 +52,8 @@ export class TestimonialClient extends BaseApiClient {
          let resp = await this.GetResponseAsync<TestimonialSM, TestimonialSM>(
            `${AppConstants.ApiUrls.TESTIMONIAL}/create`,
            'POST',
-           TestimonialFormData, new AdditionalRequestDetails<TestimonialSM>(false, Authentication.false  ));
+           TestimonialFormData, new AdditionalRequestDetails<TestimonialSM>(false, Authentication.true  )
+         );
          return resp;
        };
  
