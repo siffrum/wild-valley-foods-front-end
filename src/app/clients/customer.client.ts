@@ -27,10 +27,14 @@ export class CustomerClient extends BaseApiClient {
     super(storageService, storageCache, commonResponseCodeHandler);
   }
   GetAllPaginatedCustomers = async (
-    queryFilter: QueryFilter
-  ): Promise<ApiResponse<CustomerDetailSM[]>> => {
-    let resp = await this.GetResponseAsync<null, CustomerDetailSM[]>(
-      `${AppConstants.ApiUrls.CUSTOMER}/getall/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`,
+    queryFilter: QueryFilter & { search?: string }
+  ): Promise<ApiResponse<CustomerDetailSM[] | { data: CustomerDetailSM[]; total: number; skip: number; top: number; hasMore: boolean }>> => {
+    let url = `${AppConstants.ApiUrls.CUSTOMER}/getall/paginated?skip=${queryFilter.skip}&top=${queryFilter.top}`;
+    if (queryFilter.search) {
+      url += `&search=${encodeURIComponent(queryFilter.search)}`;
+    }
+    let resp = await this.GetResponseAsync<null, CustomerDetailSM[] | { data: CustomerDetailSM[]; total: number; skip: number; top: number; hasMore: boolean }>(
+      url,
       'GET'
     );
 

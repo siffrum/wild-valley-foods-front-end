@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BaseComponent } from '../../../../../../base.component';
 import { CommonService } from '../../../../../../services/common.service';
 import { LogHandlerService } from '../../../../../../services/log-handler.service';
@@ -17,8 +17,9 @@ import { CustomerDetailSM } from '../../../../../../models/service-models/app/v1
   styleUrl: './customer-list.component.scss',
   standalone: true
 })
-export class CustomerListComponent extends BaseComponent<CustomerViewModel> implements OnInit {
+export class CustomerListComponent extends BaseComponent<CustomerViewModel> implements OnInit, OnDestroy {
   protected _logHandler: LogHandlerService;
+  private searchTimeout: any;
 
   constructor(
     commonService: CommonService,
@@ -52,10 +53,29 @@ export class CustomerListComponent extends BaseComponent<CustomerViewModel> impl
           confirmButtonText: 'OK'
         });
       } else {
-        this.viewModel.customers = response.successData || [];
-        this.viewModel.totalCount = this.viewModel.customers.length;
-        this.viewModel.pagination.totalCount = this.viewModel.totalCount;
-        this.viewModel.pagination.totalPages = Array.from({ length: Math.ceil(this.viewModel.totalCount / this.viewModel.pagination.PageSize) }, (_, i) => i + 1);
+        // Handle both old format (array) and new format (object with data and total)
+        let customers: CustomerDetailSM[] = [];
+        let totalCount = 0;
+        
+        const responseData = response.successData as any;
+        
+        if (Array.isArray(responseData)) {
+          // Old format - just array
+          customers = responseData;
+          totalCount = customers.length;
+        } else if (responseData && typeof responseData === 'object' && responseData.data) {
+          // New format - object with data and total
+          customers = Array.isArray(responseData.data) ? responseData.data : [];
+          totalCount = responseData.total || customers.length;
+        } else {
+          customers = [];
+          totalCount = 0;
+        }
+        
+        this.viewModel.customers = customers;
+        this.viewModel.totalCount = totalCount;
+        this.viewModel.pagination.totalCount = totalCount;
+        this.viewModel.pagination.totalPages = Array.from({ length: Math.ceil(totalCount / this.viewModel.pagination.PageSize) }, (_, i) => i + 1);
       }
     } catch (error: any) {
       this.viewModel.error = error.message || 'An error occurred';
@@ -78,8 +98,14 @@ export class CustomerListComponent extends BaseComponent<CustomerViewModel> impl
   }
 
   async applyFilters() {
-    this.viewModel.pagination.PageNo = 1;
-    await this.loadCustomers();
+    // Debounce search to avoid too many API calls
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+    this.searchTimeout = setTimeout(async () => {
+      this.viewModel.pagination.PageNo = 1;
+      await this.loadCustomers();
+    }, 300); // 300ms debounce
   }
 
   async clearFilters() {
@@ -148,6 +174,12 @@ export class CustomerListComponent extends BaseComponent<CustomerViewModel> impl
     if (!customer.addresses || customer.addresses.length === 0) return 'No address';
     const address = customer.addresses[0];
     return `${address.addressLine1 || ''}${address.city ? ', ' + address.city : ''}${address.state ? ', ' + address.state : ''}${address.postalCode ? ' - ' + address.postalCode : ''}`.trim();
+  }
+
+  ngOnDestroy() {
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
   }
 }
 

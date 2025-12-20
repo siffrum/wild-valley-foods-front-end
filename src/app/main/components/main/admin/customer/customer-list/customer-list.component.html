@@ -10,7 +10,9 @@
         <div class="col-md-10">
           <label class="form-label">Search</label>
           <input type="text" class="form-control" [(ngModel)]="viewModel.filters.search" 
-                 placeholder="Search by name, email, contact..." (keyup.enter)="applyFilters()">
+                 placeholder="Search by name, email, contact..." 
+                 (keyup.enter)="applyFilters()"
+                 (input)="applyFilters()">
         </div>
         <div class="col-md-2 d-flex align-items-end">
           <button class="btn btn-outline-secondary w-100" (click)="clearFilters()">
@@ -78,11 +80,12 @@
       </div>
 
       <!-- Pagination -->
-      <pagination
-        *ngIf="viewModel.totalCount > 0"
-        [viewModel]="viewModel.pagination"
-        (selectedPageNum)="onPageChange($event)">
-      </pagination>
+      <div class="pagination-container" *ngIf="viewModel.totalCount > 0">
+        <pagination
+          [viewModel]="viewModel.pagination"
+          (selectedPageNum)="onPageChange($event)">
+        </pagination>
+      </div>
     </div>
   </div>
 </div>

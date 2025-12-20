@@ -281,13 +281,25 @@
           border-collapse: collapse;
           thead th {
             text-align: left;
-            padding: 8px;
+            padding: 12px 8px;
             color: $color-text-light;
             font-size: $font-size-sm;
+            font-weight: $font-weight-semibold;
+            border-bottom: 2px solid $color-border-light;
+            vertical-align: bottom;
+            
+            &.center {
+              text-align: center;
+            }
+            
+            &.right {
+              text-align: right;
+            }
           }
           tbody td {
-            padding: 10px 8px;
+            padding: 12px 8px;
             vertical-align: middle;
+            border-bottom: 1px solid $color-border-light;
           }
           td.center {
             text-align: center;
@@ -298,19 +310,31 @@
           }
           .product {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: center;
+            min-width: 200px;
             img {
-              width: 56px;
-              height: 56px;
+              width: 60px;
+              height: 60px;
               border-radius: $border-radius-md;
               object-fit: cover;
+              flex-shrink: 0;
+              background: $color-bg-quaternary;
+              border: 1px solid $color-border-light;
+            }
+            > div {
+              flex: 1;
+              min-width: 0;
             }
             .p-name {
               font-weight: $font-weight-bold;
+              color: $color-text-primary;
+              margin-bottom: 4px;
+              word-wrap: break-word;
             }
             .small {
               color: $color-text-lightest;
+              font-size: $font-size-xs;
             }
           }
         }

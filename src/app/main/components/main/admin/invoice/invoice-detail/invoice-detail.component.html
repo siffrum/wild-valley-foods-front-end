@@ -75,18 +75,17 @@
               <th>Item</th>
               <th>SKU</th>
               <th>Quantity</th>
+              <th>Unit</th>
               <th>Unit Price</th>
               <th>Total</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let item of invoice.items">
-              <td>{{ item.productName }}</td>
+              <td>{{ item.productName || 'Unknown Product' }}</td>
               <td>{{ item.variantSku || 'N/A' }}</td>
-              <td>
-                {{ item.quantity }} 
-                <span *ngIf="item.variantDetails?.unitSymbol">{{ item.variantDetails?.unitSymbol }}</span>
-              </td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ item.variantDetails?.unitSymbol || item.variantDetails?.unitName || 'N/A' }}</td>
               <td>{{ formatCurrency(item.unitPrice) }}</td>
               <td><strong>{{ formatCurrency(item.total) }}</strong></td>
             </tr>

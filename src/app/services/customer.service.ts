@@ -7,7 +7,7 @@ import { QueryFilter } from '../models/service-models/foundation/api-contracts/q
 import { IntResponseRoot } from '../models/service-models/foundation/common-response/int-response-root';
 import { AppConstants } from '../../app-constants';
 import { CustomerClient } from '../clients/customer.client';
-import { CustomerViewModel } from '../models/view/end-user/people/customer.viewmodel';
+import { CustomerViewModel } from '../models/view/Admin/customer.viewmodel';
 import { CustomerDetailSM } from '../models/service-models/app/v1/customer-detail-s-m';
 
 @Injectable({
@@ -27,12 +27,16 @@ export class CustomerService extends BaseService {
    */
   async getAllPaginatedCustomer(
     viewModel: CustomerViewModel
-  ): Promise<ApiResponse<CustomerDetailSM[]>> {
+  ): Promise<ApiResponse<CustomerDetailSM[] | { data: CustomerDetailSM[]; total: number; skip: number; top: number; hasMore: boolean }>> {
     let queryFilter = new QueryFilter();
     queryFilter.skip =
       (viewModel.pagination.PageNo - 1) * viewModel.pagination.PageSize;
     queryFilter.top = viewModel.pagination.PageSize;
-    return await this.customerClient.GetAllPaginatedCustomers(queryFilter);
+    // Add search parameter if available
+    if (viewModel.filters && (viewModel.filters as any).search) {
+      (queryFilter as any).search = (viewModel.filters as any).search;
+    }
+    return await this.customerClient.GetAllPaginatedCustomers(queryFilter as any);
   }
 
   async getTotalCustomerCount(): Promise<ApiResponse<IntResponseRoot>> {

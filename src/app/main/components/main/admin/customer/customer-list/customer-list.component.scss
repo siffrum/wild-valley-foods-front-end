@@ -1,3 +1,5 @@
+@use "../../../../../../../variable" as *;
+
 // Customer List Component Styles
 // Following the same pattern as order-list and invoice-list
 
@@ -20,5 +22,13 @@
 .btn-sm {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
+}
+
+// Pagination Container - Center aligned
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  padding-top: $spacing-lg;
+  margin-top: $spacing-md;
 }
 

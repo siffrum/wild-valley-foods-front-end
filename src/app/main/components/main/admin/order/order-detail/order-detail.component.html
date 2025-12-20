@@ -133,7 +133,7 @@
             <tbody>
               @for (item of order.items; track $index) {
                 <tr>
-                  <td>{{ item.product?.name || 'N/A' }}</td>
+                  <td>{{ item.product?.name || 'Unknown Product' }}</td>
                   <td>{{ item.variant?.sku || item.variantDetails?.sku || 'N/A' }}</td>
                   <td>{{ item.quantity }}</td>
                   <td>{{ item.variant?.unitSymbol || item.variantDetails?.unitSymbol || 'N/A' }}</td>

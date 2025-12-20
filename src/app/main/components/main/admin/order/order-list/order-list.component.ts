@@ -50,7 +50,12 @@ export class OrderListComponent extends BaseComponent<OrderViewModel> implements
         customers: []
       } as any);
       if (!response.isError && response.successData) {
-        this.viewModel.customers = response.successData.map((c: CustomerDetailSM) => ({
+        // Handle both array and object with data property
+        const customersData = Array.isArray(response.successData) 
+          ? response.successData 
+          : (response.successData as any).data || [];
+        
+        this.viewModel.customers = customersData.map((c: CustomerDetailSM) => ({
           id: c.id,
           firstName: c.firstName || '',
           lastName: c.lastName || '',
