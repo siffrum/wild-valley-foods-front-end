@@ -1,16 +1,41 @@
+@use "../../../../../../variable" as *;
+
 .topbar {
-  background-color: #f9aa3c;
-  border-bottom: 1px solid #e9ecef;
-  color: white;
+  background-color: $color-primary;
+  border-bottom: 1px solid $color-border-bootstrap;
+  color: $color-text-on-primary;
+  
   .icons {
     cursor: pointer;
     margin-right: 10px;
   }
 }
+
 .bi-list,
 .bi-three-dots-vertical {
-  font-size: 26px;
-  color: black;
+  font-size: $font-size-icon-xl;
+  color: $color-text-primary;
+}
+
+/* Shop Dropdown Styles */
+.shop-dropdown {
+  max-height: 400px;
+  overflow-y: auto;
+  min-width: 250px;
+  
+  .dropdown-item {
+    padding: $spacing-sm $spacing-md;
+    font-size: $font-size-sm;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background-color $transition-fast;
+    
+    &:hover {
+      background-color: $color-bg-quaternary;
+      color: $color-primary;
+    }
+  }
 }
 
 /* Search Dropdown Styles */
@@ -18,7 +43,7 @@
   position: relative;
   
   &:hover {
-    color: #f9aa3c !important;
+    color: $color-primary !important;
   }
 }
 
@@ -26,14 +51,14 @@
   position: absolute;
   top: 100%;
   right: 0;
-  margin-top: 8px;
+  margin-top: $spacing-sm;
   width: 400px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  z-index: 1050;
+  background: $color-bg-primary;
+  border-radius: $border-radius-md;
+  box-shadow: $shadow-lg;
+  z-index: $z-index-modal;
   overflow: hidden;
-  animation: slideDown 0.2s ease-out;
+  animation: slideDown $transition-fast ease-out;
 
   @keyframes slideDown {
     from {
@@ -49,27 +74,27 @@
   .search-input-wrapper {
     position: relative;
     padding: 12px;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid $color-border-bootstrap;
 
     .search-icon {
       position: absolute;
       left: 20px;
       top: 50%;
       transform: translateY(-50%);
-      color: #6c757d;
+      color: $color-text-muted;
       z-index: 1;
     }
 
     .search-input {
       padding-left: 40px;
       padding-right: 40px;
-      border: 1px solid #e9ecef;
+      border: 1px solid $color-border-bootstrap;
       border-radius: 6px;
-      font-size: 0.95rem;
+      font-size: $font-size-md;
 
       &:focus {
-        border-color: #f9aa3c;
-        box-shadow: 0 0 0 0.2rem rgba(249, 170, 60, 0.25);
+        border-color: $color-primary;
+        box-shadow: 0 0 0 0.2rem rgba($color-primary, 0.25);
       }
     }
 
@@ -80,7 +105,7 @@
       transform: translateY(-50%);
       background: none;
       border: none;
-      color: #6c757d;
+      color: $color-text-muted;
       cursor: pointer;
       padding: 4px;
       display: flex;
@@ -88,7 +113,7 @@
       z-index: 1;
 
       &:hover {
-        color: #333;
+        color: $color-text-primary;
       }
     }
   }
@@ -99,7 +124,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #6c757d;
+    color: $color-text-muted;
   }
 
   .search-results {
@@ -108,9 +133,9 @@
 
     .search-results-header {
       padding: 10px 12px;
-      background: #f8f9fa;
-      border-bottom: 1px solid #e9ecef;
-      font-size: 0.85rem;
+      background: $color-bg-quaternary;
+      border-bottom: 1px solid $color-border-bootstrap;
+      font-size: $font-size-xs;
     }
 
     .search-results-list {
@@ -120,10 +145,10 @@
         padding: 12px;
         cursor: pointer;
         border-bottom: 1px solid #f0f0f0;
-        transition: background-color 0.2s;
+        transition: background-color $transition-fast;
 
         &:hover {
-          background-color: #f8f9fa;
+          background-color: $color-bg-quaternary;
         }
 
         &:last-child {
@@ -143,9 +168,9 @@
           min-width: 0;
 
           .result-name {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #333;
+            font-size: $font-size-sm;
+            font-weight: $font-weight-medium;
+            color: $color-text-primary;
             margin-bottom: 4px;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -153,9 +178,9 @@
           }
 
           .result-price {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #e63946;
+            font-size: $font-size-xs;
+            font-weight: $font-weight-semibold;
+            color: $color-text-danger-alt;
           }
         }
       }
@@ -163,15 +188,15 @@
 
     .search-footer {
       padding: 12px;
-      border-top: 1px solid #e9ecef;
-      background: #f8f9fa;
+      border-top: 1px solid $color-border-bootstrap;
+      background: $color-bg-quaternary;
     }
   }
 
   .search-no-results {
     padding: 40px 20px;
     text-align: center;
-    color: #6c757d;
+    color: $color-text-muted;
 
     i {
       display: block;
@@ -186,7 +211,7 @@
   .search-hint {
     padding: 12px;
     text-align: center;
-    background: #f8f9fa;
+    background: $color-bg-quaternary;
   }
 }
 
@@ -196,12 +221,12 @@
   top: 56px; /* Below navbar */
   left: 0;
   right: 0;
-  background: white;
-  z-index: 1050;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  background: $color-bg-primary;
+  z-index: $z-index-modal;
+  box-shadow: $shadow-lg;
   max-height: calc(100vh - 56px);
   overflow-y: auto;
-  animation: slideDownMobile 0.2s ease-out;
+  animation: slideDownMobile $transition-fast ease-out;
 
   @keyframes slideDownMobile {
     from {
@@ -217,30 +242,30 @@
   .search-input-wrapper {
     position: relative;
     padding: 12px 15px;
-    border-bottom: 1px solid #e9ecef;
-    background: white;
+    border-bottom: 1px solid $color-border-bootstrap;
+    background: $color-bg-primary;
 
     .search-icon {
       position: absolute;
       left: 28px;
       top: 50%;
       transform: translateY(-50%);
-      color: #6c757d;
+      color: $color-text-muted;
       z-index: 1;
-      font-size: 1.1rem;
+      font-size: $font-size-icon-sm;
     }
 
     .search-input {
       padding-left: 45px;
       padding-right: 45px;
-      border: 1px solid #e9ecef;
+      border: 1px solid $color-border-bootstrap;
       border-radius: 6px;
-      font-size: 1rem;
+      font-size: $font-size-base;
       height: 44px;
 
       &:focus {
-        border-color: #f9aa3c;
-        box-shadow: 0 0 0 0.2rem rgba(249, 170, 60, 0.25);
+        border-color: $color-primary;
+        box-shadow: 0 0 0 0.2rem rgba($color-primary, 0.25);
       }
     }
 
@@ -251,16 +276,16 @@
       transform: translateY(-50%);
       background: none;
       border: none;
-      color: #6c757d;
+      color: $color-text-muted;
       cursor: pointer;
       padding: 4px;
       display: flex;
       align-items: center;
       z-index: 1;
-      font-size: 1.2rem;
+      font-size: $font-size-icon-base;
 
       &:hover {
-        color: #333;
+        color: $color-text-primary;
       }
     }
   }
@@ -271,15 +296,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #6c757d;
+    color: $color-text-muted;
   }
 
   .search-results {
     .search-results-header {
       padding: 10px 15px;
-      background: #f8f9fa;
-      border-bottom: 1px solid #e9ecef;
-      font-size: 0.85rem;
+      background: $color-bg-quaternary;
+      border-bottom: 1px solid $color-border-bootstrap;
+      font-size: $font-size-xs;
     }
 
     .search-results-list {
@@ -289,10 +314,10 @@
         padding: 12px 15px;
         cursor: pointer;
         border-bottom: 1px solid #f0f0f0;
-        transition: background-color 0.2s;
+        transition: background-color $transition-fast;
 
         &:hover, &:active {
-          background-color: #f8f9fa;
+          background-color: $color-bg-quaternary;
         }
 
         &:last-child {
@@ -312,9 +337,9 @@
           min-width: 0;
 
           .result-name {
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: #333;
+            font-size: $font-size-md;
+            font-weight: $font-weight-medium;
+            color: $color-text-primary;
             margin-bottom: 4px;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -322,9 +347,9 @@
           }
 
           .result-price {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #e63946;
+            font-size: $font-size-sm;
+            font-weight: $font-weight-semibold;
+            color: $color-text-danger-alt;
           }
         }
       }
@@ -332,15 +357,15 @@
 
     .search-footer {
       padding: 12px 15px;
-      border-top: 1px solid #e9ecef;
-      background: #f8f9fa;
+      border-top: 1px solid $color-border-bootstrap;
+      background: $color-bg-quaternary;
     }
   }
 
   .search-no-results {
     padding: 40px 20px;
     text-align: center;
-    color: #6c757d;
+    color: $color-text-muted;
 
     i {
       display: block;
@@ -355,7 +380,7 @@
   .search-hint {
     padding: 12px 15px;
     text-align: center;
-    background: #f8f9fa;
+    background: $color-bg-quaternary;
   }
 }
 
@@ -366,8 +391,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1040;
+  background: $color-bg-overlay;
+  z-index: $z-index-modal-backdrop;
 }
 
 /* Mobile Menu Button Styles */
@@ -380,27 +405,27 @@
     justify-content: center;
     
     i {
-      font-size: 1.5rem;
-      color: #333;
+      font-size: $font-size-icon-lg;
+      color: $color-text-primary;
     }
     
     &:hover, &:focus {
-      background-color: #f8f9fa;
+      background-color: $color-bg-quaternary;
       
       i {
-        color: #f9aa3c;
+        color: $color-primary;
       }
     }
   }
 }
 
 /* Responsive - Desktop search dropdown */
-@media (min-width: 992px) {
+@media (min-width: $breakpoint-lg) {
   .search-dropdown {
     position: absolute;
     top: 100%;
     right: 0;
-    margin-top: 8px;
+    margin-top: $spacing-sm;
     width: 400px;
   }
   
@@ -424,13 +449,13 @@
   top: 100%;
   left: 0;
   min-width: 160px;
-  background: #fff;
+  background: $color-bg-primary;
   border: 1px solid #ddd;
   display: none;
   list-style: none;
   padding: 0;
   margin: 0;
-  z-index: 1000;
+  z-index: $z-index-dropdown;
 }
 
 /* Show dropdown on hover OR when focused */
@@ -443,21 +468,22 @@
 .dropdown-menu li a {
   display: block;
   padding: 10px 15px;
-  color: #333;
+  color: $color-text-primary;
   text-decoration: none;
 }
 
 .dropdown-menu li a:hover {
   background-color: #f1f1f1;
 }
+
 .active-route {
-  color: #f9aa3c !important;
+  color: $color-primary !important;
 }
 
 #offcanvasLeft {
   .offcanvas-header {
-    border-bottom: 1px solid #e9ecef;
-    padding: 1rem 1.25rem;
+    border-bottom: 1px solid $color-border-bootstrap;
+    padding: $spacing-md 1.25rem;
     
     .branding {
       display: flex;
@@ -471,9 +497,9 @@
       }
       
       .offcanvas-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #333;
+        font-size: $font-size-xl;
+        font-weight: $font-weight-bold;
+        color: $color-text-primary;
         margin: 0;
       }
     }
@@ -481,19 +507,19 @@
 
   .offcanvas-body {
     .mobile-search {
-      background: #f8f9fa;
+      background: $color-bg-quaternary;
       
       .input-group {
         .input-group-text {
-          border-color: #dee2e6;
+          border-color: $color-border-input;
         }
         
         .form-control {
-          border-color: #dee2e6;
+          border-color: $color-border-input;
           
           &:focus {
-            border-color: #f9aa3c;
-            box-shadow: 0 0 0 0.2rem rgba(249, 170, 60, 0.25);
+            border-color: $color-primary;
+            box-shadow: 0 0 0 0.2rem rgba($color-primary, 0.25);
           }
         }
       }
@@ -523,7 +549,7 @@
               width: 45px;
               height: 45px;
               object-fit: cover;
-              border-radius: 0.25rem;
+              border-radius: $border-radius-base;
             }
           }
         }
@@ -532,41 +558,41 @@
     
     nav {
       .nav-link {
-        font-size: 1rem;
-        padding: 0.75rem 1rem;
-        color: #333;
+        font-size: $font-size-base;
+        padding: 0.75rem $spacing-md;
+        color: $color-text-primary;
         text-decoration: none;
         border-radius: 0.375rem;
-        transition: all 0.2s;
+        transition: all $transition-fast;
         display: flex;
         align-items: center;
         
         i {
-          font-size: 1.2rem;
+          font-size: $font-size-icon-base;
           width: 24px;
           text-align: center;
-          color: #6c757d;
+          color: $color-text-muted;
         }
         
         span {
-          color: #333;
+          color: $color-text-primary;
         }
         
         &:hover, &:focus {
-          background-color: #f8f9fa;
-          color: #f9aa3c;
+          background-color: $color-bg-quaternary;
+          color: $color-primary;
           
           i {
-            color: #f9aa3c;
+            color: $color-primary;
           }
         }
         
         &.active {
-          background-color: #f9aa3c;
-          color: white;
+          background-color: $color-primary;
+          color: $color-text-on-primary;
           
           i, span {
-            color: white;
+            color: $color-text-on-primary;
           }
         }
       }
@@ -583,18 +609,18 @@
           transform: none !important;
           border: none;
           box-shadow: none;
-          background: #f8f9fa;
-          margin: 0.5rem 0 0 2.5rem;
-          padding: 0.5rem 0;
+          background: $color-bg-quaternary;
+          margin: $spacing-sm 0 0 2.5rem;
+          padding: $spacing-sm 0;
           
           .dropdown-item {
-            padding: 0.5rem 1rem;
-            font-size: 0.95rem;
+            padding: $spacing-sm $spacing-md;
+            font-size: $font-size-md;
             color: #495057;
             
             &:hover {
-              background-color: #e9ecef;
-              color: #f9aa3c;
+              background-color: $color-border-bootstrap;
+              color: $color-primary;
             }
           }
         }
@@ -608,6 +634,6 @@
   }
   
   .border-top {
-    background: #f8f9fa;
+    background: $color-bg-quaternary;
   }
 }

@@ -9,31 +9,36 @@
 
 body,
 html {
-  font-family: "Poppins", sans-serif;
-  background: white;
-  color: black;
+  font-family: $font-family-primary;
+  background: $color-bg-primary;
+  color: $color-text-primary;
   height: 100%;
   margin: 0;
   overflow-x: hidden !important;
 }
+
 a,
 i {
   cursor: pointer;
   text-decoration: none;
 }
+
 app-root {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
-app-product{
+
+app-product {
   cursor: pointer !important;
 }
+
 main {
   flex: 1; // takes remaining space
 }
+
 .btn-primary {
-  background-color: #f9aa3c !important;
+  background-color: $color-primary !important;
   border: none;
-  color: rgb(255, 255, 255);
+  color: $color-text-on-primary;
 }

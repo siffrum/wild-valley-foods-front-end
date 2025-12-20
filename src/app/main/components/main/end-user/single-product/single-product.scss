@@ -1,11 +1,13 @@
+@use "../../../../../../variable" as *;
+
 .product-page {
-  font-family: 'Inter', sans-serif;
-  color: #333;
+  font-family: $font-family-secondary;
+  color: $color-text-primary;
 
   .image-card {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    background: $color-bg-primary;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-base;
     .main-image-wrapper {
       display: flex;
       align-items: center;
@@ -23,12 +25,12 @@
       .thumb-img {
         width: 64px;
         height: 64px;
-        border-radius: 8px;
+        border-radius: $border-radius-md;
         object-fit: cover;
-        transition: 0.2s;
+        transition: $transition-fast;
       }
       .selected .thumb-img {
-        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2);
+        box-shadow: 0 0 0 3px rgba($color-info, 0.2);
         transform: scale(1.05);
       }
       .thumb-btn {
@@ -41,66 +43,66 @@
 
   .product-details-card {
     border: none;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-    background: #fff;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-base;
+    background: $color-bg-primary;
 
     .product-title {
-      font-weight: 700;
+      font-weight: $font-weight-bold;
       color: #111;
     }
 
     .price {
-      color: #e63946;
-      font-weight: 700;
+      color: $color-text-danger-alt;
+      font-weight: $font-weight-bold;
       font-size: 1.6rem;
     }
 
     .stock-badge {
-      font-size: 0.8rem;
+      font-size: $font-size-xs;
       padding: 0.4rem 0.6rem;
-      border-radius: 8px;
+      border-radius: $border-radius-md;
     }
 
     .qty-selector {
-      background: #f8f9fa;
+      background: $color-bg-quaternary;
       input {
         width: 50px;
-        font-weight: 600;
+        font-weight: $font-weight-semibold;
       }
       button {
-        color: #333;
+        color: $color-text-primary;
         &:hover {
-          color: #007bff;
+          color: $color-info;
         }
       }
     }
   }
 
   .rating-summary i {
-    font-size: 1.1rem;
+    font-size: $font-size-lg;
   }
 
   .reviews-section {
     .review-card {
       border: none;
-      border-radius: 12px;
-      background: #fff;
-      box-shadow: 0 3px 14px rgba(0, 0, 0, 0.05);
-      transition: all 0.2s ease-in-out;
+      border-radius: $border-radius-lg;
+      background: $color-bg-primary;
+      box-shadow: $shadow-sm;
+      transition: all $transition-fast;
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        box-shadow: $shadow-md;
       }
     }
 
     .btn-gradient {
-      background: linear-gradient(90deg, #007bff, #6610f2);
-      color: #fff;
+      background: linear-gradient(90deg, $color-info, #6610f2);
+      color: $color-text-on-primary;
       border: none;
-      transition: 0.3s;
+      transition: $transition-base;
       &:hover {
-        background: linear-gradient(90deg, #6610f2, #007bff);
+        background: linear-gradient(90deg, #6610f2, $color-info);
         transform: scale(1.03);
       }
     }
@@ -108,14 +110,15 @@
 
   .rich-desc {
     background: #f9f9f9;
-    padding: 1.5rem;
+    padding: $spacing-lg;
     border-radius: 10px;
     p {
-      line-height: 1.8;
-      color: #555;
+      line-height: $line-height-loose;
+      color: $gray-600;
     }
   }
 }
+
 .star-rating {
   display: flex;
   gap: 4px;
@@ -124,8 +127,8 @@
 .star-rating i {
   font-size: 28px;
   cursor: pointer;
-  color: #ccc;
-  transition: transform .2s, color .2s;
+  color: $gray-300;
+  transition: transform $transition-fast, color $transition-fast;
 }
 
 .bi-star-fill,
@@ -136,4 +139,3 @@
 .star-rating i:hover {
   transform: scale(1.2);
 }
-

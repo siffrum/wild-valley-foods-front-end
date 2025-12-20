@@ -1,10 +1,10 @@
-
+@use "../../../../../../variable" as *;
 
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+  font-family: $font-family-base;
 }
 
 main {
@@ -26,41 +26,41 @@ main::after {
   left: 0;
   height: 100%;
   width: 100%;
-  background-color: rgba(0,0,0,0.8);
+  background-color: rgba($color-warning-yellow, 0.75);
 }
 
 section {
   position: relative;
   z-index: 3;
-  padding-top: 50px;
-  padding-bottom: 50px;
+  padding-top: $spacing-xxxl;
+  padding-bottom: $spacing-xxxl;
 }
 
 .container {
   max-width: 1080px;
   margin-left: auto;
   margin-right: auto;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: $spacing-xl;
+  padding-right: $spacing-xl;
 }
 
 .section-header {
-  margin-bottom: 50px;
+  margin-bottom: $spacing-xxxl;
   text-align: center;
 }
 
 .section-header h2 {
-  color: #FFF;
-  font-weight: bold;
-  font-size: 3em;
-  margin-bottom: 20px;
+  color: $color-text-on-primary;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-display;
+  margin-bottom: $spacing-xl;
 }
 
 .section-header p {
-  color: #FFF;
+  color: $color-text-on-primary;
 }
 
-.row  {
+.row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -73,66 +73,66 @@ section {
 
 .contact-info-item {
   display: flex;
-  margin-bottom: 30px;
+  margin-bottom: $spacing-lg;
 }
 
 .contact-info-icon {
   height: 70px;
   width: 70px;
-  background-color: #fff;
+  background-color: $color-bg-primary;
   text-align: center;
-  border-radius: 50%;
+  border-radius: $border-radius-full;
 }
 
 .contact-info-icon i {
-  font-size: 30px;
+  font-size: $font-size-h3;
   line-height: 70px;
 }
 
 .contact-info-content {
-  margin-left: 20px;
+  margin-left: $spacing-xl;
 }
 
 .contact-info-content h4 {
-  color: #ffc107;
-  font-size: 1.4em;
-  margin-bottom: 5px;
+  color: $color-warning-yellow;
+  font-size: $font-size-h4;
+  margin-bottom: $spacing-xs;
 }
 
 .contact-info-content p {
-  color: #FFF;
-  font-size: 1em;
+  color: $color-text-on-primary;
+  font-size: $font-size-base;
 }
 
 .contact-form {
-  background-color: #fff;
-  padding: 40px;
+  background-color: $color-bg-primary;
+  padding: $spacing-xxl;
   width: 45%;
-  padding-bottom: 20px;
-  padding-top: 20px;
+  padding-bottom: $spacing-xl;
+  padding-top: $spacing-xl;
 }
 
 .contact-form h2 {
-  font-weight: bold;
-  font-size: 2em;
-  margin-bottom: 10px;
-  color: #333;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-h2;
+  margin-bottom: $spacing-sm;
+  color: $color-text-primary;
 }
 
 .contact-form .input-box {
   position: relative;
   width: 100%;
-  margin-top: 10px;
+  margin-top: $spacing-sm;
 }
 
 .contact-form .input-box input,
-.contact-form .input-box textarea{
+.contact-form .input-box textarea {
   width: 100%;
-  padding: 5px 0;
-  font-size: 16px;
-  margin: 10px 0;
+  padding: $spacing-xs 0;
+  font-size: $font-size-base;
+  margin: $spacing-sm 0;
   border: none;
-  border-bottom: 2px solid #333;
+  border-bottom: 2px solid $color-text-primary;
   outline: none;
   resize: none;
 }
@@ -140,64 +140,64 @@ section {
 .contact-form .input-box span {
   position: absolute;
   left: 0;
-  padding: 5px 0;
-  font-size: 16px;
-  margin: 10px 0;
+  padding: $spacing-xs 0;
+  font-size: $font-size-base;
+  margin: $spacing-sm 0;
   pointer-events: none;
-  transition: 0.5s;
-  color: #666;
+  transition: $transition-slow;
+  color: $color-text-secondary;
 }
 
 .contact-form .input-box input:focus ~ span,
 .contact-form .input-box input.ng-dirty ~ span,
 .contact-form .input-box textarea:focus ~ span,
 .contact-form .input-box textarea.ng-dirty ~ span {
-  color: #0e0e0f;   /* or your primary color if you like */
-  font-size: 16px;
-  font-weight: 600;
+  color: $color-text-primary;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
   transform: translateY(-20px);
 }
 
-.contact-form .input-box input[type="submit"]
-{
+.contact-form .input-box input[type="submit"] {
   width: 100%;
-  background: #ffc107;
-  color: #FFF;
+  background: $color-warning-yellow;
+  color: $color-text-on-primary;
   border: none;
   cursor: pointer;
-  padding: 10px;
-  font-size: 18px;
-  border: 1px solid #ffc107;
-  transition: 0.5s;
+  padding: $spacing-sm;
+  font-size: $font-size-lg;
+  border: 1px solid $color-warning-yellow;
+  transition: $transition-slow;
 }
+
 .input-box input[type="submit"] {
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all $transition-base;
 }
 
 /* Disabled state */
 .input-box input[type="submit"]:disabled {
-  opacity: 0.5;      // faded look
+  opacity: 0.5;
   cursor: not-allowed;
-  background-color: #ffc107; // your primary color
-  color: #fff;        // keep text readable
+  background-color: $color-warning-yellow;
+  color: $color-text-on-primary;
 }
 
-@media (max-width: 991px) {
+@media (max-width: $breakpoint-lg) {
   section {
-    padding-top: 50px;
-    padding-bottom: 50px;
+    padding-top: $spacing-xxxl;
+    padding-bottom: $spacing-xxxl;
   }
-  
+
   .row {
     flex-direction: column;
   }
-  
+
   .contact-info {
-    margin-bottom: 40px;
+    margin-bottom: $spacing-xxl;
     width: 100%;
   }
-  
+
   .contact-form {
     width: 100%;
   }

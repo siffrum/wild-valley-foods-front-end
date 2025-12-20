@@ -35,6 +35,9 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit, On
   searchResults: ProductSM[] = [];
   isSearching: boolean = false;
 
+  // Best selling products for Shop dropdown
+  bestSellingProducts: ProductSM[] = [];
+
   // Expose utils to template
   utils = ProductUtils;
 
@@ -84,6 +87,7 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit, On
       });
 
     this.loadPageData();
+    this.loadBestSellingProducts();
   }
 
   trackById(_: number, item: any) {
@@ -114,6 +118,19 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit, On
         icon: 'error',
         confirmButtonText: 'OK',
       });
+    }
+  }
+
+  async loadBestSellingProducts(): Promise<void> {
+    try {
+      const resp = await this.productService.getAllIsBestSelling();
+      if (!resp.isError && resp.successData) {
+        // Limit to a reasonable number for dropdown (e.g., 8-10 products)
+        this.bestSellingProducts = resp.successData.slice(0, 10);
+        this.cdr.detectChanges();
+      }
+    } catch (error) {
+      console.error('[Header] Error loading best selling products:', error);
     }
   }
 

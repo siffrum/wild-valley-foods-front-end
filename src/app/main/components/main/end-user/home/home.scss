@@ -1,11 +1,15 @@
+@use "../../../../../../variable" as *;
+
 .container-fluid {
   width: 100%;
 }
+
 .products {
   width: 100%;
 }
+
 .newarrivals {
   width: 100%;
   background-color: aliceblue;
-  padding-top: 1rem;
+  padding-top: $spacing-md;
 }

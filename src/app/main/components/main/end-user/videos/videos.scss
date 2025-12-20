@@ -1,5 +1,7 @@
+@use "../../../../../../variable" as *;
+
 .video-section {
-  padding: 0 1rem;
+  padding: 0 $spacing-md;
 }
 
 /* Video Controls Header */
@@ -7,8 +9,8 @@
   .playing-dot {
     width: 8px;
     height: 8px;
-    background: #fff;
-    border-radius: 50%;
+    background: $color-text-on-primary;
+    border-radius: $border-radius-full;
     animation: pulse-dot 1.5s infinite;
   }
 }
@@ -20,14 +22,14 @@
 
 /* Video Card */
 .video-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform $transition-base, box-shadow $transition-base;
   cursor: pointer;
   
   &:hover {
     transform: translateY(-5px);
     
     .video-container {
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      box-shadow: $shadow-lg;
       
       iframe {
         opacity: 1;
@@ -36,7 +38,7 @@
     
     .video-info {
       .video-title {
-        color: #dc3545;
+        color: $color-danger-dark;
       }
     }
   }
@@ -47,11 +49,11 @@
   position: relative;
   width: 100%;
   padding-bottom: 56.25%; /* 16:9 aspect ratio */
-  background: #000;
-  border-radius: 12px;
+  background: $color-bg-dark;
+  border-radius: $border-radius-lg;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  box-shadow: $shadow-md;
+  transition: box-shadow $transition-base, transform $transition-base;
   
   // Prevent black screen during carousel transitions
   &::before {
@@ -61,10 +63,10 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    background: linear-gradient(135deg, $gradient-dark-start 0%, $gradient-dark-end 100%);
     z-index: 0;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity $transition-base;
   }
   
   iframe {
@@ -78,13 +80,13 @@
     pointer-events: auto;
     opacity: 1;
     visibility: visible;
-    transition: opacity 0.3s ease;
-    background: #000;
+    transition: opacity $transition-base;
+    background: $color-bg-dark;
   }
   
   /* Playing state */
   &.is-playing {
-    box-shadow: 0 0 0 3px #dc3545, 0 6px 25px rgba(220, 53, 69, 0.3);
+    box-shadow: 0 0 0 3px $color-danger-dark, 0 6px 25px rgba($color-danger-dark, 0.3);
     transform: scale(1.02);
   }
 }
@@ -96,8 +98,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  border: 3px solid #dc3545;
-  border-radius: 12px;
+  border: 3px solid $color-danger-dark;
+  border-radius: $border-radius-lg;
   pointer-events: none;
   z-index: 2;
   animation: border-pulse 2s infinite;
@@ -110,18 +112,18 @@
 
 /* Video Info */
 .video-info {
-  transition: color 0.3s ease;
+  transition: color $transition-base;
   
   .video-title {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: #333;
+    font-weight: $font-weight-semibold;
+    font-size: $font-size-md;
+    color: $color-text-primary;
     display: -webkit-box;
     -webkit-line-clamp: 1;
     line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    transition: color 0.3s ease;
+    transition: color $transition-base;
   }
   
   .video-desc {
@@ -130,8 +132,8 @@
     line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    font-size: 0.85rem;
-    transition: color 0.3s ease;
+    font-size: $font-size-xs;
+    transition: color $transition-base;
   }
 }
 
@@ -140,7 +142,7 @@
 .carousel-control-next {
   width: 50px;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity $transition-base;
 }
 
 #videoCarousel:hover {
@@ -156,14 +158,14 @@
   justify-content: center;
   width: 45px;
   height: 45px;
-  background: rgba(0, 0, 0, 0.7);
-  border-radius: 50%;
-  color: #fff;
-  font-size: 1.25rem;
-  transition: all 0.2s ease;
+  background: $color-bg-overlay;
+  border-radius: $border-radius-full;
+  color: $color-text-on-primary;
+  font-size: $font-size-xl;
+  transition: all $transition-fast;
   
   &:hover {
-    background: rgba(0, 0, 0, 0.9);
+    background: $color-bg-overlay-dark;
     transform: scale(1.1);
   }
 }
@@ -172,26 +174,26 @@
 #videoCarousel .carousel-indicators {
   position: relative;
   bottom: auto;
-  margin-top: 1.5rem;
+  margin-top: $spacing-lg;
   margin-bottom: 0;
   
   button {
     width: 10px;
     height: 10px;
-    border-radius: 50%;
-    background-color: #d1d5db;
+    border-radius: $border-radius-full;
+    background-color: $neutral-300;
     border: none;
     margin: 0 5px;
     opacity: 1;
-    transition: all 0.3s ease;
+    transition: all $transition-base;
     
     &:hover {
-      background-color: #9ca3af;
+      background-color: $neutral-400;
       transform: scale(1.2);
     }
     
     &.active {
-      background-color: #f59e0b;
+      background-color: $color-warning;
       width: 12px;
       height: 12px;
     }
@@ -200,7 +202,7 @@
 
 /* Status Message */
 .status-message {
-  animation: fade-in 0.3s ease;
+  animation: fade-in $transition-base;
 }
 
 @keyframes fade-in {
@@ -210,7 +212,7 @@
 
 /* Empty State */
 .empty-state {
-  color: #9ca3af;
+  color: $neutral-400;
   
   .bi-youtube {
     font-size: 4rem;
@@ -219,12 +221,12 @@
 
 /* Auto-scroll button styles */
 .btn-success {
-  background-color: #10b981;
-  border-color: #10b981;
+  background-color: $color-success;
+  border-color: $color-success;
   
   &:hover {
-    background-color: #059669;
-    border-color: #059669;
+    background-color: $color-success-dark;
+    border-color: $color-success-dark;
   }
 }
 
@@ -238,20 +240,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  background: linear-gradient(135deg, $gradient-dark-start 0%, $gradient-dark-end 100%);
   z-index: 0;
-  color: #666;
+  color: $gray-500;
   font-size: 3rem;
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-md) {
   .video-section {
-    padding: 0 0.5rem;
+    padding: 0 $spacing-sm;
   }
   
   .video-container {
-    border-radius: 8px;
+    border-radius: $border-radius-md;
   }
   
   .carousel-control-prev,
@@ -263,7 +265,7 @@
   .carousel-nav-icon {
     width: 35px;
     height: 35px;
-    font-size: 1rem;
+    font-size: $font-size-base;
   }
   
   #videoCarousel .carousel-indicators button {
@@ -278,11 +280,11 @@
   
   .video-info {
     .video-title {
-      font-size: 0.9rem;
+      font-size: $font-size-sm;
     }
     
     .video-desc {
-      font-size: 0.8rem;
+      font-size: $font-size-xs;
     }
   }
 }
@@ -299,19 +301,19 @@
 @media (prefers-color-scheme: dark) {
   .video-info {
     .video-title {
-      color: #f3f4f6;
+      color: $color-text-on-dark;
     }
   }
   
   .empty-state {
-    color: #6b7280;
+    color: $gray-500;
   }
   
   #videoCarousel .carousel-indicators button {
-    background-color: #4b5563;
+    background-color: $gray-600;
     
     &.active {
-      background-color: #f59e0b;
+      background-color: $color-warning;
     }
   }
 }

@@ -1,37 +1,45 @@
+@use "../../../../../../variable" as *;
+
 .banner-carousel {
   max-width: 100%;
   margin: auto;
 }
+
 .carousel-item img {
   object-fit: cover;
   max-height: 400px;
   width: 100%;
 }
+
 .carousel-caption.ShortAdd {
   background-color: rgba(0, 0, 0, 0.5);
-  padding: 1rem;
-  border-radius: 0.25rem;
+  padding: $spacing-md;
+  border-radius: $border-radius-sm;
 }
+
 .carousel-caption.LongAdd {
   background-color: rgba(0, 0, 0, 0.7);
-  padding: 1.5rem;
-  border-radius: 0.5rem;
+  padding: $spacing-lg;
+  border-radius: $border-radius-sm;
 }
+
 .carousel-caption.Sales {
   background-color: rgba(255, 0, 0, 0.7);
-  padding: 1rem;
-  border-radius: 0.5rem;
-  color: white;
+  padding: $spacing-md;
+  border-radius: $border-radius-sm;
+  color: $color-text-on-primary;
 }
+
 .carousel-caption.Voucher {
   background-color: rgba(0, 128, 0, 0.7);
-  padding: 1rem;
-  border-radius: 0.5rem;
-  color: white;
+  padding: $spacing-md;
+  border-radius: $border-radius-sm;
+  color: $color-text-on-primary;
 }
+
 .carousel-caption.Slider {
   background-color: rgba(0, 0, 0, 0.3);
-  padding: 1rem;
-  border-radius: 0.25rem;
-  color: white;
+  padding: $spacing-md;
+  border-radius: $border-radius-sm;
+  color: $color-text-on-primary;
 }

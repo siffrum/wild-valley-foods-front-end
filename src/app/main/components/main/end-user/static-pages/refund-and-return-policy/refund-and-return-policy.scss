@@ -1,47 +1,49 @@
+@use "../../../../../../../variable" as *;
+
 .refund-container {
-  color: #333;
-  line-height: 1.8;
+  color: $color-text-primary;
+  line-height: $line-height-relaxed;
 
   .refund-title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #ffc107;
+    font-size: $font-size-h2;
+    font-weight: $font-weight-bold;
+    color: $color-warning-yellow;
     text-align: center;
   }
 
   .refund-section {
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    background: $color-bg-primary;
+    padding: $spacing-lg;
+    border-radius: $border-radius-md;
+    box-shadow: $shadow-sm;
 
     h3 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: #444;
-      border-left: 4px solid #ffc107;
-      padding-left: 10px;
+      font-size: $font-size-h4;
+      font-weight: $font-weight-semibold;
+      margin-bottom: $spacing-sm;
+      color: $color-text-secondary;
+      border-left: 4px solid $color-warning-yellow;
+      padding-left: $spacing-sm;
     }
 
     p, li {
-      font-size: 1rem;
-      color: #555;
+      font-size: $font-size-base;
+      color: $color-text-secondary;
     }
 
     ul {
-      padding-left: 1.2rem;
-      margin-top: 0.5rem;
+      padding-left: $spacing-lg;
+      margin-top: $spacing-sm;
     }
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: $breakpoint-md) {
   .refund-container {
-    padding: 1rem;
+    padding: $spacing-md;
 
     .refund-title {
-      font-size: 1.6rem;
+      font-size: $font-size-h3;
     }
   }
 }

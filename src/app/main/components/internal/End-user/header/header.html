@@ -30,30 +30,45 @@
         <a class="nav-link" routerLink="/home" routerLinkActive="active-route"
           [routerLinkActiveOptions]="{ exact: true }">Home</a>
       </li>
-      <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/shop" routerLinkActive="active-route"
-          [routerLinkActiveOptions]="{ exact: true }">Shop</a>
+      <li class="nav-item dropdown me-3">
+        <a class="nav-link dropdown-toggle" routerLink="/shop" routerLinkActive="active-route"
+          [routerLinkActiveOptions]="{ exact: true }" tabindex="0">Shop</a>
+        <ul class="dropdown-menu shop-dropdown">
+          @if (bestSellingProducts.length > 0) {
+            @for (product of bestSellingProducts; track product.id) {
+              <li>
+                <a class="dropdown-item" [routerLink]="['/product', product.id]">
+                  {{ product.name }}
+                </a>
+              </li>
+            }
+          } @else {
+            <li>
+              <span class="dropdown-item text-muted">Loading...</span>
+            </li>
+          }
+        </ul>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" tabindex="0">Categories</a>
         <ul class="dropdown-menu">
-          <li *ngFor="let category of viewModel.categoriesViewModel.categories">
-            <a class="dropdown-item" [routerLink]="['/shop',category.name, category.id]">
-              {{ category.name }}
-            </a>
-          </li>
+          @for (category of viewModel.categoriesViewModel.categories; track category.id) {
+            <li>
+              <a class="dropdown-item" [routerLink]="['/shop',category.name, category.id]">
+                {{ category.name }}
+              </a>
+            </li>
+          }
         </ul>
       </li>
 
-
-
-      <li class="nav-item me-3">
-        <a class="nav-link" routerLink="/contact-us" routerLinkActive="active-route"
-          [routerLinkActiveOptions]="{ exact: true }">Contact us</a>
-      </li>
       <li class="nav-item me-3">
         <a class="nav-link" routerLink="/about-us" routerLinkActive="active-route"
           [routerLinkActiveOptions]="{ exact: true }">Our Story</a>
+      </li>
+      <li class="nav-item me-3">
+        <a class="nav-link" routerLink="/contact-us" routerLinkActive="active-route"
+          [routerLinkActiveOptions]="{ exact: true }">Contact us</a>
       </li>
       
       <!-- Search Icon -->

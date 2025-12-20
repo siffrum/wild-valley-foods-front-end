@@ -1,3 +1,5 @@
+@use "../../../../../../variable" as *;
+
 :host {
   display: block;
 }
@@ -5,12 +7,12 @@
 .categories {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: $spacing-md;
   width: 100%;
   max-height: 400px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding-right: 0.25rem;
+  padding-right: $spacing-xs;
 }
 
 .category-item {
@@ -18,22 +20,21 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 0.5rem;
-  border-bottom: 1px solid rgb(186, 186, 186);
-
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  padding: $spacing-sm;
+  border-bottom: 1px solid $gray-300;
+  transition: transform $transition-fast, box-shadow $transition-fast;
   cursor: pointer;
   background: transparent;
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    box-shadow: $shadow-md;
   }
 
   .img-wrap {
     width: 40px;
     height: 40px;
-    border-radius: 8px;
+    border-radius: $border-radius-md;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -49,17 +50,17 @@
   }
 
   .name {
-    margin-top: 0.5rem;
-    font-size: 0.95rem;
-    line-height: 1.1;
-    color: var(--text-color, #222);
+    margin-top: $spacing-sm;
+    font-size: $font-size-sm;
+    line-height: $line-height-tight;
+    color: var(--text-color, $color-text-primary);
     word-break: break-word;
   }
 }
 
 /* small fallback display */
 .empty {
-  color: #666;
-  font-size: 0.95rem;
-  padding: 0.5rem 0;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+  padding: $spacing-sm 0;
 }

@@ -1,36 +1,38 @@
+@use "../../../../../../variable" as *;
+
 .features {
-  background: #ffffff;
+  background: $color-bg-primary;
 
   .feature-box {
-    background: #f0efef;
-    border-radius: 10px;
-    transition: all 0.2s ease-in-out;
+    background: $gray-100;
+    border-radius: $border-radius-md;
+    transition: all $transition-fast;
     cursor: default;
-    padding: 2rem 1rem !important;
+    padding: $spacing-xl $spacing-md !important;
 
     &:hover {
-      background: #fff;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+      background: $color-bg-primary;
+      box-shadow: $shadow-md;
       transform: translateY(-4px);
     }
 
     .icon-wrap {
-      font-size: 2rem;
-      color: #f9aa3c; // green accent
+      font-size: $font-size-h2;
+      color: $color-primary;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .title {
-      font-weight: 600;
-      font-size: 1rem;
-      color: #111;
+      font-weight: $font-weight-semibold;
+      font-size: $font-size-base;
+      color: $color-text-primary;
     }
 
     .desc {
-      font-size: 0.9rem;
-      color: #555;
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
     }
   }
 }

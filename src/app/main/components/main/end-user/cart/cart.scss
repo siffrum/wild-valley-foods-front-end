@@ -1,5 +1,7 @@
+@use "../../../../../../variable" as *;
+
 .container {
-  max-width: 960px;
+  max-width: $container-lg;
 }
 
 .cart-item-img {

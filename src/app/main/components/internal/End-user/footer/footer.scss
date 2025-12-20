@@ -1,9 +1,12 @@
+@use "../../../../../../variable" as *;
+
 .footer-main {
   position: relative;
   overflow: hidden; // Ensures background stays within bounds
-  font-size: 1rem;
-  letter-spacing: 0.01em;
-background-color: transparent;
+  font-size: $font-size-base;
+  letter-spacing: $letter-spacing-normal;
+  background-color: transparent;
+  
   .footer-bg {
     position: absolute;
     top: 0;
@@ -29,39 +32,41 @@ background-color: transparent;
 
   .footer-link-title {
     h5 {
-      font-weight: 700;
-      color: #ffc107;
-      transition: color 0.2s;
+      font-weight: $font-weight-bold;
+      color: $color-warning-yellow;
+      transition: color $transition-fast;
     }
     &:hover h5 {
-      color: #fff176;
+      color: $color-warning-yellow-light;
       text-decoration: underline;
     }
   }
+  
   .footer-links {
     li {
-      margin-bottom: 0.5rem;
-      a{
-          color:#ffc107;
+      margin-bottom: $spacing-sm;
+      a {
+        color: $color-warning-yellow;
       }
       .footer-link {
         opacity: 0.9;
-        transition: color 0.2s, opacity 0.2s;
+        transition: color $transition-fast, opacity $transition-fast;
         &:hover, &:focus {
-          color: #ffc107;
+          color: $color-warning-yellow;
           opacity: 1;
         }
       }
     }
   }
+  
   .footer-social {
     a {
-      transition: color 0.2s, transform 0.2s;
-      i{
-        color:#ffc107;
+      transition: color $transition-fast, transform $transition-fast;
+      i {
+        color: $color-warning-yellow;
       }
       &:hover {
-        color: #ffc107;
+        color: $color-warning-yellow;
         transform: translateY(-2px) scale(1.12);
       }
     }
@@ -72,25 +77,26 @@ background-color: transparent;
       text-align: center !important;
     }
     .footer-main {
-      font-size: 0.95rem;
+      font-size: $font-size-md;
     }
     .footer-link-title h5, h5 {
-      font-size: 1.1rem;
+      font-size: $font-size-lg;
     }
   }
 
   .topbar {
-    background-color: #f9aa3c;
-    border-bottom: 1px solid #e9ecef;
-    color: white;
+    background-color: $color-primary;
+    border-bottom: 1px solid $color-border-bootstrap;
+    color: $color-text-on-primary;
     .icons {
       cursor: pointer;
       margin-right: 10px;
     }
   }
+  
   .bi-list,
   .bi-three-dots-vertical {
-    font-size: 26px;
-    color: black;
+    font-size: $font-size-icon-xl;
+    color: $color-text-primary;
   }
 }
