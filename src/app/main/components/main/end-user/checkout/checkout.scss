@@ -3,6 +3,8 @@
    Modern, Clean, Professional Design
    ============================================ */
 
+@use "sass:color";
+
 // Design System Variables
 $primary-color: #2563eb;
 $primary-dark: #1e40af;
@@ -616,7 +618,7 @@ $shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 
     padding: 0;
 
     &:hover {
-      background: darken($danger-color, 10%);
+      background: color.adjust($danger-color, $lightness: -10%);
       transform: scale(1.1);
     }
   }

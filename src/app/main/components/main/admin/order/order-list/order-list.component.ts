@@ -79,15 +79,39 @@ export class OrderListComponent extends BaseComponent<OrderViewModel> implements
           confirmButtonText: 'OK'
         });
       } else {
-        // Backend returns array of orders
-        const orders = Array.isArray(response.successData) ? response.successData : [];
+        // Backend returns { data: [...], total: ..., skip: ..., top: ..., hasMore: ... }
+        // Check if successData is an object with 'data' property or directly an array
+        let orders: OrderSM[] = [];
+        let totalCount = 0;
+        
+        if (response.successData) {
+          // Type guard: check if it's an array
+          if (Array.isArray(response.successData)) {
+            // Direct array response
+            orders = response.successData;
+            totalCount = orders.length;
+          } else {
+            // Type assertion for object response
+            const responseData = response.successData as any;
+            if (responseData.data && Array.isArray(responseData.data)) {
+              // Nested response with data property
+              orders = responseData.data;
+              totalCount = responseData.total || orders.length;
+            } else if (responseData.orders && Array.isArray(responseData.orders)) {
+              // Alternative nested structure
+              orders = responseData.orders;
+              totalCount = responseData.total || orders.length;
+            }
+          }
+        }
+        
         this.viewModel.orders = orders;
-        this.viewModel.totalCount = orders.length;
-        this.viewModel.pagination.totalCount = this.viewModel.totalCount;
-        this.viewModel.pagination.totalPages = Array.from({ length: Math.ceil(this.viewModel.totalCount / this.viewModel.pagination.PageSize) }, (_, i) => i + 1);
+        this.viewModel.totalCount = totalCount;
+        this.viewModel.pagination.totalCount = totalCount;
+        this.viewModel.pagination.totalPages = Array.from({ length: Math.ceil(totalCount / this.viewModel.pagination.PageSize) }, (_, i) => i + 1);
         
         if (orders.length > 0) {
-          console.log('Orders loaded successfully:', orders.length, 'orders');
+          console.log('Orders loaded successfully:', orders.length, 'orders (Total:', totalCount, ')');
         } else {
           console.log('No orders found');
         }
