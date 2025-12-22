@@ -132,8 +132,26 @@
             <div>
               <h5 class="card-title-modern">
                 <i class="bi bi-bar-chart-line me-2"></i>Daily Website Visitors
+                <span *ngIf="viewModel.dailyVisitorsNotification" class="badge bg-warning text-dark ms-2" 
+                      title="{{ viewModel.dailyVisitorsNotification.message }}" 
+                      style="font-size: 0.65rem; font-weight: normal;">
+                  <i class="bi bi-exclamation-triangle-fill me-1"></i>Auto-deletes after 24h
+                </span>
               </h5>
               <p class="card-subtitle">Last 30 days traffic analysis</p>
+              <!-- Notification Alert -->
+              <div *ngIf="viewModel.dailyVisitorsNotification" 
+                   class="alert alert-warning alert-dismissible fade show mt-2 mb-0" 
+                   role="alert" 
+                   style="padding: 0.5rem 1rem; font-size: 0.875rem;">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <strong>Note:</strong> {{ viewModel.dailyVisitorsNotification.message }}
+                <small class="d-block mt-1 text-muted">
+                  <i class="bi bi-clock me-1"></i>Cleanup runs daily at {{ viewModel.dailyVisitorsNotification.cleanupTime }} | 
+                  <i class="bi bi-download me-1"></i>{{ viewModel.dailyVisitorsNotification.exportMessage }}
+                </small>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="font-size: 0.7rem;"></button>
+              </div>
             </div>
             <div class="card-actions">
               <select class="form-select form-select-sm" style="width: auto;">

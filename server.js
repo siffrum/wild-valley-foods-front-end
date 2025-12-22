@@ -25,10 +25,39 @@ app.use(cors({
   ],
 }));
 
-app.use(express.static(angularDistPath));
+// Serve static files (including favicon.ico)
+app.use(express.static(angularDistPath, {
+  maxAge: '1y', // Cache static assets for 1 year
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, filePath) => {
+    // Set proper content type for favicon
+    if (filePath.endsWith('.ico')) {
+      res.setHeader('Content-Type', 'image/x-icon');
+    }
+  }
+}));
 
+// Explicitly handle favicon.ico to prevent 500 errors
+app.get('/favicon.ico', (req, res) => {
+  const faviconPath = path.join(angularDistPath, 'favicon.ico');
+  res.sendFile(faviconPath, (err) => {
+    if (err) {
+      // If favicon doesn't exist, return 204 No Content instead of 500
+      res.status(204).end();
+    }
+  });
+});
+
+// Catch-all handler: serve index.html for all other routes (SPA routing)
 app.get('/*', (req, res) => {
-  res.sendFile(path.join(angularDistPath, 'index.html'));
+  const indexPath = path.join(angularDistPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      console.error('Error serving index.html:', err);
+      res.status(500).send('Internal Server Error');
+    }
+  });
 });
 
 const PORT = process.env.PORT || 4000;

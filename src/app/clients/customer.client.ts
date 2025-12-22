@@ -145,4 +145,21 @@ export class CustomerClient extends BaseApiClient {
     );
     return resp;
   };
+
+  /**
+   * Get Customer By Email
+   * Checks if customer exists before creation (for multi-device support)
+   */
+  GetCustomerByEmail = async (
+    email: string
+  ): Promise<ApiResponse<{ exists: boolean; customer: CustomerDetailSM | null }>> => {
+    const encodedEmail = encodeURIComponent(email);
+    let resp = await this.GetResponseAsync<null, { exists: boolean; customer: CustomerDetailSM | null }>(
+      `${AppConstants.ApiUrls.CUSTOMER}/getbyemail?email=${encodedEmail}`,
+      'GET',
+      null,
+      new AdditionalRequestDetails<{ exists: boolean; customer: CustomerDetailSM | null }>(false, Authentication.false)
+    );
+    return resp;
+  };
 }

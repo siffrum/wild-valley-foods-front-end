@@ -56,6 +56,14 @@ export class DashboardChartsSM {
     visitors: number;
     avgTime: string;
   }>;
+  dailyVisitorsNotification?: {
+    message: string;
+    type: string;
+    cleanupTime: string;
+    retentionPeriod: string;
+    exportAvailable: boolean;
+    exportMessage: string;
+  };
 }
 
 /**

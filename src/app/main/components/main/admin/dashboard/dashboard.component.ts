@@ -110,6 +110,11 @@ export class DashboardComponent extends BaseComponent<AdminDashboardViewModel> i
     if (data.charts?.dailyVisitors) {
       this.viewModel.dailyVisitors = data.charts.dailyVisitors;
     }
+    
+    // Map Daily Visitors Notification
+    if (data.charts?.dailyVisitorsNotification) {
+      this.viewModel.dailyVisitorsNotification = data.charts.dailyVisitorsNotification;
+    }
 
     // Map Widgets
     if (data.widgets) {

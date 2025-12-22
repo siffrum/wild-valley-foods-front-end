@@ -13,6 +13,7 @@
     "build:localqa": "ng build --configuration localqa",
     "build:reg": "ng build --configuration reg",
     "build:prod": "ng build --configuration production",
+    "start:server": "node server.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

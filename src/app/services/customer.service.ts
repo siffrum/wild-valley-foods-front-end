@@ -91,4 +91,15 @@ export class CustomerService extends BaseService {
   getRazorpayKey(): Promise<ApiResponse<{ keyId: string; environment?: string }>> {
     return this.customerClient.GetRazorpayKey();
   }
+
+  /**
+   * Get Customer By Email
+   * Checks if customer exists (for multi-device checkout support)
+   */
+  async getCustomerByEmail(email: string): Promise<ApiResponse<{ exists: boolean; customer: CustomerDetailSM | null }>> {
+    if (!email || !email.trim()) {
+      throw new Error("Email is required");
+    }
+    return await this.customerClient.GetCustomerByEmail(email.trim());
+  }
 }

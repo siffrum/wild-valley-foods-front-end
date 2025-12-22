@@ -199,13 +199,43 @@ export class Checkout
     }
     try {
       this.viewModel.submitted = true;
+      
+      // Validate email is provided
+      if (!this.viewModel.customer.email || !this.viewModel.customer.email.trim()) {
+        this._commonService.showSweetAlertToast({
+          title: 'Email Required',
+          text: 'Please enter your email address to continue.',
+          icon: 'warning',
+          confirmButtonText: 'OK',
+        });
+        return;
+      }
+
       this.viewModel.homeAddress.addressType = this.selectedAddressType;
       this.viewModel.customer.addresses = [this.viewModel.homeAddress];
       this._commonService.presentLoading();
+
+      // Smart customer creation: Handles both new and existing customers seamlessly
+      // Backend will return existing customer if email exists, or create new one
       const resp = await this.customerService.createCustomer(
         this.viewModel.customer
       );
+
       if (resp.isError) {
+        // If error is "customer already exists", try to fetch existing customer
+        if (resp.errorData?.displayMessage?.toLowerCase().includes('already exists')) {
+          console.log('[Checkout] Customer exists, fetching existing customer...');
+          const emailCheckResp = await this.customerService.getCustomerByEmail(this.viewModel.customer.email);
+          
+          if (!emailCheckResp.isError && emailCheckResp.successData?.exists && emailCheckResp.successData?.customer) {
+            // Use existing customer
+            this.viewModel.createdCustomer = emailCheckResp.successData.customer;
+            this._handleCustomerSuccess(true); // isExisting = true
+            return;
+          }
+        }
+        
+        // Other errors - show error message
         this._commonService.showSweetAlertToast({
           title: 'Error',
           text: resp.errorData.displayMessage,
@@ -213,36 +243,64 @@ export class Checkout
           confirmButtonText: 'OK',
         });
       } else {
+        // Success - customer created or found
         this.viewModel.createdCustomer = resp.successData;
-        if (this.savedCustomers.length >= 10) {
-          this.savedCustomers.shift();
-          this._commonService.showSweetAlertToast({
-            title: 'Address Limit',
-            text: 'Address limit reached. Oldest address was replaced.',
-            icon: 'info',
-            confirmButtonText: 'OK',
-          });
-        } else {
-          await this.savedCustomers.push(this.viewModel.createdCustomer);
-          await this.storageService.saveToStorage(
-            AppConstants.DbKeys.SAVED_CUSTOMER_DETAILS,
-            this.savedCustomers
-          );
-          this._commonService.showSweetAlertToast({
-            title: 'Success',
-            text: 'Details added successfully.',
-            icon: 'success',
-            confirmButtonText: 'OK',
-          });
-          this.currentCard = 'order';
-          this.selectedCustomerId = this.viewModel.createdCustomer.id;
-        }
+        const isExisting = (resp.successData as any)?.isExisting || false;
+        this._handleCustomerSuccess(isExisting);
       }
     } catch (error) {
+      console.error('[Checkout] Error in onSubmit:', error);
       this._exceptionHandler.handleError(error);
     } finally {
       this._commonService.dismissLoader();
     }
+  }
+
+  /**
+   * Handle successful customer creation/retrieval
+   * Saves to IndexedDB and proceeds to order
+   */
+  private _handleCustomerSuccess(isExisting: boolean = false) {
+    // Check if customer already in saved list
+    const alreadySaved = this.savedCustomers.some(c => c.id === this.viewModel.createdCustomer.id);
+    
+    if (!alreadySaved) {
+      // Add to saved customers (limit 10)
+      if (this.savedCustomers.length >= 10) {
+        this.savedCustomers.shift();
+      }
+      this.savedCustomers.push(this.viewModel.createdCustomer);
+      
+      // Save to IndexedDB
+      this.storageService.saveToStorage(
+        AppConstants.DbKeys.SAVED_CUSTOMER_DETAILS,
+        this.savedCustomers
+      ).catch(err => {
+        console.warn('[Checkout] Failed to save customer to IndexedDB:', err);
+        // Don't block checkout if IndexedDB save fails
+      });
+    }
+
+    // Show appropriate message
+    if (isExisting) {
+      this._commonService.showSweetAlertToast({
+        title: 'Welcome Back!',
+        text: 'Your details have been loaded. You can proceed to checkout.',
+        icon: 'success',
+        confirmButtonText: 'OK',
+      });
+    } else {
+      this._commonService.showSweetAlertToast({
+        title: 'Success',
+        text: 'Your details have been saved. Proceeding to checkout.',
+        icon: 'success',
+        confirmButtonText: 'OK',
+      });
+    }
+
+    // Proceed to order
+    this.currentCard = 'order';
+    this.selectedCustomerId = this.viewModel.createdCustomer.id;
   }
 
   async loadCart() {

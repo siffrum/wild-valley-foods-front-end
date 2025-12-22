@@ -33,6 +33,9 @@
       
       iframe {
         opacity: 1;
+        visibility: visible;
+        // Prevent black screen on hover
+        transform: translateZ(0) scale(1);
       }
     }
     
@@ -40,6 +43,13 @@
       .video-title {
         color: $color-danger-dark;
       }
+    }
+  }
+  
+  // Prevent hover issues on touch devices
+  @media (hover: none) {
+    &:hover {
+      transform: none;
     }
   }
 }
@@ -54,6 +64,9 @@
   overflow: hidden;
   box-shadow: $shadow-md;
   transition: box-shadow $transition-base, transform $transition-base;
+  // Prevent rendering issues
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
   
   // Prevent black screen during carousel transitions
   &::before {
@@ -67,6 +80,7 @@
     z-index: 0;
     opacity: 0;
     transition: opacity $transition-base;
+    pointer-events: none;
   }
   
   iframe {
@@ -80,8 +94,18 @@
     pointer-events: auto;
     opacity: 1;
     visibility: visible;
-    transition: opacity $transition-base;
+    transition: opacity $transition-base, visibility $transition-base;
     background: $color-bg-dark;
+    // Prevent black screen on hover and transitions
+    will-change: auto;
+    backface-visibility: visible;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    // Force GPU acceleration to prevent black screens
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    // Ensure iframe stays loaded
+    display: block;
   }
   
   /* Playing state */
@@ -254,6 +278,13 @@
   
   .video-container {
     border-radius: $border-radius-md;
+    
+    iframe {
+      // Ensure iframes work properly on mobile
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
   }
   
   .carousel-control-prev,
@@ -286,6 +317,11 @@
     .video-desc {
       font-size: $font-size-xs;
     }
+  }
+  
+  // Prevent hover effects on mobile
+  .video-card:hover {
+    transform: none;
   }
 }
 

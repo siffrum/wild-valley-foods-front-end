@@ -28,6 +28,10 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
   private carousel: any = null;
   private autoScrollTimer: any = null;
   private messageListener: ((event: MessageEvent) => void) | null = null;
+  private touchStartY: number = 0;
+  private touchStartX: number = 0;
+  private isUserInteracting: boolean = false;
+  private scrollTimeout: any = null;
   
   groupedVideos: any[][] = [];
   videoStates: Map<string, VideoState> = new Map();
@@ -41,6 +45,7 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
   // Settings
   readonly AUTO_SCROLL_INTERVAL = 6000;
   readonly RESUME_DELAY = 3000;
+  readonly SCROLL_DETECTION_DELAY = 500;
 
   constructor(
     commonService: CommonService,
@@ -62,6 +67,9 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
   ngAfterViewInit(): void {
     // Setup YouTube message listener
     this.setupYouTubeListener();
+    
+    // Setup manual scroll/touch detection
+    this.setupScrollDetection();
   }
 
   ngOnDestroy(): void {
@@ -71,6 +79,9 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
       window.removeEventListener('message', this.messageListener);
       this.messageListener = null;
     }
+    
+    // Remove scroll detection listeners
+    this.removeScrollDetection();
     
     if (this.carousel) {
       try {
@@ -107,7 +118,11 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
         carouselEl.addEventListener('slid.bs.carousel', (event: any) => {
           // Refresh iframes after slide change to prevent black screens
           this.refreshInactiveIframes();
+          this.currentSlide = event.to;
         });
+        
+        // Detect touch/swipe gestures
+        this.setupCarouselTouchDetection(carouselEl);
       }
 
       // Start auto-scroll
@@ -126,8 +141,111 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
       if (iframe) {
         iframe.style.opacity = '1';
         iframe.style.visibility = 'visible';
+        iframe.style.display = 'block';
+        // Force reflow to prevent black screen
+        iframe.offsetHeight;
       }
     });
+  }
+
+  /**
+   * Setup scroll/touch detection to pause videos on manual interaction
+   */
+  private setupScrollDetection(): void {
+    // Detect wheel/scroll events
+    const carouselEl = document.getElementById('videoCarousel');
+    if (carouselEl) {
+      carouselEl.addEventListener('wheel', this.onWheel.bind(this), { passive: true });
+      carouselEl.addEventListener('touchstart', this.onTouchStart.bind(this), { passive: true });
+      carouselEl.addEventListener('touchmove', this.onTouchMove.bind(this), { passive: true });
+    }
+  }
+
+  /**
+   * Remove scroll detection listeners
+   */
+  private removeScrollDetection(): void {
+    const carouselEl = document.getElementById('videoCarousel');
+    if (carouselEl) {
+      carouselEl.removeEventListener('wheel', this.onWheel.bind(this));
+      carouselEl.removeEventListener('touchstart', this.onTouchStart.bind(this));
+      carouselEl.removeEventListener('touchmove', this.onTouchMove.bind(this));
+    }
+  }
+
+  /**
+   * Setup carousel-specific touch detection
+   */
+  private setupCarouselTouchDetection(carouselEl: HTMLElement): void {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    
+    carouselEl.addEventListener('touchstart', (e: TouchEvent) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      this.isUserInteracting = true;
+    }, { passive: true });
+    
+    carouselEl.addEventListener('touchend', () => {
+      this.isUserInteracting = false;
+      // If video was playing and user swiped, pause it
+      if (this.isAnyVideoPlaying) {
+        this.pauseAllVideos();
+      }
+    }, { passive: true });
+  }
+
+  /**
+   * Handle wheel/scroll events
+   */
+  private onWheel(event: WheelEvent): void {
+    this.isUserInteracting = true;
+    
+    // Clear existing timeout
+    if (this.scrollTimeout) {
+      clearTimeout(this.scrollTimeout);
+    }
+    
+    // If video is playing and user scrolls, pause it
+    if (this.isAnyVideoPlaying) {
+      this.pauseAllVideos();
+    }
+    
+    // Reset interaction flag after delay
+    this.scrollTimeout = setTimeout(() => {
+      this.isUserInteracting = false;
+    }, this.SCROLL_DETECTION_DELAY);
+  }
+
+  /**
+   * Handle touch start
+   */
+  private onTouchStart(event: TouchEvent): void {
+    this.touchStartY = event.touches[0].clientY;
+    this.touchStartX = event.touches[0].clientX;
+    this.isUserInteracting = true;
+  }
+
+  /**
+   * Handle touch move
+   */
+  private onTouchMove(event: TouchEvent): void {
+    if (!this.touchStartY || !this.touchStartX) return;
+    
+    const touchY = event.touches[0].clientY;
+    const touchX = event.touches[0].clientX;
+    const deltaY = Math.abs(touchY - this.touchStartY);
+    const deltaX = Math.abs(touchX - this.touchStartX);
+    
+    // If significant horizontal or vertical movement (swipe/scroll)
+    if (deltaX > 10 || deltaY > 10) {
+      this.isUserInteracting = true;
+      
+      // If video is playing and user is scrolling/swiping, pause it
+      if (this.isAnyVideoPlaying) {
+        this.pauseAllVideos();
+      }
+    }
   }
 
   /**
@@ -142,12 +260,12 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
       
       iframes.forEach(iframe => {
         if (!isActive) {
-          // For inactive slides, ensure iframe is still loaded but with reduced opacity
-          iframe.style.opacity = '0.7';
+          // For inactive slides, keep iframe loaded but prevent interaction
           iframe.style.pointerEvents = 'none';
         } else {
-          // For active slide, ensure full visibility
+          // For active slide, ensure full visibility and interaction
           iframe.style.opacity = '1';
+          iframe.style.visibility = 'visible';
           iframe.style.pointerEvents = 'auto';
         }
       });
@@ -300,12 +418,13 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
    * Start auto-scroll timer
    */
   private startAutoScroll(): void {
-    if (this.autoScrollTimer || !this.autoScrollEnabled || this.isAnyVideoPlaying) {
+    if (this.autoScrollTimer || !this.autoScrollEnabled || this.isAnyVideoPlaying || this.isUserInteracting) {
       return;
     }
 
     this.autoScrollTimer = setInterval(() => {
-      if (!this.isAnyVideoPlaying && this.carousel) {
+      // Don't auto-scroll if video is playing or user is interacting
+      if (!this.isAnyVideoPlaying && !this.isUserInteracting && this.carousel) {
         this.carousel.next();
       }
     }, this.AUTO_SCROLL_INTERVAL);
@@ -326,7 +445,11 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
    */
   private onSlideChange(slideIndex: number): void {
     this.currentSlide = slideIndex;
-    this.pauseAllVideos();
+    
+    // If slide changed (not just initialized), pause videos
+    if (this.isAnyVideoPlaying) {
+      this.pauseAllVideos();
+    }
     
     // Ensure iframes are properly visible
     setTimeout(() => {
@@ -340,8 +463,17 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
    * Handle manual navigation (prev/next buttons, indicators)
    */
   onManualNavigation(): void {
+    this.isUserInteracting = true;
     this.pauseAllVideos();
-    this.resetAutoScroll();
+    this.clearAutoScroll();
+    
+    // Reset interaction flag after delay
+    setTimeout(() => {
+      this.isUserInteracting = false;
+      if (this.autoScrollEnabled && !this.isAnyVideoPlaying) {
+        this.startAutoScroll();
+      }
+    }, this.SCROLL_DETECTION_DELAY);
   }
 
   /**
@@ -430,7 +562,10 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
     const videoId = this.extractVideoId(url);
     // enablejsapi=1 is required for postMessage control
     // origin is needed for security
-    const embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1`;
+    // autoplay=0 prevents auto-play
+    // controls=1 shows controls
+    // fs=1 allows fullscreen
+    const embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1&autoplay=0&controls=1&fs=1&origin=${window.location.origin}`;
     return this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
   }
 

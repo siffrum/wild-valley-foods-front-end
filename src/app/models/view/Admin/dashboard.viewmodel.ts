@@ -34,6 +34,15 @@ export class AdminDashboardViewModel extends BaseViewModel {
     avgTime: string;
   }> = [];
   
+  dailyVisitorsNotification?: {
+    message: string;
+    type: string;
+    cleanupTime: string;
+    retentionPeriod: string;
+    exportAvailable: boolean;
+    exportMessage: string;
+  };
+  
   // Widget Data
   recentOrders: Array<{
     id: number;
