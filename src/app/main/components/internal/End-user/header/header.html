@@ -155,8 +155,7 @@
   </li>
   <li class="nav-item ms-3">
     <a class="nav-link" routerLink="/my-orders" routerLinkActive="active-route"
-      [routerLinkActiveOptions]="{ exact: true }"><i class="bi bi-basket fs-5"></i><span
-        class="position-absolute top-1 start-80 translate-middle badge rounded-pill bg-success">0</span></a>
+      [routerLinkActiveOptions]="{ exact: true }"><i class="bi bi-basket fs-5"></i></a>
 
   </li>
   </ul>
@@ -401,12 +400,15 @@
         </a>
         <a class="nav-link d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close" routerLink="/cart">
           <i class="bi bi-cart me-3"></i> <span>Cart</span>
+          @if (viewModel.cartItems.length > 0) {
+          <span class="badge bg-success text-white ms-auto">{{viewModel.cartItems.length}}</span>
+          }
         </a>
         <a class="nav-link d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close"
           routerLink="/wishlist">
           <i class="bi bi-heart me-3"></i> <span>Wishlist</span>
           @if (viewModel.wishListItems.length > 0) {
-          <span class="badge bg-danger ms-auto">{{viewModel.wishListItems.length}}</span>
+          <span class="badge bg-success text-white ms-auto">{{viewModel.wishListItems.length}}</span>
           }
         </a>
 
