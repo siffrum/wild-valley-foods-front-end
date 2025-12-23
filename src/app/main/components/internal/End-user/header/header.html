@@ -51,7 +51,7 @@
         </ul>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" tabindex="0">Categories</a>
+        <a class="nav-link">Categories</a>
         <ul class="dropdown-menu">
           @for (category of viewModel.categoriesViewModel.categories; track category.id) {
           <li>
@@ -374,11 +374,12 @@
         </a>
 
         <!-- Categories Dropdown -->
-        <div class="nav-item dropdown">
+        <div class="nav-item dropdown" (click)="toggleCategories()">
           <a class="nav-link d-flex align-items-center dropdown-toggle" tabindex="0" data-bs-toggle="dropdown"
             aria-expanded="false">
             <i class="bi bi-grid me-3"></i> <span>Categories</span>
           </a>
+          @if (isOpenOffCanvasCategories) {
           <ul class="dropdown-menu">
             @for (category of viewModel.categoriesViewModel.categories; track category.id) {
             <li>
@@ -389,6 +390,7 @@
             </li>
             }
           </ul>
+          }
         </div>
 
         <hr class="my-2">

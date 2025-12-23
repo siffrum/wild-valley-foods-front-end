@@ -1,5 +1,14 @@
 import { CommonModule, NgIf } from '@angular/common';
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, ChangeDetectionStrategy, ViewChild, ElementRef, HostListener } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+  ViewChild,
+  ElementRef,
+  HostListener,
+} from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../../../../services/cart.service';
@@ -23,7 +32,10 @@ import { ProductUtils } from '../../../../../utils/product.utils';
   styleUrls: ['./header.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Header extends BaseComponent<HeaderViewModel> implements OnInit, OnDestroy {
+export class Header
+  extends BaseComponent<HeaderViewModel>
+  implements OnInit, OnDestroy
+{
   private cartSub: Subscription | null = null;
   private wishlistSub: Subscription | null = null;
   private searchSub: Subscription | null = null;
@@ -40,8 +52,10 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit, On
 
   // Expose utils to template
   utils = ProductUtils;
+  isOpenOffCanvasCategories: boolean = false;
 
-  @ViewChild('searchInput', { static: false }) searchInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('searchInput', { static: false })
+  searchInput?: ElementRef<HTMLInputElement>;
 
   constructor(
     commonService: CommonService,
@@ -78,10 +92,7 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit, On
 
     // Setup debounced search
     this.searchSub = this.searchSubject
-      .pipe(
-        debounceTime(400),
-        distinctUntilChanged()
-      )
+      .pipe(debounceTime(400), distinctUntilChanged())
       .subscribe((query) => {
         this.performSearch(query);
       });
@@ -89,7 +100,10 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit, On
     this.loadPageData();
     this.loadBestSellingProducts();
   }
-
+  toggleCategories() {
+    this.isOpenOffCanvasCategories = !this.isOpenOffCanvasCategories;
+    this.cdr.detectChanges();
+  }
   trackById(_: number, item: any) {
     return item.id ?? item.name;
   }
@@ -146,7 +160,9 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit, On
     if (this.showSearchDropdown) {
       setTimeout(() => {
         // Try mobile search input first, then desktop
-        const mobileInput = document.querySelector('.mobile-search-dropdown .search-input') as HTMLInputElement;
+        const mobileInput = document.querySelector(
+          '.mobile-search-dropdown .search-input'
+        ) as HTMLInputElement;
         if (mobileInput) {
           mobileInput.focus();
         } else {
@@ -167,7 +183,7 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit, On
   onSearchInput(event: any): void {
     const query = event.target.value.trim();
     this.searchQuery = query;
-    
+
     if (query.length >= 3) {
       this.searchSubject.next(query);
     } else {
@@ -197,8 +213,10 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit, On
     this.cdr.detectChanges();
 
     try {
-      const resp = await this.productService.getAllProductsBySearchString(query);
-      
+      const resp = await this.productService.getAllProductsBySearchString(
+        query
+      );
+
       if (resp.isError) {
         this.searchResults = [];
       } else {
@@ -215,8 +233,8 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit, On
 
   navigateToShop(): void {
     if (this.searchQuery && this.searchQuery.trim().length >= 3) {
-      this.router.navigate(['/shop'], { 
-        queryParams: { search: this.searchQuery.trim() } 
+      this.router.navigate(['/shop'], {
+        queryParams: { search: this.searchQuery.trim() },
       });
       this.closeSearch();
     }
@@ -237,14 +255,19 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit, On
     const target = event.target as HTMLElement;
     if (this.showSearchDropdown) {
       // Check for desktop search dropdown
-      const isDesktopSearch = target.closest('.search-dropdown') || target.closest('.search-icon-link');
+      const isDesktopSearch =
+        target.closest('.search-dropdown') ||
+        target.closest('.search-icon-link');
       // Check for mobile search dropdown or button
-      const isMobileSearch = target.closest('.mobile-search-dropdown') || 
-                            (target.closest('.d-lg-none') && target.closest('button[type="button"]') && target.closest('button')?.querySelector('.bi-search'));
-      
+      const isMobileSearch =
+        target.closest('.mobile-search-dropdown') ||
+        (target.closest('.d-lg-none') &&
+          target.closest('button[type="button"]') &&
+          target.closest('button')?.querySelector('.bi-search'));
+
       // Don't close if clicking on overlay (it will close via overlay click handler)
       const isOverlay = target.classList.contains('search-overlay');
-      
+
       if (!isDesktopSearch && !isMobileSearch && !isOverlay) {
         this.closeSearch();
       }
@@ -282,7 +305,11 @@ export class Header extends BaseComponent<HeaderViewModel> implements OnInit, On
 
   async saveCart() {
     for (const item of this.viewModel.cartItems) {
-      await this.cartService.updateCartItem(item.id, item.cartQuantity, item.selectedVariantId);
+      await this.cartService.updateCartItem(
+        item.id,
+        item.cartQuantity,
+        item.selectedVariantId
+      );
     }
     await this.getCartItems();
   }

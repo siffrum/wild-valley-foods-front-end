@@ -8,9 +8,9 @@
             <div class="carousel-item" [class.active]="i === 0" [attr.data-type]="banner.bannerType">
 
                 @if (banner.link) {
-                <a [href]="banner.link" target="_blank" rel="noopener">
-                    <img [src]="banner.image_base64" class="d-block w-100" alt="{{ banner.title }}" />
-                </a>
+
+                <img [src]="banner.image_base64" class="d-block w-100" alt="{{ banner.title }}" />
+
                 } @else {
                 <img [src]="banner.image_base64" class="d-block w-100" alt="{{ banner.title }}" />
                 }
