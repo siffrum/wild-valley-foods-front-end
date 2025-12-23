@@ -109,10 +109,10 @@
 
         <!-- Price Display -->
         <div class="price-row mb-3 d-flex align-items-center gap-2">
-          <h3 class="price mb-0 text-success">₹{{ utils.getPrice(viewModel.product) | number:'1.2-2' }}</h3>
+          <h3 class="price mb-0 text-success">₹{{ utils.getPrice(viewModel.product)  | number:'1.0-2' }}</h3>
           @if (utils.hasDiscount(viewModel.product)) {
             <small class="text-muted text-decoration-line-through">
-              ₹{{ utils.getComparePrice(viewModel.product) | number:'1.2-2' }}
+              ₹{{ utils.getComparePrice(viewModel.product)  | number:'1.0-2' }}
             </small>
             <span class="badge bg-danger">-{{ utils.getDiscountPercentage(viewModel.product) }}%</span>
           }

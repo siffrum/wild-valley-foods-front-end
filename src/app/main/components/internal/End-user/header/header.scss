@@ -463,7 +463,10 @@
 .nav-item.dropdown:focus-within .dropdown-menu {
   display: block;
 }
-
+.nav-item{
+  // border: 1px solid black !important;
+  font-size: 1.2rem !important;
+}
 /* Dropdown items */
 .dropdown-menu li a {
   display: block;
@@ -566,6 +569,7 @@
         transition: all $transition-fast;
         display: flex;
         align-items: center;
+        // border: 1px solid black !important;
         
         i {
           font-size: $font-size-icon-base;

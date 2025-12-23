@@ -34,7 +34,7 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   fgsType: SPINNER.threeStrings,
 
   // Display a logo above the spinner
-  logoUrl: 'assets/logo-no-bg.png',
+  logoUrl: 'assets/Logo.jpeg',
   logoSize: 100,
   logoPosition: POSITION.centerCenter,
 
