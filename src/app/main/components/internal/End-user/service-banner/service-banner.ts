@@ -13,8 +13,8 @@ export class ServiceBanner {
   features = [
     {
       icon: 'bi bi-truck',
-      title: 'Free Shipping',
-      desc: 'Free Shipping World Wide',
+      title: 'Shipping',
+      desc: 'Shipping World Wide',
     },
     {
       icon: 'bi bi-clock-history',
