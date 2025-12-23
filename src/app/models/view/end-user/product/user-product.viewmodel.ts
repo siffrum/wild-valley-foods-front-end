@@ -17,7 +17,7 @@ export class UserProductViewModel extends BaseViewModel {
   
   // UI toggles
   showReviews = false;
-  showDescription = true;  // Description expanded by default
+  showDescription = false;  // Description expanded by default
   showSpecs = false;       // Specifications collapsed by default
   showFullRichDesc = false;
   

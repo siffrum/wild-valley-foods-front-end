@@ -36,13 +36,20 @@
                 <div class="video-card">
                   <!-- Video Container -->
                   <div class="video-container" [class.is-playing]="isVideoPlaying(i, j)">
-                    <iframe
+                    <!-- <iframe
                       [id]="'youtube-' + getVideoIndex(i, j)"
                       [src]="getSafeYoutubeUrl(video.youtubeUrl)"
                       frameborder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowfullscreen
-                    ></iframe>
+                    ></iframe> -->
+                    <iframe
+  [src]="getSafeYoutubeUrl(video.youtubeUrl)"
+  frameborder="0"
+  allow="autoplay; encrypted-media; picture-in-picture"
+  sandbox="allow-scripts allow-same-origin allow-presentation"
+  allowfullscreen>
+</iframe>
                     
                     <!-- Playing indicator border -->
                     @if (isVideoPlaying(i, j)) {

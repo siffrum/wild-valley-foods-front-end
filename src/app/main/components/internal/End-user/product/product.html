@@ -94,11 +94,11 @@
                 <div>
                     <div class="price h6 mb-0 d-flex align-items-baseline">
                         <span class="currency fw-bold">{{ currency }}</span>
-                        <span class="amount fw-bold">{{ utils.getPrice(product) | number:'1.2-2' }}</span>
+                      <span class="amount fw-bold"> {{ utils.getPrice(product) | number:'1.0-2' }}</span>
                     </div>
                     @if (utils.hasDiscount(product)) {
                         <small class="text-muted text-decoration-line-through">
-                            {{ currency }}{{ utils.getComparePrice(product) | number:'1.2-2' }}
+                            {{ currency }}{{ utils.getComparePrice(product) | number:'1.0-2' }}
                         </small>
                     }
                 </div>
@@ -107,7 +107,7 @@
                 <div class="text-end">
                     @if (selectedVariant) {
                         <small class="d-block fw-semibold">
-                            {{ selectedVariant.quantity }}{{ selectedVariant.unitSymbol || selectedVariant.unitName || '' }}
+                            {{ selectedVariant.quantity | number:'1.0-2' }}&nbsp;{{ selectedVariant.unitSymbol || selectedVariant.unitName || '' }}
                         </small>
                         @if (utils.getWeight(product)) {
                             <small class="d-block text-muted">{{ utils.getFormattedWeight(product) }}</small>
@@ -125,8 +125,8 @@
                             (change)="onVariantChange($event)">
                         @for (variant of availableVariants; track variant.id) {
                             <option [ngValue]="variant.id" [disabled]="variant.stock <= 0">
-                                {{ variant.quantity }}{{ variant.unitSymbol || variant.unitName || '' }} 
-                                - {{ currency }}{{ variant.price | number:'1.2-2' }}
+                                {{ variant.quantity | number:'1.0-2' }}&nbsp;{{  variant.unitSymbol || variant.unitName || '' }} 
+                                - {{ currency }}{{ variant.price | number:'1.0-2' }}
                                 @if (variant.stock <= 0) { (Out of Stock) }
                             </option>
                         }
@@ -136,7 +136,7 @@
                 <!-- Single variant - show unit info without dropdown -->
                 <div class="mb-3 text-center">
                     <small class="text-muted">
-                        {{ selectedVariant?.quantity }}{{ selectedVariant?.unitSymbol || selectedVariant?.unitName || '' }}
+                        {{ selectedVariant?.quantity | number:'1.0-2' }}{{ selectedVariant?.unitSymbol || selectedVariant?.unitName || '' }}
                     </small>
                 </div>
             }

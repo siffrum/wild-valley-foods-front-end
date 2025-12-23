@@ -103,7 +103,7 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
         this.carousel = new bootstrap.Carousel(carouselEl, {
           interval: false,
           wrap: true,
-          touch: true,
+          touch: false,
           keyboard: true
         });
 
@@ -199,23 +199,27 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
    * Handle wheel/scroll events
    */
   private onWheel(event: WheelEvent): void {
-    this.isUserInteracting = true;
+  if ((event.target as HTMLElement).tagName === 'IFRAME') return;
+  this.isUserInteracting = true;
+}
+  // private onWheel(event: WheelEvent): void {
+  //   this.isUserInteracting = true;
     
-    // Clear existing timeout
-    if (this.scrollTimeout) {
-      clearTimeout(this.scrollTimeout);
-    }
+  //   // Clear existing timeout
+  //   if (this.scrollTimeout) {
+  //     clearTimeout(this.scrollTimeout);
+  //   }
     
-    // If video is playing and user scrolls, pause it
-    if (this.isAnyVideoPlaying) {
-      this.pauseAllVideos();
-    }
+  //   // If video is playing and user scrolls, pause it
+  //   if (this.isAnyVideoPlaying) {
+  //     this.pauseAllVideos();
+  //   }
     
-    // Reset interaction flag after delay
-    this.scrollTimeout = setTimeout(() => {
-      this.isUserInteracting = false;
-    }, this.SCROLL_DETECTION_DELAY);
-  }
+  //   // Reset interaction flag after delay
+  //   this.scrollTimeout = setTimeout(() => {
+  //     this.isUserInteracting = false;
+  //   }, this.SCROLL_DETECTION_DELAY);
+  // }
 
   /**
    * Handle touch start
@@ -225,52 +229,70 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
     this.touchStartX = event.touches[0].clientX;
     this.isUserInteracting = true;
   }
+  private onTouchMove(event: TouchEvent): void {
+  if ((event.target as HTMLElement).tagName === 'IFRAME') return;
+  this.isUserInteracting = true;
+}
 
   /**
    * Handle touch move
    */
-  private onTouchMove(event: TouchEvent): void {
-    if (!this.touchStartY || !this.touchStartX) return;
+  // private onTouchMove(event: TouchEvent): void {
+  //   if (!this.touchStartY || !this.touchStartX) return;
     
-    const touchY = event.touches[0].clientY;
-    const touchX = event.touches[0].clientX;
-    const deltaY = Math.abs(touchY - this.touchStartY);
-    const deltaX = Math.abs(touchX - this.touchStartX);
+  //   const touchY = event.touches[0].clientY;
+  //   const touchX = event.touches[0].clientX;
+  //   const deltaY = Math.abs(touchY - this.touchStartY);
+  //   const deltaX = Math.abs(touchX - this.touchStartX);
     
-    // If significant horizontal or vertical movement (swipe/scroll)
-    if (deltaX > 10 || deltaY > 10) {
-      this.isUserInteracting = true;
+  //   // If significant horizontal or vertical movement (swipe/scroll)
+  //   if (deltaX > 10 || deltaY > 10) {
+  //     this.isUserInteracting = true;
       
-      // If video is playing and user is scrolling/swiping, pause it
-      if (this.isAnyVideoPlaying) {
-        this.pauseAllVideos();
-      }
-    }
-  }
+  //     // If video is playing and user is scrolling/swiping, pause it
+  //     if (this.isAnyVideoPlaying) {
+  //       this.pauseAllVideos();
+  //     }
+  //   }
+  // }
 
   /**
    * Refresh inactive iframes to prevent black screens
    */
   private refreshInactiveIframes(): void {
-    // Get all carousel items
-    const carouselItems = document.querySelectorAll('.carousel-item');
-    carouselItems.forEach((item, index) => {
-      const isActive = item.classList.contains('active');
-      const iframes = item.querySelectorAll<HTMLIFrameElement>('iframe[id^="youtube-"]');
-      
-      iframes.forEach(iframe => {
-        if (!isActive) {
-          // For inactive slides, keep iframe loaded but prevent interaction
-          iframe.style.pointerEvents = 'none';
-        } else {
-          // For active slide, ensure full visibility and interaction
-          iframe.style.opacity = '1';
-          iframe.style.visibility = 'visible';
-          iframe.style.pointerEvents = 'auto';
-        }
-      });
+  const carouselItems = document.querySelectorAll('.carousel-item');
+
+  carouselItems.forEach(item => {
+    const isActive = item.classList.contains('active');
+    const iframes = item.querySelectorAll<HTMLIFrameElement>('iframe');
+
+    iframes.forEach(iframe => {
+      iframe.style.pointerEvents = 'auto'; // ALWAYS ENABLE
+      iframe.style.visibility = isActive ? 'visible' : 'hidden';
     });
-  }
+  });
+}
+
+  // private refreshInactiveIframes(): void {
+  //   // Get all carousel items
+  //   const carouselItems = document.querySelectorAll('.carousel-item');
+  //   carouselItems.forEach((item, index) => {
+  //     const isActive = item.classList.contains('active');
+  //     const iframes = item.querySelectorAll<HTMLIFrameElement>('iframe[id^="youtube-"]');
+      
+  //     iframes.forEach(iframe => {
+  //       if (!isActive) {
+  //         // For inactive slides, keep iframe loaded but prevent interaction
+  //         iframe.style.pointerEvents = 'none';
+  //       } else {
+  //         // For active slide, ensure full visibility and interaction
+  //         iframe.style.opacity = '1';
+  //         iframe.style.visibility = 'visible';
+  //         iframe.style.pointerEvents = 'auto';
+  //       }
+  //     });
+  //   });
+  // }
 
   /**
    * Setup listener for YouTube iframe API messages
@@ -565,7 +587,18 @@ export class Videos extends BaseComponent<VideoViewModel> implements OnInit, Aft
     // autoplay=0 prevents auto-play
     // controls=1 shows controls
     // fs=1 allows fullscreen
-    const embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1&autoplay=0&controls=1&fs=1&origin=${window.location.origin}`;
+    // const embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1&autoplay=0&controls=1&fs=1&origin=${window.location.origin}`;
+    const embedUrl =
+  `https://www.youtube.com/embed/${videoId}
+   ?enablejsapi=1
+   &controls=1
+   &fs=1
+   &playsinline=1
+   &rel=0
+   &modestbranding=1
+   &mute=0
+   &origin=${window.location.origin}`;
+
     return this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
   }
 

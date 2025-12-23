@@ -88,7 +88,7 @@
             (change)="onVariantChange($event)">
             @for (variant of availableVariants; track variant.id) {
             <option [ngValue]="variant.id" [disabled]="variant.stock <= 0">
-              {{ variant.quantity }}{{ variant.unitSymbol || variant.unitName || '' }} - ₹{{ variant.price | number:'1.2-2' }}
+              {{ variant.quantity | number:'1.0-2' }}&nbsp;{{ variant.unitSymbol || variant.unitName || '' }} - ₹{{ variant.price | number:'1.2-2' }}
               @if (variant.stock > 0) {
                 ({{ variant.stock }} available)
               } @else {
@@ -102,7 +102,7 @@
         <!-- Single variant - display info -->
         <div class="mb-3">
           <span class="badge bg-secondary">
-            {{ selectedVariant.quantity }}{{ selectedVariant.unitSymbol || selectedVariant.unitName || '' }}
+            {{ selectedVariant.quantity | number:'1.0-2' }}&nbsp;{{ selectedVariant.unitSymbol || selectedVariant.unitName || '' }}
           </span>
         </div>
         }
@@ -193,7 +193,7 @@
                 @if (selectedVariant) {
                 <tr>
                   <td class="text-muted">Unit</td>
-                  <td class="fw-semibold">{{ selectedVariant.quantity }}{{ selectedVariant.unitSymbol || selectedVariant.unitName || '' }}</td>
+                  <td class="fw-semibold">{{ selectedVariant.quantity | number:'1.0-2' }}&nbsp;{{ selectedVariant.unitSymbol || selectedVariant.unitName || '' }}</td>
                 </tr>
                 }
                 @if (utils.getWeight(viewModel.product)) {
@@ -211,7 +211,7 @@
                 @if (viewModel.product.taxRate) {
                 <tr>
                   <td class="text-muted">Tax Rate</td>
-                  <td class="fw-semibold">{{ viewModel.product.taxRate }}%</td>
+                  <td class="fw-semibold">{{ viewModel.product.taxRate | number:'1.0-2' }}%</td>
                 </tr>
                 }
                 <tr>

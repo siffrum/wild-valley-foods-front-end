@@ -125,12 +125,83 @@ export class ProductUtils {
   /**
    * Get formatted weight string
    */
-  static getFormattedWeight(product: any): string {
-    const weight = ProductUtils.getWeight(product);
-    if (!weight) return '';
-    if (weight >= 1000) return `${(weight / 1000).toFixed(1)} kg`;
-    return `${weight} g`;
+  // static getFormattedWeight(product: any): string {
+  //   const weight = ProductUtils.getWeight(product);
+  //   if (!weight) return '';
+  //   if (weight >= 1000) return `${(weight / 1000).toFixed(1)} kg`;
+  //   return `${weight} g`;
+  // }
+static getFormattedWeight(product: any): string {
+  const rawWeight: unknown = ProductUtils.getWeight(product);
+
+  // null / undefined
+  if (rawWeight == null) {
+    return '';
   }
+
+  // empty string (ONLY if string)
+  if (typeof rawWeight === 'string' && rawWeight.trim() === '') {
+    return '';
+  }
+
+  const weight = Number(rawWeight);
+
+  if (Number.isNaN(weight) || weight <= 0) {
+    return '';
+  }
+
+  const unit = (product?.weightUnit || product?.unit || 'g').toLowerCase();
+
+  const format = (value: number): string =>
+    Number.isInteger(value)
+      ? value.toString()
+      : value.toFixed(2).replace(/\.?0+$/, '');
+
+  switch (unit) {
+    case 'g':
+    case 'gram':
+    case 'grams':
+      return weight >= 1000
+        ? `${format(weight / 1000)} kg`
+        : `${format(weight)} g`;
+
+    case 'kg':
+    case 'kilogram':
+    case 'kilograms':
+      return `${format(weight)} kg`;
+
+    case 'lb':
+    case 'lbs':
+    case 'pound':
+    case 'pounds':
+      return `${format(weight)} lb`;
+
+    case 'ml':
+    case 'milliliter':
+    case 'milliliters':
+      return weight >= 1000
+        ? `${format(weight / 1000)} l`
+        : `${format(weight)} ml`;
+
+    case 'l':
+    case 'liter':
+    case 'liters':
+      return `${format(weight)} l`;
+
+    case 'pack':
+    case 'packs':
+    case 'pcs':
+    case 'piece':
+    case 'pieces':
+      return `${format(weight)} ${unit}`;
+
+    default:
+      return `${format(weight)} ${unit}`;
+  }
+}
+
+
+
 
   /**
    * Check if product has multiple variants
