@@ -7,7 +7,6 @@
         <i class="bi bi-list"></i>
       </button>
 
-
       <button class="btn btn-outline-secondary border-0 p-0 position-relative" type="button" (click)="toggleSearch()"
         [attr.aria-expanded]="showSearchDropdown">
         <i class="bi bi-search"></i>
@@ -16,8 +15,15 @@
 
     <a class="navbar-brand d-flex align-items-center flex-row-reverse flex-lg-row" [routerLink]="['/home']"
       routerLinkActive="router-link-active">
+
       <img src="assets/logo.png" alt="Logo" width="50" class="ms-2 ms-lg-4 me-0 me-lg-2">
-      <span class="fw-bold ms-lg-1">Wild Valley Foods</span>
+
+      <div class="d-flex flex-column align-items-start" style="line-height: 1.2;">
+        <span class="fw-bold ms-lg-1">Wild Valley Foods</span>
+        <small class="text-muted ms-lg-1  d-block" style="font-size: 0.65rem; letter-spacing: 0.5px;">
+          FRESH FROM THE FARMS OF KASHMIR
+        </small>
+      </div>
     </a>
 
     <ul class="navbar-nav ms-auto d-none d-lg-flex flex-row align-items-center me-lg-4">
@@ -306,7 +312,7 @@
 
   <div class="offcanvas-body p-0 d-flex flex-column">
     <!-- Mobile Search -->
-    <div class="mobile-search p-3 border-bottom">
+    <!-- <div class="mobile-search p-3 border-bottom">
       <div class="input-group">
         <span class="input-group-text bg-white border-end-0">
           <i class="bi bi-search text-muted"></i>
@@ -355,7 +361,7 @@
         }
       </div>
       }
-    </div>
+    </div> -->
 
     <!-- Main nav list -->
     <div class="p-3 flex-grow-1 overflow-auto">
