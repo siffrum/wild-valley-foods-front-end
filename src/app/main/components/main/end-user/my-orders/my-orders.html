@@ -1,169 +1,137 @@
-<div class="orders-root" role="main" >
+<div class="orders-root" role="main">
   <!-- Email Input Section -->
   @if (!hasSearched && viewModel.orders.length === 0 && !isLoading) {
-    <div class="email-section">
-      <div class="email-card">
-        <h2>View Your Orders</h2>
-        <p class="subtitle">Enter your email address to view your order history</p>
-        <form (ngSubmit)="onSubmitEmail()" class="email-form">
-          <div class="form-group">
-            <input
-              type="email"
-              class="email-input"
-              placeholder="Enter your email address"
-              [(ngModel)]="viewModel.customerEmail"
-              name="customerEmail"
-              required
-              [disabled]="isLoading"
-            />
-            <button type="submit" class="btn primary" [disabled]="isLoading || !viewModel.customerEmail">
-              @if (!isLoading) {
-                <span>View Orders</span>
-              }
-              @if (isLoading) {
-                <span>Loading...</span>
-              }
-            </button>
-          </div>
-        </form>
-      </div>
+  <div class="email-section">
+    <div class="email-card">
+      <h2>View Your Orders</h2>
+      <p class="subtitle">Enter your email address to view your order history</p>
+      <form (ngSubmit)="onSubmitEmail()" class="email-form">
+        <div class="form-group  flex-column">
+          <input type="email" class="email-input" placeholder="Enter your email address"
+            [(ngModel)]="viewModel.customerEmail" name="customerEmail" required [disabled]="isLoading" />
+          <button type="submit" class="btn primary" [disabled]="isLoading || !viewModel.customerEmail">
+            @if (!isLoading) {
+            <span>View Orders</span>
+            }
+            @if (isLoading) {
+            <span>Loading...</span>
+            }
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
   }
 
   @if (viewModel.orders.length > 0 || isLoading) {
-    <header class="orders-header">
-      <div>
-        <h1 id="orders-heading">My Orders <span class="count">({{ totalCount }})</span></h1>
-        <p class="subtitle">All your recent purchases and order details</p>
-        @if (viewModel.customerEmail) {
-          <p class="email-display">
-            <small>Orders for: <strong>{{ viewModel.customerEmail }}</strong></small>
-          </p>
-        }
-        @if (viewModel.orders.length > 0) {
-          <button class="btn primary btn-sm mt-2" (click)="downloadAllOrdersPDF()">
-            <i class="bi bi-download me-1"></i>Download All Orders PDF
-          </button>
-        }
-      </div>
+  <header class="orders-header">
+    <div>
+      <h1 id="orders-heading">My Orders <span class="count">({{ totalCount }})</span></h1>
+      <p class="subtitle">All your recent purchases and order details</p>
+      @if (viewModel.customerEmail) {
+      <p class="email-display">
+        <small>Orders for: <strong>{{ viewModel.customerEmail }}</strong></small>
+      </p>
+      }
+      @if (viewModel.orders.length > 0) {
+      <button class="btn primary btn-sm mt-2" (click)="downloadAllOrdersPDF()">
+        <i class="bi bi-download me-1"></i>Download All Orders PDF
+      </button>
+      }
+    </div>
 
     <div class="actions">
-      <input
-        type="search"
-        class="search"
-        placeholder="Search order id, item, or payment..."
-        [(ngModel)]="searchTerm"
-        (keyup.enter)="onSearch()"
-      />
+      <input type="search" class="search" placeholder="Search order id, item, or payment..." [(ngModel)]="searchTerm"
+        (keyup.enter)="onSearch()" />
 
-      <div class="filter-row" role="tablist" >
-        <button
-          class="filter-btn"
-          [class.active]="statusFilter === ''"
-          (click)="setFilter('')"
-          role="tab"
-        
-        >All</button>
+      <div class="filter-row" role="tablist">
+        <button class="filter-btn" [class.active]="statusFilter === ''" (click)="setFilter('')" role="tab">All</button>
 
-        <button
-          class="filter-btn"
-          [class.active]="statusFilter === 'Processing'"
-          (click)="setFilter('Processing')"
-          role="tab"
-        >Processing</button>
+        <button class="filter-btn" [class.active]="statusFilter === 'Processing'" (click)="setFilter('Processing')"
+          role="tab">Processing</button>
 
-        <button
-          class="filter-btn"
-          [class.active]="statusFilter === 'Shipped'"
-          (click)="setFilter('Shipped')"
-          role="tab"
-        >Shipped</button>
+        <button class="filter-btn" [class.active]="statusFilter === 'Shipped'" (click)="setFilter('Shipped')"
+          role="tab">Shipped</button>
 
-        <button
-          class="filter-btn"
-          [class.active]="statusFilter === 'Delivered'"
-          (click)="setFilter('Delivered')"
-          role="tab"
-        >Delivered</button>
+        <button class="filter-btn" [class.active]="statusFilter === 'Delivered'" (click)="setFilter('Delivered')"
+          role="tab">Delivered</button>
 
-        <button
-          class="filter-btn"
-          [class.active]="statusFilter === 'Cancelled'"
-          (click)="setFilter('Cancelled')"
-          role="tab"
-        >Cancelled</button>
+        <button class="filter-btn" [class.active]="statusFilter === 'Cancelled'" (click)="setFilter('Cancelled')"
+          role="tab">Cancelled</button>
       </div>
 
-      <select class="sort" [(ngModel)]="sortBy"  (change)="page = 1">
+      <select class="sort" [(ngModel)]="sortBy" (change)="page = 1">
         <option value="dateDesc">Newest</option>
         <option value="dateAsc">Oldest</option>
         <option value="totalDesc">Total: High → Low</option>
         <option value="totalAsc">Total: Low → High</option>
       </select>
     </div>
-    </header>
+  </header>
   }
 
   <!-- empty - no orders match filters -->
   @if (!isLoading && hasSearched && viewModel.orders.length > 0 && filteredOrders.length === 0) {
-    <div class="empty">
-      <img src="https://cdn-icons-png.flaticon.com/512/107/107831.png" alt="" />
-      <h2>No orders found</h2>
-      <p>No orders match your current filters.</p>
-    </div>
+  <div class="empty">
+    <img src="https://cdn-icons-png.flaticon.com/512/107/107831.png" alt="" />
+    <h2>No orders found</h2>
+    <p>No orders match your current filters.</p>
+  </div>
   }
 
   <!-- No orders after email search -->
   @if (!isLoading && hasSearched && viewModel.orders.length === 0 && viewModel.customerEmail) {
-    <div class="empty">
-      <img src="https://cdn-icons-png.flaticon.com/512/107/107831.png" alt="" />
-      <h2>No orders found</h2>
-      <p>No orders found for email: <strong>{{ viewModel.customerEmail }}</strong></p>
-      <button class="btn primary" (click)="viewModel.customerEmail = ''; viewModel.orders = []; hasSearched = false">Try Different Email</button>
-    </div>
+  <div class="empty">
+    <img src="https://cdn-icons-png.flaticon.com/512/107/107831.png" alt="" />
+    <h2>No orders found</h2>
+    <p>No orders found for email: <strong>{{ viewModel.customerEmail }}</strong></p>
+    <button class="btn primary" (click)="viewModel.customerEmail = ''; viewModel.orders = []; hasSearched = false">Try
+      Different Email</button>
+  </div>
   }
 
   <!-- skeleton -->
   @if (isLoading) {
-    <div class="skeleton-list">
-      @for (s of [1,2,3]; track $index) {
-        <div class="skeleton-item"></div>
-      }
-    </div>
+  <div class="skeleton-list">
+    @for (s of [1,2,3]; track $index) {
+    <div class="skeleton-item"></div>
+    }
+  </div>
   }
 
   <!-- list -->
   @if (!isLoading && filteredOrders.length > 0) {
-    <section class="orders-list">
-      @for (order of pagedOrders; track order.id; let i = $index) {
-        <article class="order-card">
+  <section class="orders-list">
+    @for (order of pagedOrders; track order.id; let i = $index) {
+    <article class="order-card">
       <div class="order-head">
         <div class="left">
           <div class="meta">
             <div class="order-id">Order <strong>#{{ order.id }}</strong></div>
             <div class="small muted">Placed: {{ formatDate(order.createdOnUTC) }}</div>
             @if (order.razorpayOrderId) {
-              <div class="small muted">Order ID: {{ order.razorpayOrderId }}</div>
+            <div class="small muted">Order ID: {{ order.razorpayOrderId }}</div>
             }
           </div>
         </div>
 
         <div class="right">
           <div class="total">{{ formatCurrency(order.amount) }}</div>
-          <div class="status" [ngClass]="statusClass(order.status || 'created')">{{ mapStatusToUI(order.status || 'created') }}</div>
+          <div class="status" [ngClass]="statusClass(order.status || 'created')">{{ mapStatusToUI(order.status ||
+            'created') }}</div>
           <button class="icon-btn" (click)="toggleDetails(order)" [attr.aria-expanded]="isDetailsShown(order)">
             @if (!isDetailsShown(order)) {
-              <span>View</span>
+            <span>View</span>
             }
             @if (isDetailsShown(order)) {
-              <span>Hide</span>
+            <span>Hide</span>
             }
           </button>
         </div>
       </div>
 
       @if (isDetailsShown(order)) {
-        <div class="order-body" [id]="'details-'+i">
+      <div class="order-body" [id]="'details-'+i">
         <div class="items">
           <table class="items-table">
             <thead>
@@ -176,38 +144,36 @@
             </thead>
             <tbody>
               @for (it of order.items; track $index) {
-                <tr>
-                  <td>
-                    <div class="product">
-                      <img 
-                        [src]="getProductImage(it.product)" 
-                        [alt]="it.product?.name || 'Product'" 
-                      />
-                      <div>
-                        <div class="p-name">{{ it.product?.name || 'Unknown Product' }}</div>
-                        <div class="muted small">
-                          @if (it.variant && it.variant.unitSymbol) {
-                            <span>{{ it.variant.quantity }}{{ it.variant.unitSymbol }}</span>
-                          }
-                          @if (it.variant && !it.variant.unitSymbol && it.variant.sku) {
-                            <span>{{ it.variant.sku }}</span>
-                          }
-                          @if (!it.variant && it.variantDetails && it.variantDetails.unitSymbol) {
-                            <span>
-                              {{ it.variantDetails.quantity }}{{ it.variantDetails.unitSymbol }}
-                            </span>
-                          }
-                          @if ((!it.variant || (!it.variant.unitSymbol && !it.variant.sku)) && (!it.variantDetails || !it.variantDetails.unitSymbol)) {
-                            <span>N/A</span>
-                          }
-                        </div>
+              <tr>
+                <td>
+                  <div class="product">
+                    <img [src]="getProductImage(it.product)" [alt]="it.product?.name || 'Product'" />
+                    <div>
+                      <div class="p-name">{{ it.product?.name || 'Unknown Product' }}</div>
+                      <div class="muted small">
+                        @if (it.variant && it.variant.unitSymbol) {
+                        <span>{{ it.variant.quantity }}{{ it.variant.unitSymbol }}</span>
+                        }
+                        @if (it.variant && !it.variant.unitSymbol && it.variant.sku) {
+                        <span>{{ it.variant.sku }}</span>
+                        }
+                        @if (!it.variant && it.variantDetails && it.variantDetails.unitSymbol) {
+                        <span>
+                          {{ it.variantDetails.quantity }}{{ it.variantDetails.unitSymbol }}
+                        </span>
+                        }
+                        @if ((!it.variant || (!it.variant.unitSymbol && !it.variant.sku)) && (!it.variantDetails ||
+                        !it.variantDetails.unitSymbol)) {
+                        <span>N/A</span>
+                        }
                       </div>
                     </div>
-                  </td>
-                  <td class="center">{{ it.quantity }}</td>
-                  <td class="right">{{ formatCurrency(it.price) }}</td>
-                  <td class="right">{{ formatCurrency(it.total || (it.price * it.quantity)) }}</td>
-                </tr>
+                  </div>
+                </td>
+                <td class="center">{{ it.quantity }}</td>
+                <td class="right">{{ formatCurrency(it.price) }}</td>
+                <td class="right">{{ formatCurrency(it.total || (it.price * it.quantity)) }}</td>
+              </tr>
               }
             </tbody>
           </table>
@@ -217,20 +183,20 @@
           <div class="left">
             <div><strong>Status:</strong> {{ mapStatusToUI(order.status || 'created') }}</div>
             @if (order.razorpayOrderId) {
-              <div><strong>Order ID:</strong> {{ order.razorpayOrderId }}</div>
+            <div><strong>Order ID:</strong> {{ order.razorpayOrderId }}</div>
             }
             @if (order.paymentId) {
-              <div><strong>Payment ID:</strong> {{ order.paymentId }}</div>
+            <div><strong>Payment ID:</strong> {{ order.paymentId }}</div>
             }
             @if (order.customer) {
-              <div><strong>Customer:</strong> {{ order.customer.firstName }} {{ order.customer.lastName }}</div>
+            <div><strong>Customer:</strong> {{ order.customer.firstName }} {{ order.customer.lastName }}</div>
             }
           </div>
           <div class="right">
             <div class="row"><span>Subtotal</span><span>{{ formatCurrency(order.amount) }}</span></div>
             <div class="row"><span>Paid</span><span>{{ formatCurrency(order.paid_amount || 0) }}</span></div>
             @if (order.due_amount && order.due_amount > 0) {
-              <div class="row"><span>Due</span><span>{{ formatCurrency(order.due_amount) }}</span></div>
+            <div class="row"><span>Due</span><span>{{ formatCurrency(order.due_amount) }}</span></div>
             }
             <div class="row total-row"><span>Total</span><span>{{ formatCurrency(order.amount) }}</span></div>
             <div class="actions">
@@ -240,19 +206,20 @@
             </div>
           </div>
         </div>
-        </div>
+      </div>
       }
-        </article>
-      }
+    </article>
+    }
 
-      <!-- pagination -->
-      @if (filteredOrders.length > pageSize) {
-        <nav class="pager">
-          <button class="btn ghost" (click)="prevPage()" [disabled]="page === 1">Prev</button>
-          <span class="muted">Page {{ page }} of {{ totalPages }} (Showing {{ pagedOrders.length }} of {{ filteredOrders.length }} orders)</span>
-          <button class="btn ghost" (click)="nextPage()" [disabled]="page === totalPages">Next</button>
-        </nav>
-      }
-    </section>
+    <!-- pagination -->
+    @if (filteredOrders.length > pageSize) {
+    <nav class="pager">
+      <button class="btn ghost" (click)="prevPage()" [disabled]="page === 1">Prev</button>
+      <span class="muted">Page {{ page }} of {{ totalPages }} (Showing {{ pagedOrders.length }} of {{
+        filteredOrders.length }} orders)</span>
+      <button class="btn ghost" (click)="nextPage()" [disabled]="page === totalPages">Next</button>
+    </nav>
+    }
+  </section>
   }
 </div>

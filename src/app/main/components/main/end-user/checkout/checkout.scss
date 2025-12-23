@@ -11,7 +11,11 @@
    ============================================ */
 
 .checkout-page {
-  background: linear-gradient(135deg, $gradient-light-start 0%, $color-bg-primary 100%);
+  background: linear-gradient(
+    135deg,
+    $gradient-light-start 0%,
+    $color-bg-primary 100%
+  );
   min-height: 100vh;
   padding: $spacing-xxl $spacing-lg;
   font-family: $font-family-primary;
@@ -99,7 +103,11 @@
 
   &.active {
     .step-circle {
-      background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+      background: linear-gradient(
+        135deg,
+        $color-primary 0%,
+        $color-primary-light 100%
+      );
       border-color: $color-primary;
       color: $color-text-on-primary;
       box-shadow: 0 0 0 4px rgba($color-primary, 0.15);
@@ -113,7 +121,11 @@
 
   &.completed {
     .step-circle {
-      background: linear-gradient(135deg, $gradient-success-start 0%, $gradient-success-end 100%);
+      background: linear-gradient(
+        135deg,
+        $gradient-success-start 0%,
+        $gradient-success-end 100%
+      );
       border-color: $color-success;
       color: $color-text-on-primary;
       box-shadow: 0 0 0 4px rgba($color-success, 0.15);
@@ -158,13 +170,14 @@
 
 .checkout-grid {
   display: grid;
-  // grid-template-columns: 1fr 480px;
+  // grid-template-columns: 1fr 400px; /* Use a slightly smaller sidebar or 1fr 1fr */
   gap: $spacing-xl;
-  align-items: start;
+  width: 100%; // Ensure it doesn't exceed container
 
   @media (max-width: $breakpoint-xl) {
-    grid-template-columns: 1fr;
-    gap: $spacing-lg;
+    grid-template-columns: 1fr 400px; // Stack completely on smaller screens
+    display: block; // Fallback for older browsers to ensure full width
+    width: 100%;
   }
 }
 
@@ -227,7 +240,11 @@
   .header-icon {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+    background: linear-gradient(
+      135deg,
+      $color-primary 0%,
+      $color-primary-light 100%
+    );
     border-radius: $border-radius-sm;
     display: flex;
     align-items: center;
@@ -362,7 +379,11 @@
   display: inline-flex;
   align-items: center;
   padding: 0.375rem 0.875rem;
-  background: linear-gradient(135deg, $gradient-danger-start 0%, $gradient-danger-end 100%);
+  background: linear-gradient(
+    135deg,
+    $gradient-danger-start 0%,
+    $gradient-danger-end 100%
+  );
   color: $color-text-on-primary;
   border-radius: $border-radius-full;
   font-size: $font-size-xs;
@@ -531,7 +552,11 @@
    ============================================ */
 
 .saved-addresses-section {
-  background: linear-gradient(135deg, $gradient-light-start 0%, $color-bg-primary 100%);
+  background: linear-gradient(
+    135deg,
+    $gradient-light-start 0%,
+    $color-bg-primary 100%
+  );
   padding: $spacing-lg;
   border-radius: $border-radius-md;
   border: 2px dashed $color-border-light;
@@ -667,11 +692,19 @@
     flex-shrink: 0;
 
     &.cod {
-      background: linear-gradient(135deg, $color-yellow-light 0%, $color-yellow-lighter 100%);
+      background: linear-gradient(
+        135deg,
+        $color-yellow-light 0%,
+        $color-yellow-lighter 100%
+      );
     }
 
     &.online {
-      background: linear-gradient(135deg, $color-blue-light 0%, $color-blue-lighter 100%);
+      background: linear-gradient(
+        135deg,
+        $color-blue-light 0%,
+        $color-blue-lighter 100%
+      );
     }
   }
 
@@ -710,11 +743,19 @@
 
   .payment-radio:checked ~ .payment-card {
     border-color: $color-primary;
-    background: linear-gradient(135deg, rgba($color-primary, 0.03) 0%, rgba($color-primary, 0.08) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba($color-primary, 0.03) 0%,
+      rgba($color-primary, 0.08) 100%
+    );
     box-shadow: 0 0 0 4px rgba($color-primary, 0.1);
 
     .payment-check {
-      background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+      background: linear-gradient(
+        135deg,
+        $color-primary 0%,
+        $color-primary-light 100%
+      );
       border-color: $color-primary;
       opacity: 1;
       transform: scale(1);
@@ -744,7 +785,11 @@
   justify-content: center;
   gap: 0.75rem;
   padding: $spacing-md $spacing-xl;
-  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  background: linear-gradient(
+    135deg,
+    $color-primary 0%,
+    $color-primary-light 100%
+  );
   border: none;
   border-radius: $border-radius-md;
   color: $color-text-on-primary;
@@ -763,13 +808,18 @@
   }
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba($color-text-on-primary, 0.2), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba($color-text-on-primary, 0.2),
+      transparent
+    );
     transition: left 0.5s ease;
   }
 
@@ -807,7 +857,11 @@
    ============================================ */
 
 .delivery-preview {
-  background: linear-gradient(135deg, $color-sky-light 0%, $color-sky-lighter 100%);
+  background: linear-gradient(
+    135deg,
+    $color-sky-light 0%,
+    $color-sky-lighter 100%
+  );
   border: 2px solid $color-blue-border;
   border-radius: $border-radius-md;
   padding: 1.25rem;
@@ -875,7 +929,11 @@
     min-width: 28px;
     height: 28px;
     padding: 0 $spacing-sm;
-    background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+    background: linear-gradient(
+      135deg,
+      $color-primary 0%,
+      $color-primary-light 100%
+    );
     color: $color-text-on-primary;
     border-radius: $border-radius-full;
     font-size: $font-size-xs;
@@ -959,14 +1017,17 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  min-width: 0;
 }
-
 .item-name {
-  font-size: $font-size-md;
-  font-weight: $font-weight-bold;
-  color: $neutral-800;
-  margin: 0;
-  line-height: $line-height-normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; // Cuts off long names with "..."
+
+  @media (max-width: $breakpoint-sm) {
+    white-space: normal; // Allow wrap on very small screens if preferred
+    word-break: break-word;
+  }
 }
 
 .item-sku {
@@ -1089,7 +1150,11 @@
    ============================================ */
 
 .coupon-section {
-  background: linear-gradient(135deg, $color-yellow-light 0%, $color-yellow-lighter 100%);
+  background: linear-gradient(
+    135deg,
+    $color-yellow-light 0%,
+    $color-yellow-lighter 100%
+  );
   border: 2px dashed $color-yellow-border;
   border-radius: $border-radius-md;
   padding: 1.25rem;
@@ -1142,7 +1207,11 @@
 
 .coupon-btn {
   padding: 0.75rem $spacing-lg;
-  background: linear-gradient(135deg, $gradient-warning-start 0%, $gradient-warning-end 100%);
+  background: linear-gradient(
+    135deg,
+    $gradient-warning-start 0%,
+    $gradient-warning-end 100%
+  );
   border: none;
   border-radius: $border-radius-sm;
   color: $color-text-on-primary;
@@ -1186,7 +1255,11 @@
   justify-content: center;
   gap: 0.75rem;
   padding: 1.125rem $spacing-xl;
-  background: linear-gradient(135deg, $gradient-success-start 0%, $gradient-success-end 100%);
+  background: linear-gradient(
+    135deg,
+    $gradient-success-start 0%,
+    $gradient-success-end 100%
+  );
   border: none;
   border-radius: $border-radius-md;
   color: $color-text-on-primary;
@@ -1279,10 +1352,15 @@
   }
 
   .address-tag {
-    padding: $spacing-sm 0.875rem;
-    font-size: $font-size-xs;
-  }
+    max-width: 100%; // Ensure it never exceeds the parent width
+    display: inline-flex;
 
+    .tag-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
   .payment-card {
     gap: 0.75rem;
   }
